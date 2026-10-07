@@ -1,0 +1,54 @@
+.link {
+  text-decoration: underline;
+}
+
+.title {
+  margin-block: 16px;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.fields {
+  display: grid;
+  gap: 12px;
+}
+
+.label {
+  display: grid;
+  gap: 4px;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid #aaa;
+  padding: 8px;
+}
+
+.input:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.submitButton {
+  border: 1px solid currentColor;
+  padding: 8px;
+}
+
+.submitButton:disabled {
+  opacity: 0.5;
+}
+
+.switchLink {
+  margin-top: 16px;
+}
+
+.notice {
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 20px;
+}

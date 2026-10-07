@@ -1,0 +1,69 @@
+.hero {
+  display: grid;
+  grid-template-columns: 659px 519px;
+  align-items: start;
+  gap: 102px;
+  width: 1440px;
+  height: 640px;
+  margin-inline: auto;
+  padding: 67px 80px 0;
+}
+
+.modes {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 321px;
+  height: 34px;
+  padding-inline: 35px;
+  border-radius: 23px;
+  background: #f1f0fe;
+  font-size: 16px;
+  line-height: 19px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-top: 36px;
+  font-size: 52px;
+  line-height: 66px;
+  letter-spacing: -0.025em;
+}
+
+.description {
+  max-width: 469px;
+  margin-top: 25px;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 34px;
+}
+
+.startButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 266px;
+  height: 69px;
+  margin-top: 22px;
+  padding-inline: 39px 31px;
+  border-radius: 9999px;
+  background: var(--primary);
+  color: white;
+  font-size: 20px;
+  line-height: 24px;
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.startButton:hover {
+  background: var(--primary-hover);
+}
+
+.startButton:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+.arrowIcon {
+  width: 28px;
+  height: 28px;
+}

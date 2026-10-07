@@ -1,0 +1,39 @@
+.preview {
+  position: relative;
+  isolation: isolate;
+  width: 519px;
+  margin-top: 14px;
+  scroll-margin-top: 32px;
+}
+
+.background {
+  position: absolute;
+  top: -45px;
+  left: -45px;
+  z-index: -10;
+  width: 586px;
+  height: 556px;
+  max-width: none;
+  pointer-events: none;
+}
+
+.title {
+  position: absolute;
+  top: -62px;
+  left: -91px;
+  width: 180px;
+  rotate: -9.54deg;
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.arrow {
+  position: absolute;
+  top: -6px;
+  left: -81px;
+  pointer-events: none;
+}
+
+.list > li + li {
+  margin-top: 15px;
+}

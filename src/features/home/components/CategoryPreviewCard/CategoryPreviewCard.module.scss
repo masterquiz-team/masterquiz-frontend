@@ -1,0 +1,50 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 144px;
+  padding-inline: 28px 17px;
+  border: 4px solid white;
+  border-radius: 23px;
+}
+
+.imagePlaceholder {
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+.description {
+  max-width: 218px;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.arrow {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  height: 55px;
+  border-radius: 9999px;
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
+  color: var(--primary);
+}
+
+.arrowIcon {
+  width: 28px;
+  height: 28px;
+}

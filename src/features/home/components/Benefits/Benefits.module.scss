@@ -1,0 +1,57 @@
+.section {
+  min-width: 1440px;
+  min-height: 417px;
+  padding-block: 50px 64px;
+  background: #f3f5fc;
+}
+
+.container {
+  width: 1440px;
+  margin-inline: auto;
+  padding-inline: 80px;
+}
+
+.label {
+  font-size: 16px;
+  line-height: 19px;
+  text-transform: uppercase;
+}
+
+.title {
+  margin-top: 18px;
+  font-size: 32px;
+  line-height: 40px;
+  letter-spacing: -0.025em;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(4, 300px);
+  gap: 22px;
+  margin-top: 39px;
+}
+
+.item {
+  text-align: center;
+}
+
+.imagePlaceholder {
+  width: 100px;
+  height: 100px;
+  margin-inline: auto;
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: white;
+}
+
+.itemTitle {
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.description {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 24px;
+}
