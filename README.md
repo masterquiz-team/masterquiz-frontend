@@ -7,8 +7,9 @@ Frontend application for MasterQuiz — a team quiz platform
 Use Node.js 24 and pnpm. Install dependencies with `pnpm install`, then start
 the frontend with `pnpm dev`. Open `http://localhost:3000`.
 
-The home page targets the 1440 px desktop sketch and uses temporary local category data. Category
-selection and the leaderboard are not connected to a quiz API yet.
+The home page targets the 1440 px desktop sketch and uses a static category preview.
+The `/categories` page reads protected backend categories after login and preserves
+selection in the URL. Quiz setup and the leaderboard await their backend contracts.
 
 ## Styles
 
@@ -34,7 +35,14 @@ Login submits `email` and `password`. The forms validate fields and show pending
 success, and error states. Registration redirects to login. Login stores the JWT
 in an HttpOnly cookie; browser JavaScript receives only the session email and
 expiry. The session is verified through the backend after navigation or reload,
-and logout clears the cookie.
+and logout clears the cookie. The categories page uses the same server-side auth support.
 
 The decorative shape uses the supplied Figma export in `public/Vector.svg`.
 Category and benefit illustrations currently have empty reserved spaces.
+
+## Categories workflow
+
+The categories implementation and its Next.js data flows, verified backend
+limitations, and missing SVG exports are documented in
+[docs/categories-flow.md](docs/categories-flow.md). Shared authentication is
+documented in [docs/auth-flow.md](docs/auth-flow.md).

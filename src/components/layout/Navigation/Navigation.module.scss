@@ -9,6 +9,13 @@
   transition: color 150ms;
 }
 
+:global(header) .link[aria-current="page"] {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 10px;
+  text-decoration-thickness: 2px;
+}
+
 .link:hover {
   color: var(--primary);
 }

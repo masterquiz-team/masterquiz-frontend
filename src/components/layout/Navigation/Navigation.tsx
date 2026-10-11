@@ -1,17 +1,29 @@
+"use client";
+
 import styles from "./Navigation.module.scss";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export const Navigation = () => {
+  const pathname = usePathname();
   return (
     <nav>
       <ul className={styles.list}>
         <li>
-          <Link href="/" className={styles.link}>
+          <Link
+            href="/"
+            className={styles.link}
+            aria-current={pathname === "/" ? "page" : undefined}
+          >
             Home
           </Link>
         </li>
         <li>
-          <Link href="/#categories" className={styles.link}>
+          <Link
+            href="/categories"
+            className={styles.link}
+            aria-current={pathname === "/categories" ? "page" : undefined}
+          >
             Categories
           </Link>
         </li>
