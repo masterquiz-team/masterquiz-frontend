@@ -96,3 +96,16 @@
     height: 40px;
   }
 }
+
+@media (max-width: 380px) {
+  .header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .header > :last-child {
+    grid-row: 2;
+    justify-self: start;
+  }
+  .header > nav {
+    grid-row: 3;
+  }
+}

@@ -1,0 +1,44 @@
+.label {
+  display: grid;
+  gap: 12px;
+  font-size: 16px;
+  line-height: 19px;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 51px;
+  padding-inline: 8px 12px;
+  border: 1px solid #8a90a6;
+  border-radius: 9px;
+  color: #8a90a6;
+}
+
+.inputWrapper:focus-within {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  outline: none;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+}
+
+.input::placeholder {
+  color: #8a90a6;
+  opacity: 1;
+}
+
+.error {
+  color: #b42318;
+  font-size: 14px;
+  line-height: 20px;
+}

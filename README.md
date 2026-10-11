@@ -30,9 +30,11 @@ The backend URL defaults to `http://localhost:8080`. To change it, copy
 This URL is used on the Next.js server and is not a `NEXT_PUBLIC_` variable.
 
 Registration submits `email`, `nickname`, `password`, and `repeatPassword`.
-Login submits `email` and `password`. The forms show the HTTP status and a
-success or error message. Login currently verifies that the API returns a
-token; it does not save a session or enable authenticated pages.
+Login submits `email` and `password`. The forms validate fields and show pending,
+success, and error states. Registration redirects to login. Login stores the JWT
+in an HttpOnly cookie; browser JavaScript receives only the session email and
+expiry. The session is verified through the backend after navigation or reload,
+and logout clears the cookie.
 
 The decorative shape uses the supplied Figma export in `public/Vector.svg`.
 Category and benefit illustrations currently have empty reserved spaces.

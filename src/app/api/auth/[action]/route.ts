@@ -1,4 +1,10 @@
-import { NextResponse } from "next/server";
+import { authenticate } from "@/features/auth/server/auth";
+import { authJson, checkAuthRequest } from "@/features/auth/server/request";
+import {
+  parseAuthPayload,
+  validateAuthValues,
+} from "@/features/auth/validation";
+import { isRecord } from "@/features/auth/validators/responses";
 
 export async function POST(
   request: Request,
@@ -6,82 +12,30 @@ export async function POST(
 ) {
   const { action } = await params;
   if (action !== "login" && action !== "register") {
-    return NextResponse.json(
-      { message: "Unknown authentication endpoint." },
-      { status: 404 },
-    );
+    return authJson({ message: "Unknown authentication endpoint." }, 404);
   }
-  let body: Record<string, unknown>;
+  const rejected = checkAuthRequest(request);
+  if (rejected) return rejected;
+
+  let body: unknown;
   try {
-    const value = await request.json();
-    if (!value || typeof value !== "object" || Array.isArray(value))
-      throw new Error("Invalid body");
-    body = value;
+    body = await request.json();
   } catch {
-    return NextResponse.json(
-      { message: "A JSON object is required." },
-      { status: 400 },
+    return authJson({ message: "A JSON object is required." }, 400);
+  }
+  if (!isRecord(body)) {
+    return authJson({ message: "A JSON object is required." }, 400);
+  }
+  const payload = parseAuthPayload(action, body);
+  if (!payload) {
+    return authJson({ message: "Please complete all required fields." }, 400);
+  }
+  const fieldErrors = validateAuthValues(action, payload);
+  if (Object.keys(fieldErrors).length) {
+    return authJson(
+      { message: "Please check your details.", fieldErrors },
+      400,
     );
   }
-  const fields =
-    action === "register"
-      ? ["email", "password", "nickname", "repeatPassword"]
-      : ["email", "password"];
-  if (fields.some((field) => typeof body[field] !== "string" || !body[field])) {
-    return NextResponse.json(
-      { message: "Please complete all required fields." },
-      { status: 400 },
-    );
-  }
-  const payload = Object.fromEntries(
-    fields.map((field) => [field, body[field]]),
-  );
-  const baseUrl = process.env.BACKEND_API_URL ?? "http://localhost:8080";
-  try {
-    const response = await fetch(`${baseUrl.replace(/\/$/, "")}/${action}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify(payload),
-      cache: "no-store",
-      signal: AbortSignal.timeout(10000),
-      redirect: "error",
-    });
-    const result = await response.json().catch(() => null);
-    if (!response.ok) {
-      const fallback =
-        action === "login" && response.status === 401
-          ? "The email or password was not accepted."
-          : action === "register" && response.status === 409
-            ? "An account with this email already exists."
-            : "The API rejected the request. Please check your details and try again.";
-      return NextResponse.json(
-        {
-          message:
-            typeof result?.message === "string" ? result.message : fallback,
-        },
-        { status: response.status, headers: { "Cache-Control": "no-store" } },
-      );
-    }
-    if (!result || typeof result !== "object") {
-      return NextResponse.json(
-        { message: "The API returned an unexpected response." },
-        { status: 502 },
-      );
-    }
-    return NextResponse.json(result, {
-      status: response.status,
-      headers: { "Cache-Control": "no-store" },
-    });
-  } catch {
-    return NextResponse.json(
-      {
-        message:
-          "The backend is unavailable or took too long to respond. Please try again later.",
-      },
-      { status: 502 },
-    );
-  }
+  return authenticate(action, payload);
 }

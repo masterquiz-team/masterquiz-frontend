@@ -1,13 +1,19 @@
-import styles from "@/features/auth/components/AuthPage.module.scss";
 import type { Metadata } from "next";
-import { AuthForm } from "@/features/auth/components/AuthForm";
+import { AuthPage } from "@/features/auth/components/AuthPage";
 
 export const metadata: Metadata = { title: "Log in" };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string; registered?: string }>;
+}) {
+  const query = await searchParams;
   return (
-    <main className={styles.page}>
-      <AuthForm mode="login" />
-    </main>
+    <AuthPage
+      mode="login"
+      next={query.next}
+      registered={query.registered === "1"}
+    />
   );
 }
