@@ -19,11 +19,7 @@ const benefits = [
 ];
 
 export const Benefits = () => (
-  <section
-    id="about"
-    aria-labelledby="benefits-title"
-    className={styles.section}
-  >
+  <section id="about" className={styles.section}>
     <div className={styles.container}>
       <p className={styles.label}>Why play MasterQuiz?</p>
       <h2 id="benefits-title" className={styles.title}>

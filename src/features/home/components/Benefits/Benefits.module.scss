@@ -1,57 +1,86 @@
 .section {
-  min-width: 1440px;
-  min-height: 417px;
-  padding-block: 50px 64px;
   background: #f3f5fc;
 }
-
 .container {
-  width: 1440px;
+  max-width: 1440px;
+  min-height: 471px;
   margin-inline: auto;
-  padding-inline: 80px;
+  padding: 50px 80px 64px;
 }
-
 .label {
+  color: var(--primary);
+  font-weight: 700;
   font-size: 16px;
   line-height: 19px;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
-
 .title {
   margin-top: 18px;
   font-size: 32px;
   line-height: 40px;
-  letter-spacing: -0.025em;
 }
-
 .list {
   display: grid;
-  grid-template-columns: repeat(4, 300px);
-  gap: 22px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 46px;
   margin-top: 39px;
 }
-
-.item {
-  text-align: center;
-}
-
 .imagePlaceholder {
   width: 100px;
   height: 100px;
-  margin-inline: auto;
-  margin-bottom: 20px;
-  border-radius: 16px;
-  background: white;
+  margin-bottom: 34px;
+  border: 2px solid var(--foreground);
+  background:
+    linear-gradient(
+      45deg,
+      transparent calc(50% - 0.7px),
+      var(--foreground) calc(50% - 0.7px),
+      var(--foreground) calc(50% + 0.7px),
+      transparent calc(50% + 0.7px)
+    ),
+    linear-gradient(
+      -45deg,
+      transparent calc(50% - 0.7px),
+      var(--foreground) calc(50% - 0.7px),
+      var(--foreground) calc(50% + 0.7px),
+      transparent calc(50% + 0.7px)
+    );
 }
-
 .itemTitle {
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 20px;
+  line-height: 25px;
 }
-
 .description {
-  margin-top: 8px;
+  max-width: 230px;
+  margin-top: 16px;
   color: var(--muted);
-  font-size: 14px;
-  line-height: 24px;
+  font-size: 16px;
+  line-height: 26px;
+}
+@media (max-width: 1200px) {
+  .container {
+    padding-inline: 40px;
+  }
+  .list {
+    gap: 32px;
+  }
+}
+@media (max-width: 900px) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px;
+  }
+}
+@media (max-width: 600px) {
+  .container {
+    padding: 48px 24px;
+  }
+  .title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+  .list {
+    grid-template-columns: 1fr;
+  }
 }

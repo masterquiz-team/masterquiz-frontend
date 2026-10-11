@@ -1,35 +1,34 @@
 .hero {
   display: grid;
-  grid-template-columns: 659px 519px;
+  grid-template-columns: minmax(0, 659fr) minmax(0, 519fr);
   align-items: start;
   gap: 102px;
-  width: 1440px;
-  height: 640px;
+  width: 100%;
+  max-width: 1440px;
+  min-height: 640px;
   margin-inline: auto;
-  padding: 67px 80px 0;
+  padding: 63px 80px 96px;
 }
-
 .modes {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 321px;
-  height: 34px;
+  width: min(100%, 321px);
+  min-height: 34px;
   padding-inline: 35px;
   border-radius: 23px;
   background: #f1f0fe;
+  color: var(--primary);
   font-size: 16px;
   line-height: 19px;
   text-transform: uppercase;
 }
-
 .title {
   margin-top: 36px;
-  font-size: 52px;
-  line-height: 66px;
+  font-size: clamp(36px, 3.6vw, 52px);
+  line-height: 1.27;
   letter-spacing: -0.025em;
 }
-
 .description {
   max-width: 469px;
   margin-top: 25px;
@@ -37,33 +36,54 @@
   font-size: 20px;
   line-height: 34px;
 }
-
 .startButton {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  width: 266px;
-  height: 69px;
+  width: 255px;
+  min-height: 69px;
   margin-top: 22px;
-  padding-inline: 39px 31px;
-  border-radius: 9999px;
+  padding: 20px 24px 20px 39px;
+  border-radius: 35px;
   background: var(--primary);
   color: white;
   font-size: 20px;
   line-height: 24px;
-  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 150ms;
 }
-
 .startButton:hover {
   background: var(--primary-hover);
 }
-
 .startButton:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
 }
-
 .arrowIcon {
   width: 28px;
   height: 28px;
+}
+@media (max-width: 1200px) {
+  .hero {
+    padding-inline: 40px;
+    gap: 48px;
+  }
+}
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-block: 40px 64px;
+    gap: 48px;
+  }
+}
+@media (max-width: 600px) {
+  .hero {
+    padding-inline: 24px;
+  }
+  .title {
+    font-size: 36px;
+  }
+  .description {
+    font-size: 18px;
+    line-height: 30px;
+  }
 }

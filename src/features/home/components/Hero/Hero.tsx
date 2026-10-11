@@ -4,9 +4,9 @@ import { Icon } from "@/components/ui/Icon";
 import { CategoriesPreview } from "../CategoriesPreview";
 
 export const Hero = () => (
-  <section aria-labelledby="hero-title" className={styles.hero}>
+  <section className={styles.hero}>
     <div>
-      <ul aria-label="Ways to enjoy MasterQuiz" className={styles.modes}>
+      <ul className={styles.modes}>
         <li>Play</li>
         <li>Learn</li>
         <li>Compete</li>

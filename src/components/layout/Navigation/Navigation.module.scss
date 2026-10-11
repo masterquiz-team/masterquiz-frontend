@@ -1,0 +1,33 @@
+.list {
+  display: flex;
+  align-items: center;
+  gap: 46px;
+  font-size: 16px;
+  line-height: 19px;
+}
+.link {
+  transition: color 150ms;
+}
+
+.link:hover {
+  color: var(--primary);
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 5px;
+  border-radius: 3px;
+}
+
+@media (max-width: 1200px) {
+  .list {
+    gap: 24px;
+  }
+}
+@media (max-width: 600px) {
+  .list {
+    flex-wrap: wrap;
+    gap: 16px 20px;
+    font-size: 14px;
+  }
+}

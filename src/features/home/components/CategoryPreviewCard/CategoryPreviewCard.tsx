@@ -13,7 +13,7 @@ export const CategoryPreviewCard = ({
   background,
 }: Props) => (
   <li className={styles.card} style={{ backgroundColor: background }}>
-    <div aria-hidden="true" className={styles.imagePlaceholder} />
+    <div className={styles.imagePlaceholder} />
     <div className={styles.content}>
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.description}>{description}</p>
