@@ -1,0 +1,224 @@
+.section {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  max-width: 1440px;
+  min-height: 610px;
+  margin-inline: auto;
+  padding: 70px 80px 90px;
+}
+
+.intro {
+  display: grid;
+  grid-template-columns: 168px minmax(0, 1fr);
+  align-items: center;
+  gap: 52px;
+}
+
+.illustration {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 188px;
+  background: url("/Vector3.svg") center / contain no-repeat;
+}
+
+.topAccent,
+.bottomAccent {
+  position: absolute;
+  pointer-events: none;
+}
+
+.topAccent {
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 31px;
+}
+
+.bottomAccent {
+  bottom: 0;
+  left: 20px;
+  width: 27px;
+  height: 28px;
+}
+
+.title {
+  font-size: 32px;
+  line-height: 1.2;
+}
+.description {
+  margin-top: 26px;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1.65;
+}
+.signUp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  min-width: 195px;
+  min-height: 68px;
+  margin-top: 60px;
+  padding: 18px 28px 18px 36px;
+  border: 2px solid var(--primary);
+  border-radius: 34px;
+  color: var(--primary);
+  font-size: 20px;
+  transition: background-color 150ms;
+}
+.signUp:hover {
+  background: #f1f0fe;
+}
+.signUp:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+.arrow {
+  width: 28px;
+  height: 28px;
+}
+
+.preview {
+  position: relative;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) 30px;
+  align-items: center;
+  min-height: 452px;
+  background: url("/Vector2.svg") center / contain no-repeat;
+}
+.card {
+  grid-column: 2;
+  padding: 24px;
+  border-radius: 23px;
+  background: white;
+}
+.cardTitle {
+  margin: 0 0 14px 36px;
+  font-size: 20px;
+  line-height: 24px;
+}
+.player,
+.currentPlayer {
+  display: grid;
+  grid-template-columns: 12px 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 7px 12px;
+  font-size: 16px;
+  line-height: 19px;
+}
+.player + .player {
+  border-top: 1px solid #f1f0fe;
+}
+.currentPlayer {
+  border-radius: 10px;
+  background: #f1f0fe;
+}
+.avatar {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--foreground);
+  border-radius: 50%;
+}
+.score {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.leftAccent,
+.rightAccent {
+  position: absolute;
+  pointer-events: none;
+}
+.leftAccent {
+  top: 95px;
+  left: -20px;
+  width: 50px;
+  height: 66px;
+}
+.rightAccent {
+  top: calc(50% - 35px);
+  right: -10px;
+  width: 40px;
+  height: 70px;
+}
+
+@media (max-width: 1200px) {
+  .section {
+    padding-inline: 40px;
+    gap: 24px;
+  }
+  .intro {
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 24px;
+  }
+  .title {
+    font-size: 28px;
+  }
+  .card {
+    padding: 20px 12px;
+  }
+  .player,
+  .currentPlayer {
+    gap: 8px;
+  }
+}
+@media (max-width: 900px) {
+  .section {
+    grid-template-columns: 1fr;
+    padding-block: 64px;
+  }
+  .intro {
+    max-width: 680px;
+    margin-inline: auto;
+  }
+  .preview {
+    width: 100%;
+    max-width: 554px;
+    margin-inline: auto;
+  }
+}
+@media (max-width: 600px) {
+  .section {
+    padding: 48px 24px;
+  }
+  .intro {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .illustration {
+    width: 168px;
+  }
+  .signUp {
+    margin-top: 28px;
+  }
+  .preview {
+    grid-template-columns: 12px minmax(0, 1fr) 12px;
+    min-height: 380px;
+  }
+  .leftAccent,
+  .rightAccent {
+    display: none;
+  }
+  .card {
+    padding: 20px 8px;
+  }
+  .cardTitle {
+    margin-left: 12px;
+  }
+  .player,
+  .currentPlayer {
+    padding-inline: 8px;
+    font-size: 14px;
+    gap: 8px;
+    grid-template-columns: 10px 32px minmax(0, 1fr) auto;
+  }
+  .avatar {
+    width: 32px;
+    height: 32px;
+  }
+}
