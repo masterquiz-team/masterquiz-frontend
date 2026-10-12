@@ -83,7 +83,7 @@ export async function CategoriesScreen({
         {preview && (
           <p>
             Design preview — <Link href={loginHref}>log in</Link> to browse
-            available categories.
+            available categories. Preview cards open the login page.
           </p>
         )}
         {signedIn &&
@@ -120,7 +120,12 @@ export async function CategoriesScreen({
       ) : preview ? (
         <ul className={styles.grid}>
           {categoryArtwork.map(({ name }) => (
-            <CategoryCard key={name} name={name} />
+            <CategoryCard
+              key={name}
+              name={name}
+              href={loginHref}
+              requiresLogin
+            />
           ))}
         </ul>
       ) : data?.content.length ? (
