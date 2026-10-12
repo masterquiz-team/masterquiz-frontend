@@ -21,6 +21,11 @@
   outline-offset: 2px;
 }
 
+.invalid {
+  border-color: #b42318;
+  color: #b42318;
+}
+
 .input {
   width: 100%;
   min-width: 0;

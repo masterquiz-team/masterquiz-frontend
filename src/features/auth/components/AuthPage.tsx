@@ -2,7 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { redirect } from "next/navigation";
 import type { AuthFormMode } from "../types";
-import { getSession } from "../server/session";
+import { getSessionState } from "../server/session";
 import { getSafeRedirect } from "../utils/redirect";
 import { AuthForm } from "./AuthForm";
 import styles from "./LoginPage.module.scss";
@@ -21,8 +21,8 @@ export async function AuthPage({
 }: AuthPageProps) {
   const isRegister = mode === "register";
   const redirectTo = getSafeRedirect(next);
-  const session = await getSession().catch(() => null);
-  if (session) redirect(redirectTo);
+  const state = await getSessionState();
+  if (state.status === "authenticated") redirect(redirectTo);
 
   return (
     <div className={styles.shell}>
@@ -53,7 +53,12 @@ export async function AuthPage({
             <path d="M0.5 0.5L415.5 409.5M415.5 0.5L0.5 409.5" />
           </svg>
         </section>
-        <AuthForm mode={mode} redirectTo={redirectTo} registered={registered} />
+        <AuthForm
+          mode={mode}
+          redirectTo={redirectTo}
+          registered={registered}
+          sessionUnavailable={state.status === "unavailable"}
+        />
       </main>
       <Footer />
     </div>

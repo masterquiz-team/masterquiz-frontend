@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { submitAuth } from "../services/auth";
 import { createAuthPayload, emptyAuthValues } from "../utils/form";
@@ -19,6 +19,20 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
   const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
   // This closes the gap before React renders disabled={pending}.
   const submitting = useRef(false);
+  const formRef = useRef<HTMLFormElement>(null);
+  const focusErrors = useRef(false);
+
+  // Run after errors are rendered and the pending fieldset is enabled again.
+  // DOM order, rather than API object order, determines the first invalid field.
+  useEffect(() => {
+    if (pending || !focusErrors.current) return;
+    focusErrors.current = false;
+    const inputs = formRef.current?.querySelectorAll<HTMLInputElement>("input");
+    const firstInvalid = Array.from(inputs ?? []).find(
+      (input) => fieldErrors[input.name as AuthFieldName],
+    );
+    firstInvalid?.focus();
+  }, [fieldErrors, pending]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -28,6 +42,7 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
 
     setFeedback(null);
     const validationErrors = validateAuthValues(mode, payload);
+    focusErrors.current = Object.keys(validationErrors).length > 0;
     setFieldErrors(validationErrors);
     if (Object.keys(validationErrors).length) return;
 
@@ -36,6 +51,7 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
     try {
       const result = await submitAuth(mode, payload);
       if (!result.ok) {
+        focusErrors.current = Boolean(result.error.fieldErrors);
         setFieldErrors(result.error.fieldErrors ?? {});
         setFeedback({
           kind: "error",
@@ -66,5 +82,13 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
     setFeedback(null);
   }
 
-  return { values, pending, feedback, fieldErrors, updateField, handleSubmit };
+  return {
+    formRef,
+    values,
+    pending,
+    feedback,
+    fieldErrors,
+    updateField,
+    handleSubmit,
+  };
 }
