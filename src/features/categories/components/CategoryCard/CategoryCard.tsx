@@ -47,7 +47,6 @@ export function CategoryCard({
         <Link
           href={href}
           prefetch={false}
-          scroll={requiresLogin}
           className={`${styles.card} ${selected ? styles.selected : ""}`}
           aria-current={selected ? "true" : undefined}
           aria-label={
