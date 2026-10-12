@@ -4,9 +4,19 @@ import { Icon } from "@/components/ui/Icon";
 import { categoryArtwork } from "../../design-preview";
 import styles from "./CategoryCard.module.scss";
 
-type Props = { name: string; href?: string; selected?: boolean };
+type Props = {
+  name: string;
+  href?: string;
+  selected?: boolean;
+  requiresLogin?: boolean;
+};
 
-export function CategoryCard({ name, href, selected = false }: Props) {
+export function CategoryCard({
+  name,
+  href,
+  selected = false,
+  requiresLogin = false,
+}: Props) {
   const artwork = categoryArtwork.find(
     (item) => item.name.toLowerCase() === name.toLowerCase(),
   );
@@ -14,7 +24,7 @@ export function CategoryCard({ name, href, selected = false }: Props) {
     <>
       <div className={styles.illustration} aria-hidden="true">
         {artwork?.illustration && (
-          <Image src={artwork.illustration} alt="" width={160} height={150} />
+          <Image src={artwork.illustration} alt="" width={240} height={210} />
         )}
       </div>
       <h2 className={styles.title}>{name}</h2>
@@ -22,11 +32,13 @@ export function CategoryCard({ name, href, selected = false }: Props) {
         <span />
         <span />
       </div>
-      <span className={styles.action} aria-hidden="true">
-        <span className={styles.actionCircle}>
-          <Icon name="arrow" className={styles.actionIcon} />
+      {href && (
+        <span className={styles.action} aria-hidden="true">
+          <span className={styles.actionCircle}>
+            <Icon name="arrow" className={styles.actionIcon} />
+          </span>
         </span>
-      </span>
+      )}
     </>
   );
   return (
@@ -35,9 +47,12 @@ export function CategoryCard({ name, href, selected = false }: Props) {
         <Link
           href={href}
           prefetch={false}
-          scroll={false}
+          scroll={requiresLogin}
           className={`${styles.card} ${selected ? styles.selected : ""}`}
           aria-current={selected ? "true" : undefined}
+          aria-label={
+            requiresLogin ? `${name} — log in to browse categories` : undefined
+          }
         >
           {content}
         </Link>

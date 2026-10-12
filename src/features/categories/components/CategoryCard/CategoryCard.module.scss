@@ -14,7 +14,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .card:hover {
+  a.card:hover {
     // Compensate for the thinner border so the card contents do not move.
     padding: 1px 1px 7px;
     border: 1px solid rgba(92, 77, 228, 0.7);
@@ -44,16 +44,19 @@ a.card:focus-visible {
 }
 
 .illustration {
+  position: relative;
   display: flex;
   flex: 0 0 145px;
   align-items: center;
   justify-content: center;
-  width: 160px;
+  width: 240px;
   height: 145px;
 
   img {
-    width: 160px;
-    height: 145px;
+    position: absolute;
+    top: -22px;
+    width: 240px;
+    height: 210px;
     object-fit: contain;
   }
 }

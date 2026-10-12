@@ -31,9 +31,34 @@
 }
 
 .grid {
+  position: relative;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 40px;
+
+  &::before,
+  &::after {
+    position: absolute;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    content: "";
+  }
+
+  &::before {
+    top: -54px;
+    left: -65px;
+    width: 60px;
+    height: 78px;
+    background-image: url("/images/categories/accent-top.svg");
+  }
+
+  &::after {
+    right: -60px;
+    bottom: -56px;
+    width: 66px;
+    height: 75px;
+    background-image: url("/images/categories/accent-bottom.svg");
+  }
 }
 
 .state {
