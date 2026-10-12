@@ -31,7 +31,7 @@ export const JoinCommunity = () => (
           className={styles.bottomAccent}
         />
       </div>
-      <div className={styles.content}>
+      <div>
         <h2 className={styles.title}>Lorem ipsum dolor sit amet.</h2>
         <p className={styles.description}>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -52,7 +52,8 @@ export const JoinCommunity = () => (
       />
       <div className={styles.card}>
         <h3 className={styles.cardTitle}>Top players</h3>
-        <ol className={styles.players}>
+        <p className={styles.sampleRanking}>Sample ranking</p>
+        <ol>
           {players.map((player, index) => (
             <li
               key={player.name}

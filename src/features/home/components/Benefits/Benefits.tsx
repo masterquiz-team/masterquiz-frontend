@@ -27,7 +27,7 @@ export const Benefits = () => (
       </h2>
       <ul className={styles.list}>
         {benefits.map((benefit) => (
-          <li key={benefit.title} className={styles.item}>
+          <li key={benefit.title}>
             <div aria-hidden="true" className={styles.imagePlaceholder} />
             <h3 className={styles.itemTitle}>{benefit.title}</h3>
             <p className={styles.description}>{benefit.description}</p>
