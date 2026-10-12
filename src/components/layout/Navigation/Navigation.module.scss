@@ -5,6 +5,11 @@
   font-size: 16px;
   line-height: 19px;
 }
+.comingSoon {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
 .link {
   transition: color 150ms;
 }

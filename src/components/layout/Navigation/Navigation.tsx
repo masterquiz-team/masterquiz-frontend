@@ -28,7 +28,8 @@ export const Navigation = () => {
           </Link>
         </li>
         <li>
-          <span title="Coming soon">Leaderboard</span>
+          <span>Leaderboard</span>{" "}
+          <span className={styles.comingSoon}>Coming soon</span>
         </li>
         <li>
           <Link href="/#about" className={styles.link}>

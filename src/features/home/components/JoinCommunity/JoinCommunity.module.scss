@@ -101,6 +101,12 @@
   font-size: 20px;
   line-height: 24px;
 }
+.sampleRanking {
+  margin: -6px 0 14px 36px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 20px;
+}
 .player,
 .currentPlayer {
   display: grid;
@@ -207,7 +213,8 @@
   .card {
     padding: 20px 8px;
   }
-  .cardTitle {
+  .cardTitle,
+  .sampleRanking {
     margin-left: 12px;
   }
   .player,

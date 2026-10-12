@@ -20,7 +20,7 @@ export const Hero = () => (
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua.
       </p>
-      <Link href="#categories" className={styles.startButton}>
+      <Link href="/categories" className={styles.startButton}>
         Start Playing
         <Icon name="arrow" className={styles.arrowIcon} />
       </Link>
