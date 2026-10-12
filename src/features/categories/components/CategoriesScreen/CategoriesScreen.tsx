@@ -94,8 +94,13 @@ export async function CategoriesScreen({
           data.content.length > 0 && <p>Select a category to continue.</p>}
         {selected && !selectionError && (
           <p>
-            Selected: <strong>{selected.name}</strong>. Quiz setup is coming
-            soon.{" "}
+            Selected: <strong>{selected.name}</strong>.{" "}
+            <Link
+              href={`/categories/difficulty?category=${selected.id}&page=${page}`}
+            >
+              Choose difficulty
+            </Link>
+            .{" "}
             <Link href={`/categories?page=${page}`} scroll={false}>
               Clear selection
             </Link>
@@ -135,7 +140,7 @@ export async function CategoriesScreen({
               key={category.id}
               name={category.name}
               selected={selected?.id === category.id}
-              href={`/categories?${new URLSearchParams({ page: String(page), category: String(category.id) })}`}
+              href={`/categories/difficulty?${new URLSearchParams({ page: String(page), category: String(category.id) })}`}
             />
           ))}
         </ul>
