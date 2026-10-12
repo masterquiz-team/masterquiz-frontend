@@ -2,11 +2,11 @@ import styles from "./Header.module.scss";
 import Link from "next/link";
 import { Navigation } from "@/components/layout/Navigation";
 import { AuthControls } from "@/features/auth/components/AuthControls";
-import { getSession } from "@/features/auth/server/session";
+import { getSessionState } from "@/features/auth/server/session";
 
 export const Header = async () => {
   // A backend outage should not prevent the public page from rendering.
-  const session = await getSession().catch(() => null);
+  const state = await getSessionState();
   return (
     <header className={styles.header}>
       <Link href="/" className={styles.brand}>
@@ -15,7 +15,7 @@ export const Header = async () => {
 
       <Navigation />
 
-      <AuthControls session={session} />
+      <AuthControls state={state} />
     </header>
   );
 };

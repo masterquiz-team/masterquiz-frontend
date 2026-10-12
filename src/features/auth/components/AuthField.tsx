@@ -1,3 +1,4 @@
+import { useId } from "react";
 import type { AuthFieldName } from "../types";
 import { AuthFieldIcon, type AuthFieldIconName } from "./AuthFieldIcon";
 import styles from "./AuthField.module.scss";
@@ -27,13 +28,16 @@ export function AuthField({
   placeholder,
   minLength,
 }: AuthFieldProps) {
+  const inputId = useId();
+  const errorId = `${inputId}-error`;
   return (
-    <label className={styles.label}>
-      {label}
-      <span className={styles.inputWrapper}>
+    <div className={styles.label}>
+      <label htmlFor={inputId}>{label}</label>
+      <span className={`${styles.inputWrapper} ${error ? styles.invalid : ""}`}>
         <AuthFieldIcon name={icon} />
         <input
           className={styles.input}
+          id={inputId}
           name={name}
           type={type}
           autoComplete={autoComplete}
@@ -41,11 +45,16 @@ export function AuthField({
           minLength={minLength}
           required
           aria-invalid={Boolean(error)}
+          aria-describedby={error ? errorId : undefined}
           value={value}
           onChange={(event) => onValueChange(event.target.value)}
         />
       </span>
-      {error && <span className={styles.error}>{error}</span>}
-    </label>
+      {error && (
+        <span id={errorId} className={styles.error}>
+          {error}
+        </span>
+      )}
+    </div>
   );
 }

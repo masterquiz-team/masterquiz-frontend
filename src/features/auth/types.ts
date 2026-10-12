@@ -18,6 +18,11 @@ export type AuthSession = {
   expiresAt: string;
 };
 
+export type AuthSessionState =
+  | { status: "anonymous"; session: null }
+  | { status: "authenticated"; session: AuthSession }
+  | { status: "unavailable"; session: null };
+
 export type RegisteredUser = {
   id: number;
   email: string;

@@ -3,6 +3,7 @@
 import styles from "./LoginForm.module.scss";
 
 import Link from "next/link";
+import { useId, useState } from "react";
 import { useAuthForm } from "../hooks/useAuthForm";
 import type { AuthFormMode } from "../types";
 import { AuthFormFields } from "./AuthFormFields";
@@ -13,14 +14,25 @@ export function AuthForm({
   mode,
   redirectTo = "/",
   registered = false,
+  sessionUnavailable = false,
 }: {
   mode: AuthFormMode;
   redirectTo?: string;
   registered?: boolean;
+  sessionUnavailable?: boolean;
 }) {
   const isRegister = mode === "register";
-  const { values, pending, feedback, fieldErrors, updateField, handleSubmit } =
-    useAuthForm(mode, redirectTo);
+  const {
+    formRef,
+    values,
+    pending,
+    feedback,
+    fieldErrors,
+    updateField,
+    handleSubmit,
+  } = useAuthForm(mode, redirectTo);
+  const [recoveryNotice, setRecoveryNotice] = useState(false);
+  const recoveryId = useId();
   const nextQuery =
     redirectTo === "/" ? "" : `?next=${encodeURIComponent(redirectTo)}`;
 
@@ -44,7 +56,21 @@ export function AuthForm({
       {!isRegister && (
         <div className={styles.subtitlePlaceholder} aria-hidden="true" />
       )}
-      <form onSubmit={handleSubmit} className={styles.form} noValidate>
+      {sessionUnavailable && (
+        <p className={styles.notice} role="status">
+          We cannot verify your current session. Your session has been kept.{" "}
+          <button type="button" onClick={() => window.location.reload()}>
+            Try again
+          </button>
+        </p>
+      )}
+      <form
+        ref={formRef}
+        onSubmit={handleSubmit}
+        className={styles.form}
+        noValidate
+        aria-busy={pending}
+      >
         <AuthFormFields
           mode={mode}
           values={values}
@@ -53,9 +79,20 @@ export function AuthForm({
           onFieldChange={updateField}
         />
         {!isRegister && (
-          <button type="button" className={styles.forgotPassword}>
+          <button
+            type="button"
+            className={styles.forgotPassword}
+            aria-controls={recoveryId}
+            aria-expanded={recoveryNotice}
+            onClick={() => setRecoveryNotice((current) => !current)}
+          >
             Forgot password?
           </button>
+        )}
+        {!isRegister && recoveryNotice && (
+          <p id={recoveryId} className={styles.notice} role="status">
+            Password recovery is not available yet.
+          </p>
         )}
         <AuthSubmitButton
           mode={mode}

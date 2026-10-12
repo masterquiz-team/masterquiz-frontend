@@ -4,10 +4,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { logout } from "../services/auth";
-import type { AuthSession } from "../types";
+import type { AuthSessionState } from "../types";
 import styles from "./AuthControls.module.scss";
 
-export function AuthControls({ session }: { session: AuthSession | null }) {
+export function AuthControls({ state }: { state: AuthSessionState }) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,10 +29,20 @@ export function AuthControls({ session }: { session: AuthSession | null }) {
 
   return (
     <div className={styles.controls}>
-      {session ? (
+      {state.status === "unavailable" ? (
         <>
-          <span className={styles.email} title={session.email}>
-            {session.email}
+          <span role="status">Session unavailable</span>
+          <button
+            className={styles.action}
+            onClick={() => window.location.reload()}
+          >
+            Try again
+          </button>
+        </>
+      ) : state.status === "authenticated" ? (
+        <>
+          <span className={styles.email} title={state.session.email}>
+            {state.session.email}
           </span>
           <button
             className={styles.action}

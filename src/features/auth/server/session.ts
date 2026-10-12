@@ -3,7 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import type { NextResponse } from "next/server";
-import type { AuthSession } from "../types";
+import type { AuthSession, AuthSessionState } from "../types";
 
 export const SESSION_COOKIE = "masterquiz_session";
 
@@ -42,27 +42,46 @@ export async function getSessionToken(): Promise<string | null> {
   return token && readTokenSession(token) ? token : null;
 }
 
-export const getSession = cache(async (): Promise<AuthSession | null> => {
+export const getSessionState = cache(async (): Promise<AuthSessionState> => {
   const token = await getSessionToken();
-  if (!token) return null;
+  if (!token) return { status: "anonymous", session: null };
 
   // The current backend has no /me endpoint. A small, read-only authenticated
   // request verifies the JWT without inventing a user/profile endpoint.
   const baseUrl = process.env.BACKEND_API_URL ?? "http://localhost:8080";
-  const response = await fetch(
-    `${baseUrl.replace(/\/$/, "")}/categories?page=0&size=1`,
-    {
-      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
-      cache: "no-store",
-      signal: AbortSignal.timeout(10000),
-      redirect: "error",
-    },
-  );
+  try {
+    const response = await fetch(
+      `${baseUrl.replace(/\/$/, "")}/categories?page=0&size=1`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+        cache: "no-store",
+        signal: AbortSignal.timeout(10000),
+        redirect: "error",
+      },
+    );
 
-  if (response.status === 401 || response.status === 403) return null;
-  if (!response.ok) throw new Error("The session could not be verified.");
-  return readTokenSession(token);
+    if (response.status === 401) return { status: "anonymous", session: null };
+    // A forbidden resource is not proof that the JWT is invalid. Keep the
+    // session cookie and expose verification failures separately from guests.
+    if (!response.ok) return { status: "unavailable", session: null };
+    const session = readTokenSession(token);
+    return session
+      ? { status: "authenticated", session }
+      : { status: "anonymous", session: null };
+  } catch {
+    return { status: "unavailable", session: null };
+  }
 });
+
+export async function getSession(): Promise<AuthSession | null> {
+  const state = await getSessionState();
+  if (state.status === "unavailable")
+    throw new Error("The session could not be verified.");
+  return state.session;
+}
 
 export function setSessionCookie(
   response: NextResponse,
