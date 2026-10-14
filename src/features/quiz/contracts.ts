@@ -1,15 +1,16 @@
 import type { PlayerAttempt, PlayerQuiz, PlayerQuizPage } from "./types";
 
-export class QuizContractError extends Error {}
-const invalid = (): never => {
-  throw new QuizContractError("Unexpected quiz response.");
-};
-const record = (v: unknown): v is Record<string, unknown> =>
-  typeof v === "object" && v !== null && !Array.isArray(v);
-const id = (v: unknown): v is number =>
-  typeof v === "number" && Number.isSafeInteger(v) && v > 0;
-const text = (v: unknown): v is string =>
-  typeof v === "string" && v.trim().length > 0;
+import { ContractError, invalidContract } from "@/lib/api/errors";
+import {
+  isRecord as record,
+  isId as id,
+  isText as text,
+  parseSpringPage,
+} from "@/lib/validation";
+
+// Compatibility export: all contract failures now use the shared error type.
+export { ContractError as QuizContractError } from "@/lib/api/errors";
+const invalid = invalidContract;
 
 const localDateTime = (v: unknown): v is string =>
   typeof v === "string" &&
@@ -40,35 +41,7 @@ export function parsePlayerQuiz(v: unknown): PlayerQuiz {
   };
 }
 export function parsePlayerQuizPage(v: unknown): PlayerQuizPage {
-  if (!record(v) || !Array.isArray(v.content)) return invalid();
-  const { number, size, totalElements, totalPages, first, last, empty } = v;
-  if (
-    typeof number !== "number" ||
-    typeof size !== "number" ||
-    typeof totalElements !== "number" ||
-    typeof totalPages !== "number" ||
-    ![number, size, totalElements, totalPages].every(
-      (n) => Number.isSafeInteger(n) && n >= 0,
-    ) ||
-    size < 1 ||
-    typeof first !== "boolean" ||
-    typeof last !== "boolean" ||
-    typeof empty !== "boolean"
-  )
-    return invalid();
-  const content = v.content.map(parsePlayerQuiz);
-  if (content.length > size || empty !== (content.length === 0))
-    return invalid();
-  return {
-    content,
-    number,
-    size,
-    totalElements,
-    totalPages,
-    first,
-    last,
-    empty,
-  };
+  return parseSpringPage(v, parsePlayerQuiz);
 }
 export function parsePlayerAttempt(v: unknown): PlayerAttempt {
   if (
@@ -91,6 +64,6 @@ export function parsePlayerAttempt(v: unknown): PlayerAttempt {
 }
 export function parseStartInput(v: unknown): { quizId: number } {
   if (!record(v) || Object.keys(v).length !== 1 || !id(v.quizId))
-    throw new QuizContractError("Only a positive integer quizId is accepted.");
+    throw new ContractError("Only a positive integer quizId is accepted.");
   return { quizId: v.quizId };
 }

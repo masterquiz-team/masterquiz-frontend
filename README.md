@@ -7,6 +7,18 @@ Frontend application for MasterQuiz — a team quiz platform
 Use Node.js 24 and pnpm. Install dependencies with `pnpm install`, then start
 the frontend with `pnpm dev`. Open `http://localhost:3000`.
 
+## Scripts
+
+- `pnpm format:check` checks formatting; `pnpm format` rewrites it.
+- `pnpm lint` checks ESLint rules.
+- `pnpm typecheck` generates Next.js route types, then checks TypeScript.
+- `pnpm test` runs Vitest unit tests once with mocked backend requests.
+- `pnpm build` creates the production build; `pnpm start` serves it.
+
+Set `BACKEND_API_URL` explicitly for production. CI uses a placeholder URL and
+does not need a running Java backend. The tests cover request boundaries,
+session expiry, redirects, contract allowlists, and upstream error handling.
+
 The home page targets the 1440 px desktop sketch and uses a static category preview.
 The `/categories` page reads protected backend categories after login and preserves
 selection in the URL. Quiz setup and the leaderboard await their backend contracts.
