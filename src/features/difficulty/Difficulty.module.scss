@@ -1,4 +1,5 @@
 @use "../../styles/tokens";
+@use "../../styles/patterns";
 
 .difficulty {
   display: flex;
@@ -217,15 +218,7 @@
   min-height: 44px;
 }
 .back {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  transform: translateY(3px);
-  font-size: tokens.$font-size-2xl;
-  line-height: normal;
-  span {
-    transform: rotate(180deg);
-  }
+  @include patterns.back-link($shift: 3px, $line-height: normal);
 }
 .category {
   display: inline-flex;
@@ -276,42 +269,32 @@
   margin-top: 12px;
 }
 .state {
-  display: grid;
-  justify-items: center;
-  gap: 24px;
-  margin: 100px auto;
-  max-width: 650px;
-  text-align: center;
-  h1 {
-    font-size: tokens.$font-size-4xl;
-    font-weight: 600;
+  @include patterns.state-card($layout: grid) {
+    gap: 24px;
+    margin: 100px auto;
+    max-width: 650px;
   }
   a {
-    color: var(--primary);
-    text-decoration: underline;
+    @include patterns.primary-link;
   }
 }
 .back:focus-visible,
 .difficultyChoice:focus-visible,
 .state a:focus-visible {
-  outline: 3px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring($width: 3px);
 }
 .difficultyChoice[aria-pressed="true"] {
   box-shadow: 0 0 0 3px var(--primary);
 }
 .difficultyChoice:disabled {
-  cursor: default;
+  @include patterns.disabled-control;
 }
 .newAttempt {
   margin-top: 12px;
   padding: 10px 20px;
-  border: 2px solid var(--primary);
-  border-radius: tokens.$radius-control;
-  color: var(--primary);
+  @include patterns.outline-button;
   cursor: pointer;
   &:focus-visible {
-    outline: 3px solid var(--primary);
-    outline-offset: 4px;
+    @include patterns.focus-ring($width: 3px);
   }
 }

@@ -1,5 +1,6 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
 
 .section {
   display: grid;
@@ -77,8 +78,7 @@
   background: tokens.$primary-tint;
 }
 .signUp:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 .arrow {
   width: 28px;

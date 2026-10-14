@@ -1,5 +1,6 @@
 @use "../../../styles/tokens";
 @use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
 
 .card {
   position: relative;
@@ -88,14 +89,12 @@
 }
 
 .notice button:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 
 .forgotPassword:focus-visible,
 .register a:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 
 .register {

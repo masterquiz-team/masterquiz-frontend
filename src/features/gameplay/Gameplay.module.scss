@@ -1,22 +1,11 @@
 @use "../../styles/tokens";
+@use "../../styles/patterns";
 
 .srOnly {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
+  @include patterns.visually-hidden;
 }
 .back {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  font-size: tokens.$font-size-2xl;
-  cursor: pointer;
-  span {
-    transform: rotate(180deg);
-  }
+  @include patterns.back-link($cursor: pointer);
 }
 .card {
   width: min(515px, 100%);
@@ -87,8 +76,7 @@
     height: 22px;
   }
   &:has(input:focus-visible) {
-    outline: 3px solid var(--primary);
-    outline-offset: 3px;
+    @include patterns.focus-ring($width: 3px, $offset: 3px);
   }
 }
 .optionText {
@@ -112,12 +100,12 @@
 .correct {
   border-color: tokens.$success;
   background: tokens.$success-surface;
-  cursor: default;
+  @include patterns.disabled-control;
 }
 .incorrect {
   border-color: tokens.$danger-border;
   background: tokens.$danger-surface;
-  cursor: default;
+  @include patterns.disabled-control;
 }
 .outcomeIcon {
   position: relative;
@@ -135,9 +123,7 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border: 2px solid var(--primary);
-  border-radius: tokens.$radius-control;
-  color: var(--primary);
+  @include patterns.outline-button;
   min-height: 54px;
   font-size: tokens.$font-size-md;
   cursor: pointer;
@@ -146,13 +132,12 @@
   width: 100%;
   margin-top: 25px;
   &:disabled {
-    cursor: default;
+    @include patterns.disabled-control;
   }
 }
 .filled,
 .primaryButton {
-  color: tokens.$surface;
-  background: var(--primary);
+  @include patterns.primary-button;
 }
 .feedbackCard {
   min-height: 545px;
@@ -328,7 +313,7 @@
 .timerControl {
   display: grid;
   place-items: center;
-  cursor: default;
+  @include patterns.disabled-control;
   opacity: 0.45;
 }
 .content {
@@ -345,19 +330,12 @@
   margin-top: 14px;
 }
 .state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  text-align: center;
-  h1 {
-    font-size: tokens.$font-size-4xl;
-    font-weight: 600;
+  @include patterns.state-card {
+    justify-content: center;
+    gap: 24px;
   }
   a:not(.primaryButton) {
-    color: var(--primary);
-    text-decoration: underline;
+    @include patterns.primary-link;
   }
   .primaryButton,
   .outlineButton {
@@ -369,8 +347,7 @@
 .dialog button:focus-visible,
 .state button:focus-visible,
 .state a:focus-visible {
-  outline: 3px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring($width: 3px);
 }
 h1:focus,
 p[role="alert"]:focus {
@@ -378,5 +355,5 @@ p[role="alert"]:focus {
 }
 .back:disabled,
 .next:disabled {
-  cursor: default;
+  @include patterns.disabled-control;
 }

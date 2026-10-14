@@ -1,5 +1,6 @@
 @use "../../../styles/tokens";
 @use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
 
 .controls {
   position: relative;
@@ -16,9 +17,7 @@
 
 .link:focus-visible,
 .action:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
-  border-radius: tokens.$radius-focus;
+  @include patterns.focus-ring($radius: tokens.$radius-focus);
 }
 
 .action {
@@ -38,8 +37,7 @@
 }
 
 .action:disabled {
-  opacity: 0.5;
-  cursor: wait;
+  @include patterns.disabled-control($cursor: wait, $opacity: 0.5);
 }
 
 .email {

@@ -1,5 +1,6 @@
 @use "../../../styles/tokens";
 @use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
 
 .header {
   display: grid;
@@ -26,9 +27,7 @@
 }
 
 .authLink:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 5px;
-  border-radius: tokens.$radius-focus;
+  @include patterns.focus-ring($offset: 5px, $radius: tokens.$radius-focus);
 }
 
 .authLinks {
@@ -56,8 +55,7 @@
 }
 
 .signUp:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 
 @include breakpoints.down(lg) {

@@ -1,5 +1,6 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
 
 .hero {
   display: grid;
@@ -58,8 +59,7 @@
   background: var(--primary-hover);
 }
 .startButton:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 .arrowIcon {
   width: 28px;
