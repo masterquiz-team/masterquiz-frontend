@@ -1,2 +1,132 @@
-// Retained for path compatibility. AuthForm.tsx uses LoginForm.module.scss.
-// The former rules had no imports or consumers at the styles-refactor base.
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
+
+.card {
+  position: relative;
+  width: 100%;
+  min-height: 601px;
+  margin-top: 8px;
+  padding: 48px 40px 56px;
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
+}
+
+.registerCard {
+  min-height: 666px;
+  margin-top: -10px;
+  padding-block: 28px 27px;
+}
+
+.registerCard .form {
+  margin-top: 37px;
+}
+
+.registerCard .submitButton {
+  margin-top: 28px;
+}
+
+.registerCard .register {
+  margin-top: 23px;
+}
+
+.registerCard .accent {
+  top: -39px;
+}
+
+.accent {
+  position: absolute;
+  top: -57px;
+  left: -47px;
+  width: 64px;
+  height: 72px;
+  color: var(--primary);
+  pointer-events: none;
+}
+
+.title {
+  text-align: center;
+  font-size: tokens.$font-size-4xl;
+  font-weight: 600;
+  line-height: 39px;
+}
+
+.subtitlePlaceholder {
+  width: min(100%, 249px);
+  height: 17px;
+  margin: 14px auto 0;
+  background: tokens.$placeholder;
+}
+
+.form {
+  margin-top: 41px;
+}
+
+.forgotPassword {
+  display: block;
+  margin-top: 15px;
+  margin-left: auto;
+  color: var(--primary);
+  font-size: tokens.$font-size-sm;
+  line-height: 17px;
+  cursor: pointer;
+}
+
+.submitButton {
+  margin-top: 32px;
+}
+
+.notice {
+  margin-top: 16px;
+  font-size: tokens.$font-size-sm;
+  line-height: 20px;
+}
+
+.notice button {
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.notice button:focus-visible {
+  @include patterns.focus-ring;
+}
+
+.forgotPassword:focus-visible,
+.register a:focus-visible {
+  @include patterns.focus-ring;
+}
+
+.register {
+  margin-top: 56px;
+  text-align: center;
+  font-size: tokens.$font-size-md;
+  line-height: 19px;
+}
+
+.register a {
+  color: var(--primary);
+}
+
+@include breakpoints.down(lg) {
+  .card {
+    padding-inline: 24px;
+  }
+
+  .title {
+    font-size: tokens.$font-size-3xl;
+  }
+}
+
+@include breakpoints.down(md) {
+  .accent {
+    left: 0;
+  }
+}
+
+@include breakpoints.down(sm) {
+  .title {
+    font-size: tokens.$font-size-2xl;
+    line-height: 30px;
+  }
+}
