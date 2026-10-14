@@ -3,7 +3,7 @@ import "server-only";
 import { backendFetch, BackendConfigurationError } from "../backend/transport";
 import { getSessionToken } from "../backend/token";
 
-import { ApiError, invalidContract } from "./errors";
+import { ApiError } from "./errors";
 import { isRecord } from "../validation";
 import { checkMutationRequest } from "./request";
 import { jsonResponse } from "./response";
@@ -73,16 +73,6 @@ export const jsonBody = (
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify(body),
 });
-
-export async function deleteBackend(path: string): Promise<void> {
-  await backendRequest(
-    path,
-    (value) => {
-      if (value !== null) invalidContract();
-    },
-    { method: "DELETE" },
-  );
-}
 
 export async function readMutation(
   request: Request,

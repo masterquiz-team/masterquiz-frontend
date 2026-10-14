@@ -8,7 +8,6 @@ import {
 import { requirePagination } from "@/lib/validation";
 import {
   parsePlayerAttempt,
-  parsePlayerQuiz,
   parsePlayerQuizPage,
   QuizContractError,
 } from "../contracts";
@@ -57,13 +56,6 @@ export function getQuizzesByCategory(categoryId: number, page = 0, size = 12) {
       return result;
     },
   );
-}
-export function getQuiz(id: number) {
-  return request(`/quiz/${requireId(id)}`, (value) => {
-    const quiz = parsePlayerQuiz(value);
-    if (quiz.id !== id) throw new QuizContractError();
-    return quiz;
-  });
 }
 export function startQuizAttempt(quizId: number) {
   return request(
