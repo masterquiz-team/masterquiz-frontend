@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
-import { categoryArtwork } from "../../design-preview";
+import { getCategoryArtwork } from "../../design-preview";
 import styles from "./CategoryCard.module.scss";
 
 type Props = {
@@ -17,9 +17,7 @@ export function CategoryCard({
   selected = false,
   requiresLogin = false,
 }: Props) {
-  const artwork = categoryArtwork.find(
-    (item) => item.name.toLowerCase() === name.toLowerCase(),
-  );
+  const artwork = getCategoryArtwork(name);
   const content = (
     <>
       <div className={styles.illustration} aria-hidden="true">
