@@ -1,7 +1,10 @@
+@use "../../../../styles/tokens";
+@use "../../../../styles/breakpoints";
+
 .heading {
   max-width: 609px;
   margin-inline: auto;
-  font-size: 48px;
+  font-size: tokens.$font-size-7xl;
   font-weight: 700;
   line-height: 58px;
   text-align: center;
@@ -19,7 +22,7 @@
   min-height: 62px;
   padding-block: 10px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: tokens.$font-size-sm;
   line-height: 20px;
   text-align: center;
 }
@@ -67,8 +70,8 @@
   align-items: center;
   gap: 16px;
   padding: 64px 24px;
-  border-radius: 23px;
-  background: white;
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
   text-align: center;
 }
 
@@ -82,27 +85,27 @@
 
 .loadingCard {
   min-height: 270px;
-  border: 2px solid white;
-  border-radius: 23px;
-  background: white;
+  border: 2px solid tokens.$surface;
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
 }
 
-@media (max-width: 1100px) {
+@include breakpoints.down(1100px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;
   }
 }
 
-@media (max-width: 700px) {
+@include breakpoints.down(700px) {
   .heading {
     white-space: normal;
   }
 }
 
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .heading {
-    font-size: 32px;
+    font-size: tokens.$font-size-4xl;
     line-height: 40px;
   }
 

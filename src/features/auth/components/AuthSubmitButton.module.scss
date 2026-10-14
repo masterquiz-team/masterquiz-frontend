@@ -1,3 +1,5 @@
+@use "../../../styles/tokens";
+
 .button {
   display: flex;
   align-items: center;
@@ -8,7 +10,7 @@
   border: 2px solid var(--primary);
   border-radius: 27px;
   color: var(--primary);
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   font-weight: 500;
   line-height: 19px;
   cursor: pointer;

@@ -1,10 +1,12 @@
+@use "../../../styles/tokens";
+
 .link {
   text-decoration: underline;
 }
 
 .title {
   margin-block: 16px;
-  font-size: 24px;
+  font-size: tokens.$font-size-2xl;
   line-height: 32px;
 }
 
@@ -25,7 +27,7 @@
 
 .input {
   width: 100%;
-  border: 1px solid #aaa;
+  border: 1px solid tokens.$border-legacy;
   padding: 8px;
 }
 
@@ -49,6 +51,6 @@
 
 .notice {
   margin-top: 16px;
-  font-size: 14px;
+  font-size: tokens.$font-size-sm;
   line-height: 20px;
 }

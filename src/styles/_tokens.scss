@@ -1,0 +1,73 @@
+// Static values preserve the existing palette. Runtime theme colors continue
+// to use the CSS custom properties declared in globals.scss.
+$background: #f9fafc;
+$foreground: #171717;
+$primary: #5c4de4;
+$primary-hover: #493aca;
+$surface: #fff;
+$surface-subtle: #f3f5fc;
+$text: #000;
+$text-muted: #626778;
+$text-subtle: #8a90a6;
+$border: #8a90a6;
+$border-subtle: #f1f2f9;
+$border-legacy: #aaa;
+$placeholder: #d9d9d9;
+$primary-tint: #f1f0fe;
+$primary-overlay: rgb(92 77 228 / 20%);
+$primary-border-hover: rgba(92, 77, 228, 0.7);
+$danger: #b42318;
+$danger-border: #d95757;
+$danger-surface: #fce5e5;
+$success: #36a66a;
+$success-surface: #ddf5e6;
+$dialog-backdrop: rgb(249 250 252 / 70%);
+
+$accent-purple: #8b6fe8;
+$accent-purple-soft: #c9b8f5;
+$accent-cyan: #55bbd3;
+$accent-cyan-soft: #b8e8f2;
+$accent-pink: #e9a7d8;
+
+// Difficulty cards have distinct artwork palettes; do not merge their tints.
+$difficulty-easy-surface: #effaf6;
+$difficulty-easy-border: #c7ffea;
+$difficulty-easy-details: #cff4dd;
+$difficulty-easy-text: #52bf8e;
+$difficulty-medium-surface: #f0effd;
+$difficulty-medium-border: #c8c4ff;
+$difficulty-medium-details: #d4d0ff;
+$difficulty-medium-text: #7b6af4;
+$difficulty-hard-surface: #f9f4fc;
+$difficulty-hard-border: #ebcbff;
+$difficulty-hard-details: #efd4ff;
+$difficulty-hard-text: #be6ad0;
+
+$radius-focus: 3px;
+$radius-control: 10px;
+$radius-badge: 22px;
+$radius-card: 23px;
+$radius-pill: 9999px;
+$radius-circle: 50%;
+
+$shadow-category: 0 4px 4px 5px rgba(92, 77, 228, 0.3);
+$shadow-question: 0 4px 10px 10px rgb(92 77 228 / 25%);
+$shadow-timer: 0 4px 5px 5px rgb(92 77 228 / 25%);
+
+// These layers are local to the isolated category preview.
+$layer-decoration: -1;
+$layer-annotation: 1;
+
+// Only font sizes repeated in the existing styles are shared.
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-label: 15px;
+$font-size-md: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-2xl: 24px;
+$font-size-3xl: 28px;
+$font-size-4xl: 32px;
+$font-size-5xl: 36px;
+$font-size-6xl: 40px;
+$font-size-7xl: 48px;

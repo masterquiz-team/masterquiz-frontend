@@ -1,5 +1,8 @@
+@use "../../../../styles/tokens";
+@use "../../../../styles/breakpoints";
+
 .section {
-  background: #f3f5fc;
+  background: tokens.$surface-subtle;
 }
 .container {
   max-width: 1440px;
@@ -10,14 +13,14 @@
 .label {
   color: var(--primary);
   font-weight: 700;
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   line-height: 19px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 .title {
   margin-top: 18px;
-  font-size: 32px;
+  font-size: tokens.$font-size-4xl;
   line-height: 40px;
 }
 .list {
@@ -48,17 +51,17 @@
     );
 }
 .itemTitle {
-  font-size: 20px;
+  font-size: tokens.$font-size-xl;
   line-height: 25px;
 }
 .description {
   max-width: 230px;
   margin-top: 16px;
   color: var(--muted);
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   line-height: 26px;
 }
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .container {
     padding-inline: 40px;
   }
@@ -66,18 +69,18 @@
     gap: 32px;
   }
 }
-@media (max-width: 900px) {
+@include breakpoints.down(md) {
   .list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 40px;
   }
 }
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .container {
     padding: 48px 24px;
   }
   .title {
-    font-size: 28px;
+    font-size: tokens.$font-size-3xl;
     line-height: 36px;
   }
   .list {

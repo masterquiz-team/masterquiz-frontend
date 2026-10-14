@@ -1,14 +1,23 @@
+@use "../styles/tokens";
+
 :root {
-  --background: #f9fafc;
-  --foreground: #171717;
-  --primary: #5c4de4;
-  --primary-hover: #493aca;
-  --muted: #626778;
-  --color1: #8b6fe8;
-  --color2: #c9b8f5;
-  --color3: #55bbd3;
-  --color4: #b8e8f2;
-  --color5: #e9a7d8;
+  --background: #{tokens.$background};
+  --foreground: #{tokens.$foreground};
+  --primary: #{tokens.$primary};
+  --primary-hover: #{tokens.$primary-hover};
+  --muted: #{tokens.$text-muted};
+  --accent-purple: #{tokens.$accent-purple};
+  --accent-purple-soft: #{tokens.$accent-purple-soft};
+  --accent-cyan: #{tokens.$accent-cyan};
+  --accent-cyan-soft: #{tokens.$accent-cyan-soft};
+  --accent-pink: #{tokens.$accent-pink};
+
+  // Compatibility aliases for existing and parallel consumers.
+  --color1: var(--accent-purple);
+  --color2: var(--accent-purple-soft);
+  --color3: var(--accent-cyan);
+  --color4: var(--accent-cyan-soft);
+  --color5: var(--accent-pink);
 }
 
 *,

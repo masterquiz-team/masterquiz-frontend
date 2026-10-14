@@ -1,9 +1,12 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+
 .controls {
   position: relative;
   display: flex;
   align-items: center;
   gap: 39px;
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   line-height: 19px;
 }
 
@@ -15,7 +18,7 @@
 .action:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 4px;
-  border-radius: 3px;
+  border-radius: tokens.$radius-focus;
 }
 
 .action {
@@ -24,9 +27,9 @@
   justify-content: center;
   width: 112px;
   min-height: 48px;
-  border-radius: 9999px;
+  border-radius: tokens.$radius-pill;
   background: var(--primary);
-  color: #fff;
+  color: tokens.$surface;
   cursor: pointer;
 }
 
@@ -52,21 +55,21 @@
   right: 0;
   width: 230px;
   margin-top: 8px;
-  color: #b42318;
-  font-size: 14px;
+  color: tokens.$danger;
+  font-size: tokens.$font-size-sm;
   line-height: 20px;
 }
 
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .controls {
     gap: 24px;
   }
 }
 
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .controls {
     gap: 12px;
-    font-size: 14px;
+    font-size: tokens.$font-size-sm;
   }
   .action {
     width: 80px;

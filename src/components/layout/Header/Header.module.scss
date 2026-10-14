@@ -1,3 +1,6 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+
 .header {
   display: grid;
   grid-template-columns: 444px 1fr auto;
@@ -10,7 +13,7 @@
 }
 
 .brand {
-  font-size: 32px;
+  font-size: tokens.$font-size-4xl;
   line-height: 39px;
 }
 
@@ -25,14 +28,14 @@
 .authLink:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 5px;
-  border-radius: 3px;
+  border-radius: tokens.$radius-focus;
 }
 
 .authLinks {
   display: flex;
   align-items: center;
   gap: 39px;
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   line-height: 19px;
 }
 
@@ -42,9 +45,9 @@
   justify-content: center;
   width: 112px;
   height: 48px;
-  border-radius: 9999px;
+  border-radius: tokens.$radius-pill;
   background: var(--primary);
-  color: white;
+  color: tokens.$surface;
   transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -57,7 +60,7 @@
   outline-offset: 4px;
 }
 
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .header {
     grid-template-columns: auto 1fr auto;
     gap: 40px;
@@ -67,7 +70,7 @@
     gap: 24px;
   }
 }
-@media (max-width: 900px) {
+@include breakpoints.down(md) {
   .header {
     grid-template-columns: 1fr auto;
     gap: 24px;
@@ -78,18 +81,18 @@
     grid-row: 2;
   }
 }
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .header {
     padding-inline: 24px;
     gap: 20px 12px;
   }
   .brand {
-    font-size: 24px;
+    font-size: tokens.$font-size-2xl;
     line-height: 29px;
   }
   .authLinks {
     gap: 12px;
-    font-size: 14px;
+    font-size: tokens.$font-size-sm;
   }
   .signUp {
     width: 80px;
@@ -97,7 +100,7 @@
   }
 }
 
-@media (max-width: 380px) {
+@include breakpoints.down(380px) {
   .header {
     grid-template-columns: minmax(0, 1fr);
   }

@@ -1,3 +1,5 @@
+@use "../../styles/tokens";
+
 .srOnly {
   position: absolute;
   width: 1px;
@@ -10,7 +12,7 @@
   display: inline-flex;
   align-items: center;
   gap: 12px;
-  font-size: 24px;
+  font-size: tokens.$font-size-2xl;
   cursor: pointer;
   span {
     transform: rotate(180deg);
@@ -20,10 +22,10 @@
   width: min(515px, 100%);
   padding: 20px 39px 48px;
   min-height: 476px;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px 10px rgb(92 77 228 / 25%);
-  color: #000;
+  background: tokens.$surface;
+  border-radius: tokens.$radius-control;
+  box-shadow: tokens.$shadow-question;
+  color: tokens.$text;
 }
 .withNext {
   min-height: 545px;
@@ -43,14 +45,14 @@
   justify-content: center;
   min-height: 34px;
   padding: 5px 20px;
-  border-radius: 22px;
-  background: rgb(92 77 228 / 20%);
+  border-radius: tokens.$radius-badge;
+  background: tokens.$primary-overlay;
   color: var(--primary);
-  font-size: 15px;
+  font-size: tokens.$font-size-label;
 }
 .progress {
-  font-size: 16px;
-  color: #8a90a6;
+  font-size: tokens.$font-size-md;
+  color: tokens.$text-subtle;
   letter-spacing: 1.6px;
 }
 .question {
@@ -58,7 +60,7 @@
   max-width: 286px;
   margin-top: 18px;
   margin-bottom: 25px;
-  font-size: 24px;
+  font-size: tokens.$font-size-2xl;
   line-height: normal;
   font-weight: 600;
 }
@@ -74,9 +76,9 @@
   gap: 14px;
   min-height: 57px;
   padding: 10px 15px;
-  border: 1px solid #8a90a6;
-  border-radius: 10px;
-  font-size: 18px;
+  border: 1px solid tokens.$border;
+  border-radius: tokens.$radius-control;
+  font-size: tokens.$font-size-lg;
   cursor: pointer;
   input {
     position: absolute;
@@ -105,16 +107,16 @@
 }
 .selected {
   border-color: var(--primary);
-  background: rgb(92 77 228 / 20%);
+  background: tokens.$primary-overlay;
 }
 .correct {
-  border-color: #36a66a;
-  background: #ddf5e6;
+  border-color: tokens.$success;
+  background: tokens.$success-surface;
   cursor: default;
 }
 .incorrect {
-  border-color: #d95757;
-  background: #fce5e5;
+  border-color: tokens.$danger-border;
+  background: tokens.$danger-surface;
   cursor: default;
 }
 .outcomeIcon {
@@ -134,10 +136,10 @@
   justify-content: center;
   gap: 10px;
   border: 2px solid var(--primary);
-  border-radius: 10px;
+  border-radius: tokens.$radius-control;
   color: var(--primary);
   min-height: 54px;
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   cursor: pointer;
 }
 .next {
@@ -149,7 +151,7 @@
 }
 .filled,
 .primaryButton {
-  color: #fff;
+  color: tokens.$surface;
   background: var(--primary);
 }
 .feedbackCard {
@@ -191,13 +193,13 @@
 }
 .feedbackHeading {
   text-align: center;
-  font-size: 32px;
+  font-size: tokens.$font-size-4xl;
   line-height: normal;
   font-weight: 600;
   margin-bottom: 16px;
 }
 .explanation {
-  font-size: 15px;
+  font-size: tokens.$font-size-label;
   text-align: center;
   line-height: normal;
   margin-bottom: 26px;
@@ -208,10 +210,10 @@
   gap: 11px;
   padding: 10px 12px 16px;
   border: 1px solid var(--primary);
-  border-radius: 10px;
-  background: rgb(92 77 228 / 20%);
+  border-radius: tokens.$radius-control;
+  background: tokens.$primary-overlay;
   min-height: 104px;
-  font-size: 15px;
+  font-size: tokens.$font-size-label;
   line-height: normal;
   > span {
     flex-shrink: 0;
@@ -222,7 +224,7 @@
     margin: 6px 0 8px;
   }
   p {
-    color: #8a90a6;
+    color: tokens.$text-subtle;
   }
 }
 .feedbackCard .next {
@@ -237,16 +239,16 @@
   padding: 40px 33px 42px;
   overflow: auto;
   border: 2px solid var(--primary);
-  border-radius: 23px;
-  background: #fff;
-  color: #000;
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
+  color: tokens.$text;
   &::backdrop {
-    background: rgb(249 250 252 / 70%);
+    background: tokens.$dialog-backdrop;
   }
   h2 {
     text-align: center;
     margin-top: 33px;
-    font-size: 32px;
+    font-size: tokens.$font-size-4xl;
     font-weight: 700;
     line-height: normal;
   }
@@ -270,13 +272,13 @@
   span {
     width: min(282px, 100%);
     height: 17px;
-    background: #d9d9d9;
+    background: tokens.$placeholder;
   }
 }
 .dialogNotice {
-  font-size: 12px;
+  font-size: tokens.$font-size-xs;
   line-height: 1.4;
-  color: #626778;
+  color: tokens.$text-muted;
   margin: 12px 0;
   text-align: center;
 }
@@ -295,7 +297,7 @@
   min-height: 896px;
   margin: 0 auto;
   padding: 12px 80px 60px;
-  color: #000;
+  color: tokens.$text;
 }
 .top {
   display: grid;
@@ -315,10 +317,10 @@
   min-height: 50px;
   margin-top: 21px;
   padding: 10px 18px 10px 24px;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 4px 5px 5px rgb(92 77 228 / 25%);
-  font-size: 16px;
+  border-radius: tokens.$radius-control;
+  background: tokens.$surface;
+  box-shadow: tokens.$shadow-timer;
+  font-size: tokens.$font-size-md;
 }
 .timerValue {
   color: var(--muted);
@@ -338,7 +340,7 @@
 .requestStatus {
   max-width: 605px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: tokens.$font-size-sm;
   text-align: center;
   margin-top: 14px;
 }
@@ -350,7 +352,7 @@
   gap: 24px;
   text-align: center;
   h1 {
-    font-size: 32px;
+    font-size: tokens.$font-size-4xl;
     font-weight: 600;
   }
   a:not(.primaryButton) {
