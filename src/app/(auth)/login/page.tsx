@@ -3,16 +3,12 @@ import { AuthPage } from "@/features/auth/components/AuthPage";
 
 export const metadata: Metadata = { title: "Log in" };
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ next?: string; registered?: string }>;
-}) {
+export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const query = await searchParams;
   return (
     <AuthPage
       mode="login"
-      next={query.next}
+      next={typeof query.next === "string" ? query.next : undefined}
       registered={query.registered === "1"}
     />
   );

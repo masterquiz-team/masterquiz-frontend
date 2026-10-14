@@ -1,5 +1,110 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: max(1024px, 100svh);
+  color: #000;
+}
+
 .page {
-  max-width: 384px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 575px);
+  align-items: start;
+  gap: 80px;
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
   margin-inline: auto;
-  padding: 24px;
+  padding: 40px 80px 112px;
+}
+
+.pageRegister {
+  padding-bottom: 100px;
+}
+
+.welcome {
+  min-width: 0;
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 321px);
+  min-height: 34px;
+  border-radius: 23px;
+  background: #f1f0fe;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  letter-spacing: 0.2em;
+}
+
+.title {
+  margin-top: 14px;
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 77px;
+}
+
+.descriptionPlaceholder {
+  display: grid;
+  gap: 17px;
+  margin-top: 18px;
+}
+
+.descriptionPlaceholder span {
+  width: min(100%, 365px);
+  height: 21px;
+  background: #d9d9d9;
+}
+
+.descriptionPlaceholder span:last-child {
+  width: min(100%, 217px);
+}
+
+.illustrationPlaceholder {
+  width: min(100%, 416px);
+  height: auto;
+  margin-top: 31px;
+  margin-left: 74px;
+}
+
+@media (max-width: 1200px) {
+  .page {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 48px;
+    padding-inline: 40px;
+  }
+
+  .title {
+    font-size: 48px;
+    line-height: 1.2;
+  }
+
+  .illustrationPlaceholder {
+    margin-inline: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .shell {
+    min-height: 100svh;
+  }
+
+  .page {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 64px;
+    padding-bottom: 64px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding-inline: 24px;
+  }
+
+  .title {
+    font-size: 40px;
+  }
 }

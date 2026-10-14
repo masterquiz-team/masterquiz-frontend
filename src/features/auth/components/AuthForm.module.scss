@@ -1,54 +1,130 @@
-.link {
-  text-decoration: underline;
+.card {
+  position: relative;
+  width: 100%;
+  min-height: 601px;
+  margin-top: 8px;
+  padding: 48px 40px 56px;
+  border-radius: 23px;
+  background: #fff;
+}
+
+.registerCard {
+  min-height: 666px;
+  margin-top: -10px;
+  padding-block: 28px 27px;
+}
+
+.registerCard .form {
+  margin-top: 37px;
+}
+
+.registerCard .submitButton {
+  margin-top: 28px;
+}
+
+.registerCard .register {
+  margin-top: 23px;
+}
+
+.registerCard .accent {
+  top: -39px;
+}
+
+.accent {
+  position: absolute;
+  top: -57px;
+  left: -47px;
+  width: 64px;
+  height: 72px;
+  color: var(--primary);
+  pointer-events: none;
 }
 
 .title {
-  margin-block: 16px;
-  font-size: 24px;
-  line-height: 32px;
+  text-align: center;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 39px;
+}
+
+.subtitlePlaceholder {
+  width: min(100%, 249px);
+  height: 17px;
+  margin: 14px auto 0;
+  background: #d9d9d9;
 }
 
 .form {
-  display: grid;
-  gap: 16px;
+  margin-top: 41px;
 }
 
-.fields {
-  display: grid;
-  gap: 12px;
-}
-
-.label {
-  display: grid;
-  gap: 4px;
-}
-
-.input {
-  width: 100%;
-  border: 1px solid #aaa;
-  padding: 8px;
-}
-
-.input:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+.forgotPassword {
+  display: block;
+  margin-top: 15px;
+  margin-left: auto;
+  color: var(--primary);
+  font-size: 14px;
+  line-height: 17px;
+  cursor: pointer;
 }
 
 .submitButton {
-  border: 1px solid currentColor;
-  padding: 8px;
-}
-
-.submitButton:disabled {
-  opacity: 0.5;
-}
-
-.switchLink {
-  margin-top: 16px;
+  margin-top: 32px;
 }
 
 .notice {
   margin-top: 16px;
   font-size: 14px;
   line-height: 20px;
+}
+
+.notice button {
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.notice button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+.forgotPassword:focus-visible,
+.register a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+.register {
+  margin-top: 56px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 19px;
+}
+
+.register a {
+  color: var(--primary);
+}
+
+@media (max-width: 1200px) {
+  .card {
+    padding-inline: 24px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 900px) {
+  .accent {
+    left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: 24px;
+    line-height: 30px;
+  }
 }
