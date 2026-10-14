@@ -1,3 +1,7 @@
+@use "../../../../styles/tokens";
+@use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
+
 .hero {
   display: grid;
   grid-template-columns: minmax(0, 659fr) minmax(0, 519fr);
@@ -16,10 +20,10 @@
   width: min(100%, 321px);
   min-height: 34px;
   padding-inline: 35px;
-  border-radius: 23px;
-  background: #f1f0fe;
+  border-radius: tokens.$radius-card;
+  background: tokens.$primary-tint;
   color: var(--primary);
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   line-height: 19px;
   text-transform: uppercase;
 }
@@ -33,7 +37,7 @@
   max-width: 469px;
   margin-top: 25px;
   color: var(--muted);
-  font-size: 20px;
+  font-size: tokens.$font-size-xl;
   line-height: 34px;
 }
 .startButton {
@@ -46,8 +50,8 @@
   padding: 20px 24px 20px 39px;
   border-radius: 35px;
   background: var(--primary);
-  color: white;
-  font-size: 20px;
+  color: tokens.$surface;
+  font-size: tokens.$font-size-xl;
   line-height: 24px;
   transition: background-color 150ms;
 }
@@ -55,35 +59,34 @@
   background: var(--primary-hover);
 }
 .startButton:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 .arrowIcon {
   width: 28px;
   height: 28px;
 }
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .hero {
     padding-inline: 40px;
     gap: 48px;
   }
 }
-@media (max-width: 900px) {
+@include breakpoints.down(md) {
   .hero {
     grid-template-columns: 1fr;
     padding-block: 40px 64px;
     gap: 48px;
   }
 }
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .hero {
     padding-inline: 24px;
   }
   .title {
-    font-size: 36px;
+    font-size: tokens.$font-size-5xl;
   }
   .description {
-    font-size: 18px;
+    font-size: tokens.$font-size-lg;
     line-height: 30px;
   }
 }

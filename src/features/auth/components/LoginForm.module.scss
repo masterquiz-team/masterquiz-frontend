@@ -1,11 +1,15 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
+
 .card {
   position: relative;
   width: 100%;
   min-height: 601px;
   margin-top: 8px;
   padding: 48px 40px 56px;
-  border-radius: 23px;
-  background: #fff;
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
 }
 
 .registerCard {
@@ -42,7 +46,7 @@
 
 .title {
   text-align: center;
-  font-size: 32px;
+  font-size: tokens.$font-size-4xl;
   font-weight: 600;
   line-height: 39px;
 }
@@ -51,7 +55,7 @@
   width: min(100%, 249px);
   height: 17px;
   margin: 14px auto 0;
-  background: #d9d9d9;
+  background: tokens.$placeholder;
 }
 
 .form {
@@ -63,7 +67,7 @@
   margin-top: 15px;
   margin-left: auto;
   color: var(--primary);
-  font-size: 14px;
+  font-size: tokens.$font-size-sm;
   line-height: 17px;
   cursor: pointer;
 }
@@ -74,7 +78,7 @@
 
 .notice {
   margin-top: 16px;
-  font-size: 14px;
+  font-size: tokens.$font-size-sm;
   line-height: 20px;
 }
 
@@ -85,20 +89,18 @@
 }
 
 .notice button:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 
 .forgotPassword:focus-visible,
 .register a:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 
 .register {
   margin-top: 56px;
   text-align: center;
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   line-height: 19px;
 }
 
@@ -106,25 +108,25 @@
   color: var(--primary);
 }
 
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .card {
     padding-inline: 24px;
   }
 
   .title {
-    font-size: 28px;
+    font-size: tokens.$font-size-3xl;
   }
 }
 
-@media (max-width: 900px) {
+@include breakpoints.down(md) {
   .accent {
     left: 0;
   }
 }
 
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .title {
-    font-size: 24px;
+    font-size: tokens.$font-size-2xl;
     line-height: 30px;
   }
 }

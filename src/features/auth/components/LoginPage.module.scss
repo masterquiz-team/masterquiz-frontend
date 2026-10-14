@@ -1,8 +1,11 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+
 .shell {
   display: flex;
   flex-direction: column;
   min-height: max(1024px, 100svh);
-  color: #000;
+  color: tokens.$text;
 }
 
 .page {
@@ -31,10 +34,10 @@
   justify-content: center;
   width: min(100%, 321px);
   min-height: 34px;
-  border-radius: 23px;
-  background: #f1f0fe;
+  border-radius: tokens.$radius-card;
+  background: tokens.$primary-tint;
   color: var(--primary);
-  font-size: 14px;
+  font-size: tokens.$font-size-sm;
   font-weight: 500;
   line-height: 17px;
   letter-spacing: 0.2em;
@@ -56,7 +59,7 @@
 .descriptionPlaceholder span {
   width: min(100%, 365px);
   height: 21px;
-  background: #d9d9d9;
+  background: tokens.$placeholder;
 }
 
 .descriptionPlaceholder span:last-child {
@@ -70,7 +73,7 @@
   margin-left: 74px;
 }
 
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .page {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 48px;
@@ -78,7 +81,7 @@
   }
 
   .title {
-    font-size: 48px;
+    font-size: tokens.$font-size-7xl;
     line-height: 1.2;
   }
 
@@ -87,7 +90,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@include breakpoints.down(md) {
   .shell {
     min-height: 100svh;
   }
@@ -99,12 +102,12 @@
   }
 }
 
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .page {
     padding-inline: 24px;
   }
 
   .title {
-    font-size: 40px;
+    font-size: tokens.$font-size-6xl;
   }
 }

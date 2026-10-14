@@ -1,3 +1,6 @@
+@use "../../../styles/tokens";
+@use "../../../styles/patterns";
+
 .button {
   display: flex;
   align-items: center;
@@ -5,23 +8,19 @@
   gap: 21px;
   width: 100%;
   min-height: 56px;
-  border: 2px solid var(--primary);
-  border-radius: 27px;
-  color: var(--primary);
-  font-size: 16px;
+  @include patterns.outline-button($radius: 27px);
+  font-size: tokens.$font-size-md;
   font-weight: 500;
   line-height: 19px;
   cursor: pointer;
 }
 
 .button:disabled {
-  opacity: 0.5;
-  cursor: wait;
+  @include patterns.disabled-control($cursor: wait, $opacity: 0.5);
 }
 
 .button:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 4px;
+  @include patterns.focus-ring;
 }
 
 .arrow {

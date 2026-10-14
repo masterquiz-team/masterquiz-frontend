@@ -1,5 +1,7 @@
+@use "../../../styles/tokens";
+
 .feedback {
   margin-top: 16px;
-  font-size: 14px;
+  font-size: tokens.$font-size-sm;
   line-height: 20px;
 }

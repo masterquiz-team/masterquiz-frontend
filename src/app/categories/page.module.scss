@@ -1,3 +1,5 @@
+@use "../../styles/breakpoints";
+
 .main {
   width: min(1100px, calc(100% - 80px));
   min-height: 1512px;
@@ -6,7 +8,7 @@
   padding-bottom: 123px;
 }
 
-@media (max-width: 900px) {
+@include breakpoints.down(md) {
   .main {
     min-height: 0;
     padding-top: 24px;
@@ -14,7 +16,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .main {
     width: calc(100% - 48px);
     padding-bottom: 64px;

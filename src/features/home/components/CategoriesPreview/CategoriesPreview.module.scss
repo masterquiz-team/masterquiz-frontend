@@ -1,10 +1,13 @@
+@use "../../../../styles/tokens";
+@use "../../../../styles/breakpoints";
+
 .preview {
   width: 100%;
   scroll-margin-top: 24px;
 }
 .heading {
   position: relative;
-  z-index: 1;
+  z-index: tokens.$layer-annotation;
   display: flex;
   align-items: start;
   min-height: 62px;
@@ -12,7 +15,7 @@
   margin-left: -90px;
 }
 .title {
-  font-size: 20px;
+  font-size: tokens.$font-size-xl;
   line-height: 24px;
   transform: rotate(-9.54deg);
 }
@@ -29,7 +32,7 @@
   position: absolute;
   top: -45px;
   left: -45px;
-  z-index: -1;
+  z-index: tokens.$layer-decoration;
   width: min(586px, calc(100% + 90px));
   height: auto;
   max-width: none;
@@ -47,7 +50,7 @@
   display: grid;
   gap: 15px;
 }
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .background {
     left: -48px;
     width: calc(100% + 64px);
@@ -68,7 +71,7 @@
     height: auto;
   }
 }
-@media (max-width: 900px) {
+@include breakpoints.down(md) {
   .preview {
     max-width: 554px;
     margin-inline: auto;
@@ -83,7 +86,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .background {
     top: 0;
     left: -12px;

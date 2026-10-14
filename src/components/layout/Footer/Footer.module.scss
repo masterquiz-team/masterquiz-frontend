@@ -1,3 +1,6 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+
 .footer {
   width: 100%;
   max-width: 1440px;
@@ -11,10 +14,10 @@
   gap: 0;
   min-height: 100px;
   padding-block: 30px;
-  border-top: 2px solid #f1f2f9;
+  border-top: 2px solid tokens.$border-subtle;
 }
 .brand {
-  font-size: 24px;
+  font-size: tokens.$font-size-2xl;
   line-height: 29px;
 }
 .socialLinks {
@@ -26,7 +29,7 @@
   width: 24px;
   height: 24px;
 }
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .footer {
     padding-inline: 40px;
   }
@@ -35,7 +38,7 @@
     gap: 40px;
   }
 }
-@media (max-width: 900px) {
+@include breakpoints.down(md) {
   .content {
     grid-template-columns: 1fr auto;
     gap: 24px;
@@ -45,7 +48,7 @@
     grid-row: 2;
   }
 }
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .footer {
     padding-inline: 24px;
   }

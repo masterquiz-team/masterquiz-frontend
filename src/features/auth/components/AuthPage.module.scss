@@ -1,5 +1,2 @@
-.page {
-  max-width: 384px;
-  margin-inline: auto;
-  padding: 24px;
-}
+// Retained for path compatibility. AuthPage.tsx uses LoginPage.module.scss.
+// The former rules had no imports or consumers at the styles-refactor base.
