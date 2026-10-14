@@ -4,16 +4,21 @@ import {
   readMutation,
   requireId,
 } from "@/lib/api/server";
-import { startQuizAttempt } from "@/features/quiz/server/api";
-import { getPrivateQuiz, getPlayerOptions } from "@/features/quiz/server/game";
+import { getDifficulty } from "@/features/quiz/difficulty";
+import { startGame } from "@/features/quiz/server/game";
 export function POST(request: Request) {
   return apiResponse(async () => {
     const body = await readMutation(request);
-    if (Object.keys(body).length !== 1)
-      throw new ApiError(400, "Only quizId is accepted.");
-    const quizId = requireId(body.quizId);
-    const quiz = await getPrivateQuiz(quizId);
-    await Promise.all(quiz.listOfQuestions.map((q) => getPlayerOptions(q.id)));
-    return startQuizAttempt(quizId);
+    if (
+      Object.keys(body).length !== 2 ||
+      !("categoryId" in body) ||
+      !("difficulty" in body)
+    )
+      throw new ApiError(400, "Only categoryId and difficulty are accepted.");
+    const categoryId = requireId(body.categoryId, "categoryId");
+    const difficulty = getDifficulty(body.difficulty);
+    if (!difficulty?.available)
+      throw new ApiError(400, "This difficulty is unavailable.");
+    return startGame(categoryId, difficulty.id);
   }, 201);
 }

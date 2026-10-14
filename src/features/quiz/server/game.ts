@@ -9,7 +9,19 @@ import {
 import { getCategory } from "@/features/categories/server/api";
 import { parsePlayerAttempt, parsePlayerQuiz } from "../contracts";
 import type { GameView, PlayerOption, RecordedAnswer } from "../types";
-import { getQuizAttempt, quizRequest } from "./api";
+import { easyDifficulty, getDifficulty, type Difficulty } from "../difficulty";
+import {
+  buildGameView as buildView,
+  getAnsweredQuestions as answeredQuestions,
+  GameStateError,
+  type GameContext,
+} from "@/features/gameplay/server/game-view";
+import {
+  getQuizAttempt,
+  getQuizzesByCategory,
+  startQuizAttempt,
+  quizRequest,
+} from "./api";
 
 export function parseRecordedAnswer(value: unknown): RecordedAnswer {
   if (
@@ -77,7 +89,7 @@ export async function getPrivateQuiz(id: number): Promise<PrivateQuiz> {
     const quiz = parsePlayerQuiz(value);
     if (
       quiz.id !== id ||
-      quiz.listOfQuestions.length !== 10 ||
+      quiz.listOfQuestions.length !== easyDifficulty.questionCount ||
       !isRecord(value) ||
       !Array.isArray(value.listOfQuestions)
     )
@@ -138,113 +150,103 @@ async function getRevealedOptions(questionId: number) {
   });
 }
 
+// Convert pure domain failures to the existing BFF error contract.
+function gameState<T>(work: () => T): T {
+  try {
+    return work();
+  } catch (error) {
+    if (error instanceof GameStateError)
+      throw new ApiError(error.status, error.message);
+    throw error;
+  }
+}
+export const buildGameView = (
+  context: GameContext,
+  history: RecordedAnswer[],
+) => gameState(() => buildView(context, history));
+export const getAnsweredQuestions = (
+  context: GameContext,
+  history: RecordedAnswer[],
+) => gameState(() => answeredQuestions(context, history));
+
+// Request-scoped only. Quiz/options have mutable CRUD endpoints and no version or
+// invalidation contract; sharing a cache across requests could retain stale data
+// or bypass upstream authorization. All transport requests stay no-store.
+export async function loadGameContext(attemptId: number): Promise<GameContext> {
+  const attempt = await getQuizAttempt(attemptId);
+  const quiz = await getPrivateQuiz(attempt.quizId);
+  const [category, options] = await Promise.all([
+    getCategory(quiz.categoryId),
+    Promise.all(quiz.listOfQuestions.map((q) => getPlayerOptions(q.id))),
+  ]);
+  const context = { attempt, quiz, category, options };
+  getAnsweredQuestions(context, []);
+  return context;
+}
+
+export async function reviewGame(
+  context: GameContext,
+  history: RecordedAnswer[],
+  questionId: number,
+): Promise<GameView> {
+  const current = buildGameView(context, history);
+  if (current.phase === "finished") return current;
+  const index = context.quiz.listOfQuestions.findIndex(
+    (q) => q.id === questionId,
+  );
+  if (!getAnsweredQuestions(context, history).has(index))
+    throw new ApiError(409, "Feedback is available only for a saved answer.");
+  // Only fetch correctness after validated backend history proves submission.
+  const options = await getRevealedOptions(questionId);
+  return gameState(() => buildView(context, history, { questionId, options }));
+}
 export async function loadGame(
   attemptId: number,
   reviewQuestionId?: number,
 ): Promise<GameView> {
-  const attempt = await getQuizAttempt(attemptId);
-  const [quiz, history] = await Promise.all([
-    getPrivateQuiz(attempt.quizId),
+  const [context, history] = await Promise.all([
+    loadGameContext(attemptId),
     getHistory(attemptId),
   ]);
-  const category = await getCategory(quiz.categoryId);
-  if (category.id !== quiz.categoryId || !category.name.trim())
-    invalidContract();
-  const options = await Promise.all(
-    quiz.listOfQuestions.map((q) => getPlayerOptions(q.id)),
-  );
-  const answerToQuestion = new Map(
-    options.flatMap((items, index) => items.map((a) => [a.id, index] as const)),
-  );
-  if (answerToQuestion.size !== options.flat().length) invalidContract();
-  const answered = new Map<number, RecordedAnswer>();
-  for (const record of history) {
-    const index = answerToQuestion.get(record.answerId);
-    if (index === undefined || answered.has(index)) invalidContract();
-    answered.set(index, record);
-  }
-  // Resume from backend history, never from a browser counter.
-  for (let i = 0; i < answered.size; i++)
-    if (!answered.has(i)) invalidContract();
-  const base = {
-    attempt,
-    category,
-    title: quiz.title,
-    total: 10,
-    answered: answered.size,
-  };
-  if (attempt.status === "FINISHED") {
-    if (answered.size !== 10)
-      throw new ApiError(
-        409,
-        "This attempt was finished before all ten answers were saved.",
-      );
-    return {
-      ...base,
-      phase: "finished",
-      question: null,
-      review: null,
-      summary: {
-        correct: history.filter((a) => a.correctAnswer).length,
-        answered: history.length,
-        total: 10,
-      },
-    };
-  }
-  const index =
-    reviewQuestionId === undefined
-      ? answered.size
-      : quiz.listOfQuestions.findIndex((q) => q.id === reviewQuestionId);
-  if (index < 0 || (reviewQuestionId !== undefined && !answered.has(index)))
-    throw new ApiError(409, "Feedback is available only for a saved answer.");
-  if (index === 10)
-    return {
-      ...base,
-      phase: "ready-to-finish",
-      question: null,
-      review: null,
-      summary: null,
-    };
-  const q = quiz.listOfQuestions[index];
-  const question = { id: q.id, text: q.text, index, options: options[index] };
-  if (reviewQuestionId === undefined)
-    return {
-      ...base,
-      phase: "question",
-      question,
-      review: null,
-      summary: null,
-    };
-  const record = answered.get(index)!;
-  // Correctness/feedback are fetched and released only after history proves submission.
-  const revealed = await getRevealedOptions(q.id);
-  if (
-    revealed.length !== options[index].length ||
-    revealed.some((a) => !options[index].some((o) => o.id === a.id)) ||
-    new Set(revealed.map((a) => a.id)).size !== revealed.length
-  )
-    invalidContract();
-  const correctOptionIds = revealed.filter((a) => a.correct).map((a) => a.id);
-  if (
-    !correctOptionIds.length ||
-    revealed.find((a) => a.id === record.answerId)?.correct !==
-      record.correctAnswer
-  )
-    invalidContract();
-  return {
-    ...base,
-    phase: "feedback",
-    question,
-    review: {
-      answerId: record.answerId,
-      correct: record.correctAnswer,
-      correctOptionIds,
-      explanation: q.feedback,
-    },
-    summary: null,
-  };
+  return reviewQuestionId === undefined
+    ? buildGameView(context, history)
+    : reviewGame(context, history, reviewQuestionId);
 }
 
+export async function startGame(categoryId: number, difficulty: Difficulty) {
+  const configuration = getDifficulty(difficulty);
+  if (!configuration?.available)
+    throw new ApiError(400, "This difficulty is unavailable.");
+  // Preserve the existing bounded, ID-sorted search, but perform it on the server.
+  for (let page = 0; page < 100; page++) {
+    const quizzes = await getQuizzesByCategory(categoryId, page);
+    const candidate = quizzes.content.find(
+      (quiz) => quiz.listOfQuestions.length === configuration.questionCount,
+    );
+    if (candidate) {
+      const quiz = await getPrivateQuiz(candidate.id);
+      if (quiz.categoryId !== categoryId) invalidContract();
+      const options = await Promise.all(
+        quiz.listOfQuestions.map((q) => getPlayerOptions(q.id)),
+      );
+      // Validate membership and global option uniqueness before creating an attempt.
+      const ids = options.flat().map((option) => option.id);
+      if (new Set(ids).size !== ids.length) invalidContract();
+      return startQuizAttempt(quiz.id);
+    }
+    if (quizzes.last || page + 1 >= quizzes.totalPages) break;
+  }
+  throw new ApiError(
+    404,
+    "No ten-question quiz is available in this category yet.",
+  );
+}
+
+// Best-effort exclusion in this module's process only: not a distributed lock,
+// not shared across workers, replicas, serverless instances or restarts. Saved
+// history prevents sequential replays (including a lost response) from issuing
+// another POST. Simultaneous requests on different processes still need backend
+// uniqueness/transactional idempotency, which the current contract does not offer.
 const activeMutations = new Set<number>();
 export async function withAttemptMutation<T>(
   id: number,
