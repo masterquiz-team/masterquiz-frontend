@@ -66,3 +66,10 @@ export const categoryArtwork: {
     illustration: "/images/categories/astronomy.svg",
   },
 ];
+
+export function getCategoryArtwork(name: string) {
+  const normalizedName = name.trim().replace(/\s+/g, " ").toLowerCase();
+  return categoryArtwork.find(
+    (artwork) => artwork.name.toLowerCase() === normalizedName,
+  );
+}

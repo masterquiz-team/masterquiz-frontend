@@ -1,45 +1,24 @@
 import "server-only";
 
-import { cookies } from "next/headers";
+import {
+  backendFetch,
+  BackendConfigurationError,
+} from "@/lib/backend/transport";
+import {
+  getSessionToken,
+  readTokenClaims,
+  SESSION_COOKIE,
+} from "@/lib/backend/token";
 import { cache } from "react";
 import type { NextResponse } from "next/server";
 import type { AuthSession, AuthSessionState } from "../types";
 
-export const SESSION_COOKIE = "masterquiz_session";
+export { getSessionToken, SESSION_COOKIE } from "@/lib/backend/token";
 
-// Decoding is used only to read the expiry and email. It does NOT verify the
-// signature. getSession asks the Java backend to verify the token before it
-// returns an authenticated identity.
+// Claim decoding does not verify the signature; getSessionState asks Java.
 export function readTokenSession(token: string): AuthSession | null {
-  try {
-    const parts = token.split(".");
-    if (parts.length !== 3) return null;
-    const payload: unknown = JSON.parse(
-      Buffer.from(parts[1], "base64url").toString("utf8"),
-    );
-    if (!payload || typeof payload !== "object") return null;
-    const claims = payload as Record<string, unknown>;
-    if (
-      typeof claims.sub !== "string" ||
-      !claims.sub ||
-      typeof claims.exp !== "number" ||
-      !Number.isFinite(claims.exp) ||
-      claims.exp * 1000 <= Date.now()
-    ) {
-      return null;
-    }
-    return {
-      email: claims.sub,
-      expiresAt: new Date(claims.exp * 1000).toISOString(),
-    };
-  } catch {
-    return null;
-  }
-}
-
-export async function getSessionToken(): Promise<string | null> {
-  const token = (await cookies()).get(SESSION_COOKIE)?.value;
-  return token && readTokenSession(token) ? token : null;
+  const claims = readTokenClaims(token);
+  return claims ? { email: claims.subject, expiresAt: claims.expiresAt } : null;
 }
 
 export const getSessionState = cache(async (): Promise<AuthSessionState> => {
@@ -48,20 +27,8 @@ export const getSessionState = cache(async (): Promise<AuthSessionState> => {
 
   // The current backend has no /me endpoint. A small, read-only authenticated
   // request verifies the JWT without inventing a user/profile endpoint.
-  const baseUrl = process.env.BACKEND_API_URL ?? "http://localhost:8080";
   try {
-    const response = await fetch(
-      `${baseUrl.replace(/\/$/, "")}/categories?page=0&size=1`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-        cache: "no-store",
-        signal: AbortSignal.timeout(10000),
-        redirect: "error",
-      },
-    );
+    const response = await backendFetch("/categories?page=0&size=1", {}, token);
 
     if (response.status === 401) return { status: "anonymous", session: null };
     // A forbidden resource is not proof that the JWT is invalid. Keep the
@@ -71,7 +38,8 @@ export const getSessionState = cache(async (): Promise<AuthSessionState> => {
     return session
       ? { status: "authenticated", session }
       : { status: "anonymous", session: null };
-  } catch {
+  } catch (error) {
+    if (error instanceof BackendConfigurationError) throw error;
     return { status: "unavailable", session: null };
   }
 });

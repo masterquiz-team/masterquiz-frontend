@@ -1,0 +1,24 @@
+@use "../../../styles/breakpoints";
+
+.main {
+  width: min(1100px, calc(100% - 80px));
+  min-height: 1512px;
+  margin-inline: auto;
+  padding-top: 11px;
+  padding-bottom: 123px;
+}
+
+@include breakpoints.down(md) {
+  .main {
+    min-height: 0;
+    padding-top: 24px;
+    padding-bottom: 80px;
+  }
+}
+
+@include breakpoints.down(sm) {
+  .main {
+    width: calc(100% - 48px);
+    padding-bottom: 64px;
+  }
+}

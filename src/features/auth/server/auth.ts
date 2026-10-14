@@ -6,7 +6,7 @@ import {
   isRegisteredUser,
   parseAuthError,
 } from "../validators/responses";
-import { backendFetch } from "./backend";
+import { backendFetch } from "@/lib/backend/transport";
 import { authJson } from "./request";
 import { readTokenSession, setSessionCookie } from "./session";
 
@@ -65,7 +65,8 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
     const reply = authJson({ session });
     setSessionCookie(reply, token, session);
     return reply;
-  } catch {
+  } catch (error) {
+    console.error("[authenticate] Backend authentication failed", error);
     return authJson(
       {
         message:

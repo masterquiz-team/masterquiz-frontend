@@ -1,5 +1,6 @@
-export type GameplayOption = { id: string; label: string };
+export type GameplayOption = { id: number; label: string };
 export type AnswerFeedback = {
-  optionId: string;
+  optionId: number;
   outcome: "correct" | "incorrect";
 };
+export type GameFailure = { status: number; message: string };

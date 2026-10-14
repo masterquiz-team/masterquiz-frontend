@@ -1,0 +1,25 @@
+@use "sass:map";
+@use "sass:meta";
+
+// Inclusive boundaries match the original max-width media queries exactly.
+$widths: (
+  sm: 600px,
+  md: 900px,
+  lg: 1200px,
+);
+
+@mixin down($breakpoint) {
+  $width: map.get($widths, $breakpoint);
+
+  // One-off 380/700/1100px boundaries deliberately stay unnormalized.
+  @if $width == null {
+    @if meta.type-of($breakpoint) != "number" {
+      @error "Unknown breakpoint: #{$breakpoint}";
+    }
+    $width: $breakpoint;
+  }
+
+  @media (max-width: $width) {
+    @content;
+  }
+}

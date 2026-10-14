@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "./LoginForm.module.scss";
+import styles from "./AuthForm.module.scss";
 
 import Link from "next/link";
 import { useId, useState } from "react";

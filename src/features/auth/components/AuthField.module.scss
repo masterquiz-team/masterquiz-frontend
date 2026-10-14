@@ -1,7 +1,10 @@
+@use "../../../styles/tokens";
+@use "../../../styles/patterns";
+
 .label {
   display: grid;
   gap: 12px;
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   line-height: 19px;
 }
 
@@ -11,19 +14,18 @@
   gap: 8px;
   height: 51px;
   padding-inline: 8px 12px;
-  border: 1px solid #8a90a6;
+  border: 1px solid tokens.$border;
   border-radius: 9px;
-  color: #8a90a6;
+  color: tokens.$text-subtle;
 }
 
 .inputWrapper:focus-within {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
+  @include patterns.focus-ring($offset: 2px);
 }
 
 .invalid {
-  border-color: #b42318;
-  color: #b42318;
+  border-color: tokens.$danger;
+  color: tokens.$danger;
 }
 
 .input {
@@ -31,19 +33,19 @@
   min-width: 0;
   height: 100%;
   outline: none;
-  color: #000;
-  font-size: 14px;
+  color: tokens.$text;
+  font-size: tokens.$font-size-sm;
   font-weight: 500;
   line-height: 17px;
 }
 
 .input::placeholder {
-  color: #8a90a6;
+  color: tokens.$text-subtle;
   opacity: 1;
 }
 
 .error {
-  color: #b42318;
-  font-size: 14px;
+  color: tokens.$danger;
+  font-size: tokens.$font-size-sm;
   line-height: 20px;
 }

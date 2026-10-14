@@ -1,4 +1,4 @@
-import type { GameView, PlayerAttempt, PlayerQuizPage } from "./types";
+import type { GameView, PlayerAttempt } from "./types";
 
 export class GameRequestError extends Error {
   constructor(
@@ -44,41 +44,33 @@ export async function gameRequest<T>(
 export const attemptKey = (categoryId: number) =>
   `masterquiz-easy-attempt:${categoryId}`;
 export async function startEasy(categoryId: number): Promise<PlayerAttempt> {
-  let page = 0;
-  while (page < 100) {
-    const quizzes = await gameRequest<PlayerQuizPage>(
-      `/api/quiz/category/${categoryId}?page=${page}`,
+  // Write before the request: a lost response must not create another attempt on reload.
+  sessionStorage.setItem(attemptKey(categoryId), "unknown");
+  try {
+    const attempt = await gameRequest<PlayerAttempt>(
+      "/api/quiz-attempts",
+      "POST",
+      { categoryId, difficulty: "easy" },
     );
-    const quiz = quizzes.content.find((q) => q.listOfQuestions.length === 10);
-    if (quiz) {
-      // A lost start response must not cause an automatic second attempt on reload.
-      sessionStorage.setItem(attemptKey(categoryId), "unknown");
-      try {
-        const attempt = await gameRequest<PlayerAttempt>(
-          "/api/quiz-attempts",
-          "POST",
-          { quizId: quiz.id },
-        );
-        sessionStorage.setItem(attemptKey(categoryId), String(attempt.id));
-        return attempt;
-      } catch (error) {
-        if (
-          error instanceof GameRequestError &&
-          error.status >= 400 &&
-          error.status < 500
-        )
-          sessionStorage.removeItem(attemptKey(categoryId));
-        throw error;
-      }
-    }
-    if (quizzes.last || ++page >= quizzes.totalPages) break;
+    sessionStorage.setItem(attemptKey(categoryId), String(attempt.id));
+    return attempt;
+  } catch (error) {
+    if (
+      error instanceof GameRequestError &&
+      error.status >= 400 &&
+      error.status < 500
+    )
+      sessionStorage.removeItem(attemptKey(categoryId));
+    throw error;
   }
-  throw new GameRequestError(
-    404,
-    "No ten-question quiz is available in this category yet.",
-  );
 }
 export const getGame = (id: number, review?: number) =>
   gameRequest<GameView>(
     `/api/quiz-attempts/${id}/play${review ? `?review=${review}` : ""}`,
   );
+export const submitGameAnswer = (id: number, answerId: number) =>
+  gameRequest<GameView>(`/api/quiz-attempts/${id}/answers`, "POST", {
+    answerId,
+  });
+export const finishGame = (id: number) =>
+  gameRequest<GameView>(`/api/quiz-attempts/${id}/finish`, "PUT", {});

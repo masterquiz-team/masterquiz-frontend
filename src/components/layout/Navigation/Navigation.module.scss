@@ -1,13 +1,17 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
+
 .list {
   display: flex;
   align-items: center;
   gap: 46px;
-  font-size: 16px;
+  font-size: tokens.$font-size-md;
   line-height: 19px;
 }
 .comingSoon {
   color: var(--muted);
-  font-size: 12px;
+  font-size: tokens.$font-size-xs;
   white-space: nowrap;
 }
 .link {
@@ -26,20 +30,18 @@
 }
 
 .link:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 5px;
-  border-radius: 3px;
+  @include patterns.focus-ring($offset: 5px, $radius: tokens.$radius-focus);
 }
 
-@media (max-width: 1200px) {
+@include breakpoints.down(lg) {
   .list {
     gap: 24px;
   }
 }
-@media (max-width: 600px) {
+@include breakpoints.down(sm) {
   .list {
     flex-wrap: wrap;
     gap: 16px 20px;
-    font-size: 14px;
+    font-size: tokens.$font-size-sm;
   }
 }

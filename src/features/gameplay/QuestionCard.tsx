@@ -3,7 +3,7 @@
 import { useId } from "react";
 import type { ReactNode } from "react";
 import type { AnswerFeedback, GameplayOption } from "./types";
-import { gameplayAssets as assets } from "./assets";
+import { assets } from "./assets";
 import { DesignAsset } from "./GameplayArtwork";
 import styles from "./Gameplay.module.scss";
 
@@ -42,7 +42,7 @@ export function NextButton({
     >
       {children}
       <DesignAsset
-        src={filled ? assets.correct.imgArrow5 : assets.question.imgArrow5}
+        src={filled ? assets.correct.nextArrow : assets.question.nextArrow}
       />
     </button>
   );
@@ -63,9 +63,9 @@ export function QuestionCard({
   progress: string;
   question: string;
   options: readonly GameplayOption[];
-  selectedId: string | null;
+  selectedId: number | null;
   feedback?: readonly AnswerFeedback[];
-  onSelect: (id: string) => void;
+  onSelect: (id: number) => void;
   disabled?: boolean;
   next?: { onClick: () => void; disabled?: boolean; label?: string };
 }) {
@@ -89,12 +89,12 @@ export function QuestionCard({
           const selected = selectedId === option.id;
           const radio =
             outcome === "incorrect"
-              ? assets.wrong.imgEllipse10
+              ? assets.wrong.radio
               : outcome === "correct"
-                ? assets.wrong.imgEllipse11
+                ? assets.wrong.correctRadio
                 : selected
-                  ? assets.selected.imgEllipse11
-                  : assets.question.imgEllipse9;
+                  ? assets.selected.radio
+                  : assets.question.radio;
           return (
             <label
               key={option.id}
@@ -116,8 +116,8 @@ export function QuestionCard({
                   <DesignAsset
                     src={
                       outcome === "incorrect"
-                        ? assets.wrong.imgEllipse13
-                        : assets.selected.imgEllipse13
+                        ? assets.wrong.dot
+                        : assets.selected.dot
                     }
                     className={styles.radioDot}
                   />
@@ -130,13 +130,13 @@ export function QuestionCard({
                     <DesignAsset
                       src={
                         outcome === "correct"
-                          ? assets.wrong.imgEllipse14
-                          : assets.wrong.imgWrong
+                          ? assets.wrong.correctBadge
+                          : assets.wrong.cross
                       }
                     />
                     {outcome === "correct" && (
                       <DesignAsset
-                        src={assets.wrong.imgVector}
+                        src={assets.wrong.check}
                         className={styles.optionCheck}
                       />
                     )}

@@ -1,33 +1,26 @@
 import "server-only";
 
-import { NextResponse } from "next/server";
+import type { NextResponse } from "next/server";
+import { checkMutationRequest } from "@/lib/api/request";
+import { jsonResponse } from "@/lib/api/response";
 
-export const AUTH_RESPONSE_HEADERS = { "Cache-Control": "no-store" };
+export {
+  jsonResponse as authJson,
+  RESPONSE_HEADERS as AUTH_RESPONSE_HEADERS,
+} from "@/lib/api/response";
 
-export function authJson(body: unknown, status = 200) {
-  return NextResponse.json(body, { status, headers: AUTH_RESPONSE_HEADERS });
-}
-
-// Cookie authentication needs protection against cross-origin mutations,
-// including login CSRF. Browser JSON requests have an Origin header; callers
-// without browser metadata (for example curl) must still send JSON.
+// Preserve auth messages while sharing HTTP validation with other mutations.
 export function checkAuthRequest(request: Request): NextResponse | null {
-  const origin = request.headers.get("origin");
-  const site = request.headers.get("sec-fetch-site");
-  if (
-    (origin && origin !== new URL(request.url).origin) ||
-    site === "cross-site" ||
-    site === "same-site"
-  ) {
-    return authJson({ message: "The request origin was not accepted." }, 403);
-  }
-
-  if (
-    request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !==
-    "application/json"
-  ) {
-    return authJson({ message: "Send the request as JSON." }, 415);
-  }
-
-  return null;
+  const status = checkMutationRequest(request);
+  return status
+    ? jsonResponse(
+        {
+          message:
+            status === 403
+              ? "The request origin was not accepted."
+              : "Send the request as JSON.",
+        },
+        status,
+      )
+    : null;
 }

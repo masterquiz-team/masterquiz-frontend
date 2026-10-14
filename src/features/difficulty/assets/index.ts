@@ -3,7 +3,7 @@ import easy from "./easy.png";
 import medium from "./medium.png";
 import hard from "./hard.png";
 import hard_background from "./hard-background.svg";
-import back from "./back.svg";
+import { sharedGameAssets } from "@/features/gameplay/assets/shared";
 import globe_background from "./globe-background.svg";
 import easy_separator from "./easy-separator.svg";
 import medium_separator from "./medium-separator.svg";
@@ -23,7 +23,7 @@ export const assets = {
   medium: medium,
   hard: hard,
   "hard-background": hard_background,
-  back: back,
+  back: sharedGameAssets.back,
   "globe-background": globe_background,
   "easy-separator": easy_separator,
   "medium-separator": medium_separator,

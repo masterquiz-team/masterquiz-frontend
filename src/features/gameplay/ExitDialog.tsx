@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useId, useRef } from "react";
 import { DesignAsset } from "./GameplayArtwork";
-import { gameplayAssets as assets } from "./assets";
+import { assets } from "./assets";
 import styles from "./Gameplay.module.scss";
 
 export function ExitDialog({
@@ -47,10 +47,10 @@ export function ExitDialog({
         aria-label="Close dialog"
         onClick={onCancel}
       >
-        <DesignAsset src={assets.dialog.imgX} />
+        <DesignAsset src={assets.dialog.close} />
       </button>
       <span className={styles.dialogArtwork} aria-hidden="true">
-        <DesignAsset src={assets.dialog.imgGroup1} />
+        <DesignAsset src={assets.dialog.illustration} />
       </span>
       <h2 id={`${id}-title`}>Exit the game?</h2>
       <div className={styles.dialogBars} aria-hidden="true">
