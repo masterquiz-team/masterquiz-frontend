@@ -9,7 +9,8 @@ import {
 import { getCategory } from "@/features/categories/server/api";
 import { parsePlayerAttempt, parsePlayerQuiz } from "../contracts";
 import type { GameView, PlayerOption, RecordedAnswer } from "../types";
-import { getQuizAttempt, quizRequest } from "./api";
+import { getQuizAttempt, getQuizzesByCategory, startQuizAttempt, quizRequest } from "./api";
+import { easyDifficulty, getDifficulty, type Difficulty } from "../difficulty";
 
 export function parseRecordedAnswer(value: unknown): RecordedAnswer {
   if (
@@ -77,7 +78,7 @@ export async function getPrivateQuiz(id: number): Promise<PrivateQuiz> {
     const quiz = parsePlayerQuiz(value);
     if (
       quiz.id !== id ||
-      quiz.listOfQuestions.length !== 10 ||
+      quiz.listOfQuestions.length !== easyDifficulty.questionCount ||
       !isRecord(value) ||
       !Array.isArray(value.listOfQuestions)
     )
@@ -170,11 +171,11 @@ export async function loadGame(
     attempt,
     category,
     title: quiz.title,
-    total: 10,
+    total: easyDifficulty.questionCount,
     answered: answered.size,
   };
   if (attempt.status === "FINISHED") {
-    if (answered.size !== 10)
+    if (answered.size !== easyDifficulty.questionCount)
       throw new ApiError(
         409,
         "This attempt was finished before all ten answers were saved.",
@@ -187,7 +188,7 @@ export async function loadGame(
       summary: {
         correct: history.filter((a) => a.correctAnswer).length,
         answered: history.length,
-        total: 10,
+        total: easyDifficulty.questionCount,
       },
     };
   }
@@ -197,7 +198,7 @@ export async function loadGame(
       : quiz.listOfQuestions.findIndex((q) => q.id === reviewQuestionId);
   if (index < 0 || (reviewQuestionId !== undefined && !answered.has(index)))
     throw new ApiError(409, "Feedback is available only for a saved answer.");
-  if (index === 10)
+  if (index === easyDifficulty.questionCount)
     return {
       ...base,
       phase: "ready-to-finish",
@@ -243,6 +244,35 @@ export async function loadGame(
     },
     summary: null,
   };
+}
+
+export async function startGame(categoryId: number, difficulty: Difficulty) {
+  const configuration = getDifficulty(difficulty);
+  if (!configuration?.available)
+    throw new ApiError(400, "This difficulty is unavailable.");
+  // Preserve the existing bounded, ID-sorted search, but perform it on the server.
+  for (let page = 0; page < 100; page++) {
+    const quizzes = await getQuizzesByCategory(categoryId, page);
+    const candidate = quizzes.content.find(
+      (quiz) => quiz.listOfQuestions.length === configuration.questionCount,
+    );
+    if (candidate) {
+      const quiz = await getPrivateQuiz(candidate.id);
+      if (quiz.categoryId !== categoryId) invalidContract();
+      const options = await Promise.all(
+        quiz.listOfQuestions.map((q) => getPlayerOptions(q.id)),
+      );
+      // Validate membership and global option uniqueness before creating an attempt.
+      const ids = options.flat().map((option) => option.id);
+      if (new Set(ids).size !== ids.length) invalidContract();
+      return startQuizAttempt(quiz.id);
+    }
+    if (quizzes.last || page + 1 >= quizzes.totalPages) break;
+  }
+  throw new ApiError(
+    404,
+    "No ten-question quiz is available in this category yet.",
+  );
 }
 
 const activeMutations = new Set<number>();
