@@ -9,8 +9,8 @@ import {
   getGame,
   GameRequestError,
 } from "@/features/quiz/client";
-import { assets as difficultyAssets } from "@/features/difficulty/assets";
-import { assets as staticAssets, gameplayAssets as assets } from "./assets";
+import { sharedGameAssets } from "./assets/shared";
+import { assets } from "./assets";
 import { CorrectArtwork, DesignAsset } from "./GameplayArtwork";
 import { QuestionCard, CardMeta, NextButton } from "./QuestionCard";
 import { ExitDialog } from "./ExitDialog";
@@ -121,7 +121,7 @@ export function GamePlayer({
           disabled={pending}
         >
           <span aria-hidden="true">
-            <DesignAsset src={difficultyAssets.back} />
+            <DesignAsset src={sharedGameAssets.back} />
           </span>
           Back
         </button>
@@ -134,7 +134,7 @@ export function GamePlayer({
             disabled
             aria-label="Pause unavailable"
           >
-            <DesignAsset src={staticAssets["question-imgVector"]} />
+            <DesignAsset src={assets.pause} />
           </button>
         </div>
       </div>
@@ -182,7 +182,7 @@ export function GamePlayer({
             </p>
             <aside className={styles.funFact}>
               <span aria-hidden="true">
-                <DesignAsset src={assets.correct.imgMdiLightbulbOn} />
+                <DesignAsset src={assets.correct.lightbulb} />
               </span>
               <div>
                 <h2>Fun fact</h2>
