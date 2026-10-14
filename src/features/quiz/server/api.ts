@@ -5,6 +5,7 @@ import {
   jsonBody,
   requireId,
 } from "@/lib/api/server";
+import { requirePagination } from "@/lib/validation";
 import {
   parsePlayerAttempt,
   parsePlayerQuiz,
@@ -43,15 +44,7 @@ async function request<T>(
 }
 export function getQuizzesByCategory(categoryId: number, page = 0, size = 12) {
   requireId(categoryId, "categoryId");
-  if (
-    !Number.isSafeInteger(page) ||
-    page < 0 ||
-    page > 2147483647 ||
-    !Number.isSafeInteger(size) ||
-    size < 1 ||
-    size > 100
-  )
-    throw new ApiError(400, "Invalid pagination.");
+  requirePagination(page, size);
   return request(
     `/quiz/category/${categoryId}?${new URLSearchParams({ page: String(page), size: String(size), sort: "id,asc" })}`,
     (value) => {

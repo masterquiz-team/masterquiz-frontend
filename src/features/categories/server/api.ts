@@ -1,8 +1,8 @@
 import "server-only";
 
+import { parseSpringPage, requirePagination } from "@/lib/validation";
 import type { Category, CategoryInput, CategoryPage } from "../types";
 import {
-  ApiError,
   backendRequest,
   deleteBackend,
   invalidContract,
@@ -20,45 +20,11 @@ export function parseCategory(value: unknown): Category {
 }
 
 function parseCategoryPage(value: unknown): CategoryPage {
-  if (!isRecord(value) || !Array.isArray(value.content)) invalidContract();
-  const { number, size, totalElements, totalPages, first, last, empty } = value;
-  if (
-    ![number, size, totalElements, totalPages].every(
-      (item) =>
-        typeof item === "number" && Number.isSafeInteger(item) && item >= 0,
-    ) ||
-    typeof number !== "number" ||
-    typeof size !== "number" ||
-    typeof totalElements !== "number" ||
-    typeof totalPages !== "number" ||
-    typeof first !== "boolean" ||
-    typeof last !== "boolean" ||
-    typeof empty !== "boolean"
-  )
-    invalidContract();
-  return {
-    content: value.content.map(parseCategory),
-    number,
-    size,
-    totalElements,
-    totalPages,
-    first,
-    last,
-    empty,
-  };
+  return parseSpringPage(value, parseCategory);
 }
 
 export function getCategories(page = 0, size = 12): Promise<CategoryPage> {
-  if (
-    !Number.isInteger(page) ||
-    page < 0 ||
-    page > 2147483647 ||
-    !Number.isInteger(size) ||
-    size < 1 ||
-    size > 100
-  ) {
-    throw new ApiError(400, "Invalid pagination. Size must be 1–100.");
-  }
+  requirePagination(page, size, "Invalid pagination. Size must be 1–100.");
   return backendRequest(
     `/categories?${new URLSearchParams({ page: String(page), size: String(size), sort: "id,asc" })}`,
     parseCategoryPage,
