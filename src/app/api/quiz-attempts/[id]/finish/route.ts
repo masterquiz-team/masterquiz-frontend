@@ -1,7 +1,9 @@
 import { ApiError, apiResponse, parseId, readMutation } from "@/lib/api/server";
 import {
+  buildGameView,
   finishAttempt,
-  loadGame,
+  getHistory,
+  loadGameContext,
   withAttemptMutation,
 } from "@/features/quiz/server/game";
 export function PUT(
@@ -14,12 +16,16 @@ export function PUT(
       throw new ApiError(400, "No finish parameters are accepted.");
     const id = parseId((await params).id);
     return withAttemptMutation(id, async () => {
-      const game = await loadGame(id);
+      const [context, history] = await Promise.all([
+        loadGameContext(id),
+        getHistory(id),
+      ]);
+      const game = buildGameView(context, history);
       if (game.phase === "finished") return game;
       if (game.phase !== "ready-to-finish")
         throw new ApiError(409, "Save all ten answers before finishing.");
-      await finishAttempt(id);
-      return loadGame(id);
+      const attempt = await finishAttempt(id);
+      return buildGameView({ ...context, attempt }, await getHistory(id));
     });
   });
 }

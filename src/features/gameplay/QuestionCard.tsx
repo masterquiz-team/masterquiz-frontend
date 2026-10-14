@@ -63,9 +63,9 @@ export function QuestionCard({
   progress: string;
   question: string;
   options: readonly GameplayOption[];
-  selectedId: string | null;
+  selectedId: number | null;
   feedback?: readonly AnswerFeedback[];
-  onSelect: (id: string) => void;
+  onSelect: (id: number) => void;
   disabled?: boolean;
   next?: { onClick: () => void; disabled?: boolean; label?: string };
 }) {
