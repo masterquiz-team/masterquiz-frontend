@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { difficulties, type Difficulty } from "@/features/quiz/difficulty";
 import { attemptKey, startEasy } from "@/features/quiz/client";
 import Image from "next/image";
 import { DesignAsset } from "@/components/ui/DesignAsset";
@@ -9,13 +10,6 @@ import { categoryArtwork } from "@/features/categories/design-preview";
 import type { Category } from "@/features/categories/types";
 import { assets } from "./assets";
 import styles from "./Difficulty.module.scss";
-
-const choices = [
-  { id: "easy", label: "Easy", count: 10, duration: "~5 min" },
-  { id: "medium", label: "Medium", count: 15, duration: "~7 min" },
-  { id: "hard", label: "Hard", count: 20, duration: "~10 min" },
-] as const;
-type Difficulty = (typeof choices)[number]["id"];
 
 function ChoiceArtwork({ kind }: { kind: Difficulty }) {
   return (
@@ -116,13 +110,13 @@ export function DifficultyPicker({
         aria-label="Difficulty"
         aria-describedby="difficulty-note"
       >
-        {choices.map((choice) => (
+        {difficulties.map((choice) => (
           <button
             type="button"
             key={choice.id}
             className={`${styles.difficultyChoice} ${styles[choice.id]}`}
             aria-pressed={selected === choice.id}
-            disabled={choice.id !== "easy" || pending}
+            disabled={!choice.available || pending}
             onClick={chooseEasy}
           >
             <ChoiceArtwork kind={choice.id} />
@@ -135,14 +129,14 @@ export function DifficultyPicker({
             <span className={styles.difficultyDetails}>
               <span>
                 <DesignAsset src={assets[`${choice.id}-star`]} />
-                {choice.count} questions
+                {choice.questionCount} questions
               </span>
               <span className={styles.detailSeparator} aria-hidden="true">
                 <DesignAsset src={assets[`${choice.id}-separator`]} />
               </span>
               <span>
                 <DesignAsset src={assets[`${choice.id}-clock`]} />
-                {choice.duration}
+                {`~${choice.durationMinutes} min`}
               </span>
             </span>
           </button>
