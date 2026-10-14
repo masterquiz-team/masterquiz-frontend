@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Header } from "@/components/layout/Header";
-import { getSessionState } from "@/features/auth/server/session";
+import { getPageSession } from "@/features/auth/server/page-session";
 import { loadGame } from "@/features/quiz/server/game";
 import { ApiError, parseId, parsePage } from "@/lib/api/server";
 import { GamePlayer } from "@/features/gameplay/GamePlayer";
@@ -26,9 +26,9 @@ export default async function PlayPage({
     if (Array.isArray(query.page))
       throw new ApiError(400, "Use one page parameter.");
     page = parsePage(query.page);
-    const session = await getSessionState();
+    const session = await getPageSession(`/quiz/play/${id}?page=${page}`);
     if (session.status === "anonymous") {
-      login = `/login?${new URLSearchParams({ next: `/quiz/play/${id}?page=${page}` })}`;
+      login = session.loginHref;
       error = { status: 401, message: "Log in to resume this attempt." };
     } else if (session.status === "unavailable")
       error = {

@@ -4,7 +4,6 @@ import {
   parsePlayerQuiz,
   parsePlayerAttempt,
   parsePlayerQuizPage,
-  parseStartInput,
   QuizContractError,
 } from "./contracts";
 
@@ -64,13 +63,6 @@ describe("player contracts (migrated from check-quiz-contracts)", () => {
         ContractError,
       ),
   );
-  it("only accepts the quizId start allowlist", () => {
-    expect(parseStartInput({ quizId: 1 })).toEqual({ quizId: 1 });
-    expect(() => parseStartInput({ quizId: 1, difficulty: "easy" })).toThrow(
-      /Only/,
-    );
-    expect(() => parseStartInput({ quizId: 0 })).toThrow(/Only/);
-  });
   it("rejects contradictory page metadata", () =>
     expect(() =>
       parsePlayerQuizPage({

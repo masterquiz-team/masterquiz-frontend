@@ -1,6 +1,6 @@
 import type { PlayerAttempt, PlayerQuiz, PlayerQuizPage } from "./types";
 
-import { ContractError, invalidContract } from "@/lib/api/errors";
+import { invalidContract } from "@/lib/api/errors";
 import {
   isRecord as record,
   isId as id,
@@ -61,9 +61,4 @@ export function parsePlayerAttempt(v: unknown): PlayerAttempt {
     finishedAt: v.finishedAt,
     status: v.status,
   };
-}
-export function parseStartInput(v: unknown): { quizId: number } {
-  if (!record(v) || Object.keys(v).length !== 1 || !id(v.quizId))
-    throw new ContractError("Only a positive integer quizId is accepted.");
-  return { quizId: v.quizId };
 }

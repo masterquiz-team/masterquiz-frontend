@@ -6,7 +6,7 @@ import { difficulties, type Difficulty } from "@/features/quiz/difficulty";
 import { attemptKey, startEasy } from "@/features/quiz/client";
 import Image from "next/image";
 import { DesignAsset } from "@/components/ui/DesignAsset";
-import { categoryArtwork } from "@/features/categories/design-preview";
+import { getCategoryArtwork } from "@/features/categories/design-preview";
 import type { Category } from "@/features/categories/types";
 import { assets } from "./assets";
 import styles from "./Difficulty.module.scss";
@@ -78,12 +78,10 @@ export function DifficultyPicker({
       }
     }
   }
-  const artwork = categoryArtwork.find(
-    (item) => item.name.toLowerCase() === category.name.toLowerCase(),
-  );
+  const artwork = getCategoryArtwork(category.name);
   return (
     <section className={styles.difficulty} aria-labelledby="difficulty-heading">
-      {category.name.toLowerCase() === "geography" ? (
+      {artwork?.name === "Geography" ? (
         <div className={styles.geographyArtwork} aria-hidden="true">
           <DesignAsset
             src={assets["globe-background"]}
