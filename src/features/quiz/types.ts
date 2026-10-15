@@ -44,6 +44,7 @@ export type GameQuestion = {
 export type GameReview = {
   answerId: number;
   correct: boolean;
+  pointsEarned: number;
   correctOptionIds: number[];
   explanation: string | null;
 };
@@ -53,6 +54,7 @@ type GameBase = {
   title: string;
   total: number;
   answered: number;
+  score: number;
   timer: { deadline: string; serverNow: string };
 };
 export type GameView = GameBase &

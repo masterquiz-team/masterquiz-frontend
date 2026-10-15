@@ -108,6 +108,14 @@ export function buildGameView(
     title: quiz.title,
     total,
     answered: answered.size,
+    score: [...answered].reduce(
+      (points, [index, record]) =>
+        points +
+        (record.correctAnswer
+          ? difficultyPoints[quiz.listOfQuestions[index].difficultyName]
+          : 0),
+      0,
+    ),
     timer: {
       deadline: new Date(deadline).toISOString(),
       serverNow: new Date(now).toISOString(),
@@ -121,14 +129,7 @@ export function buildGameView(
         correct: history.filter((a) => a.correctAnswer).length,
         answered: history.length,
         total,
-        pointsEarned: [...answered].reduce(
-          (points, [index, record]) =>
-            points +
-            (record.correctAnswer
-              ? difficultyPoints[quiz.listOfQuestions[index].difficultyName]
-              : 0),
-          0,
-        ),
+        pointsEarned: base.score,
         totalScore: null,
       },
     };
@@ -194,6 +195,9 @@ export function buildGameView(
     review: {
       answerId: record.answerId,
       correct: record.correctAnswer,
+      pointsEarned: record.correctAnswer
+        ? difficultyPoints[q.difficultyName]
+        : 0,
       correctOptionIds,
       explanation: submission ? submission.feedback : q.feedback,
     },

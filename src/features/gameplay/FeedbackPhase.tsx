@@ -43,9 +43,17 @@ export function FeedbackPhase({
         progress={`${question.index + 1}/${game.total}`}
       />
       <CorrectArtwork />
-      <h1 className={styles.feedbackHeading} tabIndex={-1}>
-        Correct!
-      </h1>
+      <div className={styles.feedbackResult}>
+        <h1 className={styles.feedbackHeading} tabIndex={-1}>
+          Correct!
+        </h1>
+        <span
+          className={styles.pointsBadge}
+          aria-label={`${review.pointsEarned} points earned`}
+        >
+          +{review.pointsEarned}
+        </span>
+      </div>
       <p className={styles.explanation}>
         <strong>
           {question.options.find((a) => a.id === review.answerId)?.text}

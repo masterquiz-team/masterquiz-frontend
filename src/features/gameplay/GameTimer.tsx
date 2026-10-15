@@ -1,4 +1,5 @@
 import type { GameView } from "@/features/quiz/types";
+import { easyDifficulty } from "@/features/quiz/difficulty";
 import { assets } from "./assets";
 import { DesignAsset } from "./GameplayArtwork";
 import styles from "./Gameplay.module.scss";
@@ -11,6 +12,10 @@ export function GameTimer({
   remaining: number;
 }) {
   const running = game?.phase === "question";
+  const fraction = Math.max(
+    0,
+    Math.min(1, remaining / (easyDifficulty.durationMinutes * 60)),
+  );
   const minutes = Math.floor(remaining / 60);
   const seconds = String(remaining % 60).padStart(2, "0");
   const announcement =
@@ -38,7 +43,13 @@ export function GameTimer({
             : `${minutes}:${seconds}`;
   return (
     <div className={styles.timer} aria-describedby="timer-notice">
-      <span>Timer</span>
+      <span>Score: {game?.score ?? "Unavailable"}</span>
+      <div className={styles.timerTrack} aria-hidden="true">
+        <span
+          className={styles.timerFill}
+          style={{ width: `${fraction * 100}%` }}
+        />
+      </div>
       <span className={styles.timerValue} role="timer" aria-live="off">
         {label}
       </span>

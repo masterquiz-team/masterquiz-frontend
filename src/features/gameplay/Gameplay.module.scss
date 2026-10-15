@@ -176,12 +176,30 @@
   top: 11px;
   left: 8px;
 }
+.feedbackResult {
+  position: relative;
+  margin-bottom: 16px;
+}
 .feedbackHeading {
   text-align: center;
   font-size: tokens.$font-size-4xl;
   line-height: normal;
   font-weight: 600;
-  margin-bottom: 16px;
+}
+.pointsBadge {
+  position: absolute;
+  top: 50%;
+  right: -2px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 34px;
+  border: 1px solid tokens.$primary;
+  border-radius: tokens.$radius-control;
+  background: tokens.$primary-overlay;
+  font-size: tokens.$font-size-xl;
 }
 .explanation {
   font-size: tokens.$font-size-label;
@@ -299,9 +317,9 @@
 }
 .timer {
   display: grid;
-  grid-template-columns: 1fr auto 28px;
+  grid-template-columns: 115px minmax(0, 1fr) auto 20px;
   align-items: center;
-  gap: 18px;
+  gap: 24px;
   min-height: 50px;
   margin-top: 21px;
   padding: 10px 18px 10px 24px;
@@ -311,7 +329,22 @@
   font-size: tokens.$font-size-md;
 }
 .timerValue {
-  color: var(--muted);
+  min-width: 76px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1.6px;
+}
+.timerTrack {
+  height: 5px;
+  overflow: hidden;
+  border-radius: tokens.$radius-pill;
+  background: tokens.$text-subtle;
+}
+.timerFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: tokens.$primary;
 }
 .timerControl {
   display: grid;
