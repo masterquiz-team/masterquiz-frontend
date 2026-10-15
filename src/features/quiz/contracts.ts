@@ -1,4 +1,10 @@
-import type { PlayerAttempt, PlayerQuiz, PlayerQuizPage } from "./types";
+import type {
+  PlayerAttempt,
+  PlayerQuiz,
+  PlayerQuizPage,
+  RecordedAnswer,
+  SubmittedAnswer,
+} from "./types";
 
 import { invalidContract } from "@/lib/api/errors";
 import {
@@ -12,10 +18,50 @@ import {
 export { ContractError as QuizContractError } from "@/lib/api/errors";
 const invalid = invalidContract;
 
+export function parseRecordedAnswer(value: unknown): RecordedAnswer {
+  if (
+    !record(value) ||
+    !(value.id === undefined || id(value.id)) ||
+    !id(value.quizAttemptId) ||
+    !id(value.answerId) ||
+    typeof value.correctAnswer !== "boolean"
+  )
+    return invalid();
+  return {
+    ...(value.id === undefined ? {} : { id: value.id }),
+    quizAttemptId: value.quizAttemptId,
+    answerId: value.answerId,
+    correctAnswer: value.correctAnswer,
+  };
+}
+
+export function parseSubmittedAnswer(value: unknown): SubmittedAnswer {
+  const answer = parseRecordedAnswer(value);
+  if (
+    !record(value) ||
+    !id(value.questionId) ||
+    !Array.isArray(value.correctAnswerIds) ||
+    !value.correctAnswerIds.every(id) ||
+    new Set(value.correctAnswerIds).size !== value.correctAnswerIds.length ||
+    !(value.feedback === null || typeof value.feedback === "string") ||
+    value.correctAnswerIds.includes(answer.answerId) !== answer.correctAnswer
+  )
+    return invalid();
+  return {
+    ...answer,
+    questionId: value.questionId,
+    correctAnswerIds: value.correctAnswerIds,
+    feedback:
+      typeof value.feedback === "string" && value.feedback.trim()
+        ? value.feedback
+        : null,
+  };
+}
+
 const localDateTime = (v: unknown): v is string =>
   typeof v === "string" &&
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,9})?$/.test(v) &&
-  Number.isFinite(Date.parse(v));
+  Number.isFinite(Date.parse(`${v}Z`));
 
 // Explicit allowlists: never spread upstream entities into player responses.
 export function parsePlayerQuiz(v: unknown): PlayerQuiz {
@@ -53,7 +99,7 @@ export function parsePlayerAttempt(v: unknown): PlayerAttempt {
     !(v.status === "IN_PROGRESS" || v.status === "FINISHED")
   )
     return invalid();
-  // LocalDateTime is kept verbatim; it is not an authoritative deadline.
+  // Keep Java LocalDateTime verbatim; the gameplay BFF interprets it as UTC.
   return {
     id: v.id,
     quizId: v.quizId,

@@ -7,9 +7,25 @@ import {
   jsonBody,
 } from "@/lib/api/server";
 import { getCategory } from "@/features/categories/server/api";
-import { parsePlayerAttempt, parsePlayerQuiz } from "../contracts";
-import type { GameView, PlayerOption, RecordedAnswer } from "../types";
-import { easyDifficulty, getDifficulty, type Difficulty } from "../difficulty";
+import {
+  parsePlayerAttempt,
+  parsePlayerQuiz,
+  parseRecordedAnswer,
+  parseSubmittedAnswer,
+} from "../contracts";
+import type {
+  GameView,
+  PlayerOption,
+  RecordedAnswer,
+  SubmittedAnswer,
+} from "../types";
+import {
+  difficultyPoints,
+  easyDifficulty,
+  getDifficulty,
+  type Difficulty,
+  type QuestionDifficulty,
+} from "../difficulty";
 import {
   buildGameView as buildView,
   getAnsweredQuestions as answeredQuestions,
@@ -23,29 +39,14 @@ import {
   quizRequest,
 } from "./api";
 
-export function parseRecordedAnswer(value: unknown): RecordedAnswer {
-  if (
-    !isRecord(value) ||
-    !isId(value.id) ||
-    !isId(value.quizAttemptId) ||
-    !isId(value.answerId) ||
-    typeof value.correctAnswer !== "boolean"
-  )
-    invalidContract();
-  return {
-    id: value.id,
-    quizAttemptId: value.quizAttemptId,
-    answerId: value.answerId,
-    correctAnswer: value.correctAnswer,
-  };
-}
 export async function getHistory(attemptId: number) {
   return quizRequest(`/quiz-attempts/answers/${attemptId}`, (value) => {
     if (!Array.isArray(value)) invalidContract();
     const history = value.map(parseRecordedAnswer);
     if (
       history.some((a) => a.quizAttemptId !== attemptId) ||
-      new Set(history.map((a) => a.id)).size !== history.length
+      new Set(history.flatMap((a) => (a.id === undefined ? [] : [a.id])))
+        .size !== history.filter((a) => a.id !== undefined).length
     )
       invalidContract();
     return history;
@@ -55,7 +56,7 @@ export async function recordAnswer(attemptId: number, answerId: number) {
   return quizRequest(
     "/quiz-attempts/answers/create",
     (value) => {
-      const answer = parseRecordedAnswer(value);
+      const answer = parseSubmittedAnswer(value);
       if (answer.quizAttemptId !== attemptId || answer.answerId !== answerId)
         invalidContract();
       return answer;
@@ -80,7 +81,12 @@ export async function finishAttempt(attemptId: number) {
   );
 }
 
-type PrivateQuestion = { id: number; text: string; feedback: string | null };
+type PrivateQuestion = {
+  id: number;
+  text: string;
+  feedback: string | null;
+  difficultyName: QuestionDifficulty;
+};
 type PrivateQuiz = ReturnType<typeof parsePlayerQuiz> & {
   listOfQuestions: PrivateQuestion[];
 };
@@ -99,6 +105,12 @@ export async function getPrivateQuiz(id: number): Promise<PrivateQuiz> {
       ...quiz,
       listOfQuestions: quiz.listOfQuestions.map((q, index) => {
         const raw = rawQuestions[index];
+        if (
+          !isRecord(raw) ||
+          typeof raw.difficultyName !== "string" ||
+          !Object.hasOwn(difficultyPoints, raw.difficultyName)
+        )
+          invalidContract();
         return {
           ...q,
           feedback:
@@ -107,6 +119,7 @@ export async function getPrivateQuiz(id: number): Promise<PrivateQuiz> {
             raw.feedback.trim()
               ? raw.feedback
               : null,
+          difficultyName: raw.difficultyName as QuestionDifficulty,
         };
       }),
     };
@@ -188,17 +201,43 @@ export async function reviewGame(
   context: GameContext,
   history: RecordedAnswer[],
   questionId: number,
+  submission?: SubmittedAnswer,
 ): Promise<GameView> {
   const current = buildGameView(context, history);
-  if (current.phase === "finished") return current;
+  if (current.phase === "finished" || current.phase === "timed-out")
+    return withTotalScore(current);
   const index = context.quiz.listOfQuestions.findIndex(
     (q) => q.id === questionId,
   );
   if (!getAnsweredQuestions(context, history).has(index))
     throw new ApiError(409, "Feedback is available only for a saved answer.");
-  // Only fetch correctness after validated backend history proves submission.
-  const options = await getRevealedOptions(questionId);
-  return gameState(() => buildView(context, history, { questionId, options }));
+  // Wrong submits currently return [] for correctAnswerIds. History also lacks
+  // feedback/correct IDs: reveal options only after history proves submission.
+  const options = submission?.correctAnswerIds.length
+    ? undefined
+    : await getRevealedOptions(questionId);
+  return gameState(() =>
+    buildView(context, history, { questionId, options, submission }),
+  );
+}
+
+export async function withTotalScore(game: GameView): Promise<GameView> {
+  if (game.phase !== "finished") return game;
+  let totalScore: number | null = null;
+  try {
+    totalScore = await quizRequest("/user-profile", (value) => {
+      if (
+        !isRecord(value) ||
+        !Number.isSafeInteger(value.score) ||
+        (value.score as number) < 0
+      )
+        invalidContract();
+      return value.score as number;
+    });
+  } catch {
+    // Results remain available when the optional profile read fails; keep JWT.
+  }
+  return { ...game, summary: { ...game.summary, totalScore } };
 }
 export async function loadGame(
   attemptId: number,
@@ -209,7 +248,7 @@ export async function loadGame(
     getHistory(attemptId),
   ]);
   return reviewQuestionId === undefined
-    ? buildGameView(context, history)
+    ? withTotalScore(buildGameView(context, history))
     : reviewGame(context, history, reviewQuestionId);
 }
 

@@ -31,6 +31,7 @@ export function FeedbackPhase({
           })),
         ]}
         disabled={pending}
+        explanation={review.explanation}
         onSelect={() => {}}
         next={{ onClick: onAdvance, disabled: pending, label: nextLabel }}
       />

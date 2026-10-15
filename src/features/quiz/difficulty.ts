@@ -1,4 +1,4 @@
-// Durations are design estimates, never an authoritative deadline.
+// BFF time limits; the Java backend currently has no timer contract.
 export const difficulties = [
   {
     id: "easy",
@@ -24,6 +24,8 @@ export const difficulties = [
 ] as const;
 export type Difficulty = (typeof difficulties)[number]["id"];
 export const easyDifficulty = difficulties[0];
+export const difficultyPoints = { EASY: 10, MEDIUM: 20, HARD: 30 } as const;
+export type QuestionDifficulty = keyof typeof difficultyPoints;
 export function getDifficulty(value: unknown) {
   return difficulties.find((difficulty) => difficulty.id === value);
 }

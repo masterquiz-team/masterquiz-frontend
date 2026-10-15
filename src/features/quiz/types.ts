@@ -24,10 +24,15 @@ export type PlayerAttempt = {
 };
 
 export type RecordedAnswer = {
-  id: number;
+  id?: number;
   quizAttemptId: number;
   answerId: number;
   correctAnswer: boolean;
+};
+export type SubmittedAnswer = RecordedAnswer & {
+  questionId: number;
+  correctAnswerIds: number[];
+  feedback: string | null;
 };
 export type PlayerOption = { id: number; text: string; questionId: number };
 export type GameQuestion = {
@@ -48,15 +53,23 @@ type GameBase = {
   title: string;
   total: number;
   answered: number;
+  timer: { deadline: string; serverNow: string };
 };
 export type GameView = GameBase &
   (
     | { phase: "question"; question: GameQuestion }
     | { phase: "feedback"; question: GameQuestion; review: GameReview }
     | { phase: "ready-to-finish" }
+    | { phase: "timed-out" }
     | {
         phase: "finished";
-        summary: { correct: number; answered: number; total: number };
+        summary: {
+          correct: number;
+          answered: number;
+          total: number;
+          pointsEarned: number;
+          totalScore: number | null;
+        };
       }
   );
 export type GamePhase<P extends GameView["phase"]> = Extract<

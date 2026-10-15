@@ -5,6 +5,7 @@ import {
   getHistory,
   loadGameContext,
   withAttemptMutation,
+  withTotalScore,
 } from "@/features/quiz/server/game";
 export function PUT(
   request: Request,
@@ -21,11 +22,16 @@ export function PUT(
         getHistory(id),
       ]);
       const game = buildGameView(context, history);
-      if (game.phase === "finished") return game;
-      if (game.phase !== "ready-to-finish")
-        throw new ApiError(409, "Save all ten answers before finishing.");
+      if (game.phase === "finished") return withTotalScore(game);
+      if (game.phase !== "ready-to-finish" && game.phase !== "timed-out")
+        throw new ApiError(
+          409,
+          "Save all ten answers or wait until the time limit before finishing.",
+        );
       const attempt = await finishAttempt(id);
-      return buildGameView({ ...context, attempt }, await getHistory(id));
+      return withTotalScore(
+        buildGameView({ ...context, attempt }, await getHistory(id)),
+      );
     });
   });
 }

@@ -4,13 +4,24 @@ import type {
   PlayerOption,
   PlayerQuiz,
   RecordedAnswer,
+  SubmittedAnswer,
 } from "@/features/quiz/types";
-import { easyDifficulty } from "@/features/quiz/difficulty";
+import {
+  difficultyPoints,
+  easyDifficulty,
+  type QuestionDifficulty,
+} from "@/features/quiz/difficulty";
+import { getAttemptDeadline } from "@/features/quiz/timer";
 
 export type GameContext = {
   attempt: PlayerAttempt;
   quiz: PlayerQuiz & {
-    listOfQuestions: { id: number; text: string; feedback: string | null }[];
+    listOfQuestions: {
+      id: number;
+      text: string;
+      feedback: string | null;
+      difficultyName: QuestionDifficulty;
+    }[];
   };
   category: { id: number; name: string };
   options: PlayerOption[][];
@@ -62,12 +73,12 @@ export function getAnsweredQuestions(
     const index = answerToQuestion.get(record.answerId);
     if (
       record.quizAttemptId !== attempt.id ||
-      recordIds.has(record.id) ||
+      (record.id !== undefined && recordIds.has(record.id)) ||
       index === undefined ||
       answered.has(index)
     )
       invalid();
-    recordIds.add(record.id);
+    if (record.id !== undefined) recordIds.add(record.id);
     answered.set(index, record);
   }
   // Resume from a contiguous prefix of backend history, never a browser counter.
@@ -79,24 +90,30 @@ export function getAnsweredQuestions(
 export function buildGameView(
   context: GameContext,
   history: RecordedAnswer[],
-  feedback?: { questionId: number; options: RevealedOption[] },
+  feedback?: {
+    questionId: number;
+    options?: RevealedOption[];
+    submission?: SubmittedAnswer;
+  },
+  now = Date.now(),
 ): GameView {
   const { attempt, quiz, category, options } = context;
   const answered = getAnsweredQuestions(context, history);
   const total = easyDifficulty.questionCount;
+  const deadline = getAttemptDeadline(attempt);
+  if (!Number.isFinite(deadline)) invalid();
   const base = {
     attempt,
     category,
     title: quiz.title,
     total,
     answered: answered.size,
+    timer: {
+      deadline: new Date(deadline).toISOString(),
+      serverNow: new Date(now).toISOString(),
+    },
   };
   if (attempt.status === "FINISHED") {
-    if (answered.size !== total)
-      throw new GameStateError(
-        409,
-        "This attempt was finished before all ten answers were saved.",
-      );
     return {
       ...base,
       phase: "finished",
@@ -104,9 +121,20 @@ export function buildGameView(
         correct: history.filter((a) => a.correctAnswer).length,
         answered: history.length,
         total,
+        pointsEarned: [...answered].reduce(
+          (points, [index, record]) =>
+            points +
+            (record.correctAnswer
+              ? difficultyPoints[quiz.listOfQuestions[index].difficultyName]
+              : 0),
+          0,
+        ),
+        totalScore: null,
       },
     };
   }
+  if (now >= deadline && answered.size < total)
+    return { ...base, phase: "timed-out" };
   const index =
     feedback === undefined
       ? answered.size
@@ -128,7 +156,24 @@ export function buildGameView(
       409,
       "Feedback is available only for a saved answer.",
     );
-  const revealed = feedback.options;
+  const submission = feedback.submission;
+  if (
+    submission &&
+    (submission.questionId !== q.id ||
+      submission.quizAttemptId !== attempt.id ||
+      submission.answerId !== record.answerId ||
+      submission.correctAnswer !== record.correctAnswer ||
+      submission.correctAnswerIds.some(
+        (id) => !options[index].some((option) => option.id === id),
+      ))
+  )
+    invalid();
+  const revealed =
+    feedback.options ??
+    options[index].map((option) => ({
+      id: option.id,
+      correct: submission?.correctAnswerIds.includes(option.id) ?? false,
+    }));
   if (
     revealed.length !== options[index].length ||
     revealed.some((a) => !options[index].some((o) => o.id === a.id)) ||
@@ -150,7 +195,7 @@ export function buildGameView(
       answerId: record.answerId,
       correct: record.correctAnswer,
       correctOptionIds,
-      explanation: q.feedback,
+      explanation: submission ? submission.feedback : q.feedback,
     },
   };
 }

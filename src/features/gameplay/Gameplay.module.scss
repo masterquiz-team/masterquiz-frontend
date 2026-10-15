@@ -212,6 +212,9 @@
     color: tokens.$text-subtle;
   }
 }
+.options + .funFact {
+  margin-top: 20px;
+}
 .feedbackCard .next {
   margin-top: 29px;
 }
