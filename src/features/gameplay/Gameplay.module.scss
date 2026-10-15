@@ -315,6 +315,15 @@
     line-height: normal;
   }
 }
+.resultsScreen {
+  min-height: 0;
+  padding: 24px 40px 60px;
+}
+@media (max-width: 600px) {
+  .resultsScreen {
+    padding: 16px 16px 40px;
+  }
+}
 .timer {
   display: grid;
   grid-template-columns: 115px minmax(0, 1fr) auto 20px;

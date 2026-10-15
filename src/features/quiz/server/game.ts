@@ -223,21 +223,31 @@ export async function reviewGame(
 
 export async function withTotalScore(game: GameView): Promise<GameView> {
   if (game.phase !== "finished") return game;
-  let totalScore: number | null = null;
   try {
-    totalScore = await quizRequest("/user-profile", (value) => {
-      if (
-        !isRecord(value) ||
-        !Number.isSafeInteger(value.score) ||
-        (value.score as number) < 0
-      )
-        invalidContract();
-      return value.score as number;
+    const profile = await quizRequest("/user-profile", (value) => {
+      if (!isRecord(value)) invalidContract();
+      // Optional fields degrade independently; no other profile data is sent
+      // to the player, including email, user ID and backend entity fields.
+      return {
+        totalScore:
+          Number.isSafeInteger(value.score) && (value.score as number) >= 0
+            ? (value.score as number)
+            : null,
+        nickname:
+          typeof value.nickname === "string" && value.nickname.trim()
+            ? value.nickname.trim()
+            : null,
+      };
     });
+    return {
+      ...game,
+      nickname: profile.nickname,
+      summary: { ...game.summary, totalScore: profile.totalScore },
+    };
   } catch {
     // Results remain available when the optional profile read fails; keep JWT.
+    return game;
   }
-  return { ...game, summary: { ...game.summary, totalScore } };
 }
 export async function loadGame(
   attemptId: number,

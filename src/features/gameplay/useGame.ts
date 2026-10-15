@@ -33,9 +33,15 @@ export function useGame(
   useEffect(() => {
     if (!game) return;
     try {
-      if (game.phase === "finished")
-        sessionStorage.removeItem(attemptKey(game.category.id));
-      else
+      if (game.phase === "finished") {
+        // A completed page can be reloaded after an uncertain Play again POST.
+        // Clear only this attempt, preserving a newer attempt or unknown start.
+        if (
+          sessionStorage.getItem(attemptKey(game.category.id)) ===
+          String(attemptId)
+        )
+          sessionStorage.removeItem(attemptKey(game.category.id));
+      } else
         sessionStorage.setItem(attemptKey(game.category.id), String(attemptId));
     } catch {
       // The attempt URL remains sufficient for reload/resume.

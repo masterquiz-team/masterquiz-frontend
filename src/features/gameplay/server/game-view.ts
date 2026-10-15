@@ -15,7 +15,7 @@ import { getAttemptDeadline } from "@/features/quiz/timer";
 
 export type GameContext = {
   attempt: PlayerAttempt;
-  quiz: PlayerQuiz & {
+  quiz: Omit<PlayerQuiz, "listOfQuestions"> & {
     listOfQuestions: {
       id: number;
       text: string;
@@ -122,14 +122,49 @@ export function buildGameView(
     },
   };
   if (attempt.status === "FINISHED") {
+    const startedAt = Date.parse(`${attempt.startedAt}Z`);
+    const finishedAt = attempt.finishedAt
+      ? Date.parse(`${attempt.finishedAt}Z`)
+      : NaN;
+    if (!Number.isFinite(finishedAt) || finishedAt < startedAt) invalid();
+    const durationSeconds = easyDifficulty.durationMinutes * 60;
     return {
       ...base,
       phase: "finished",
+      nickname: null,
+      // Only the player's own chosen text is revealed, after FINISHED. Never
+      // serialize the complete options, private feedback or correct-answer key.
+      results: quiz.listOfQuestions.map((question, index) => {
+        const record = answered.get(index);
+        return {
+          questionId: question.id,
+          questionText: question.text,
+          answerText: record
+            ? options[index].find((option) => option.id === record.answerId)!
+                .text
+            : null,
+          outcome: record
+            ? record.correctAnswer
+              ? "correct"
+              : "wrong"
+            : "skipped",
+        };
+      }),
       summary: {
         correct: history.filter((a) => a.correctAnswer).length,
         answered: history.length,
         total,
         pointsEarned: base.score,
+        maxPoints: quiz.listOfQuestions.reduce(
+          (points, question) =>
+            points + difficultyPoints[question.difficultyName],
+          0,
+        ),
+        elapsedSeconds: Math.min(
+          durationSeconds,
+          Math.floor((finishedAt - startedAt) / 1000),
+        ),
+        durationSeconds,
         totalScore: null,
       },
     };

@@ -47,6 +47,7 @@ export function GamePlayer({
   const backHref = game
     ? `/categories/difficulty?category=${game.category.id}&page=${page}`
     : `/categories?page=${page}`;
+  const showingResults = !error && game?.phase === "finished";
   useEffect(() => {
     if (!pending && transition !== focusedTransition.current) {
       focusedTransition.current = transition;
@@ -56,25 +57,29 @@ export function GamePlayer({
     }
   }, [error, pending, transition]);
   return (
-    <main className={styles.screen}>
-      <div className={styles.top}>
-        <button
-          type="button"
-          className={styles.back}
-          onClick={() =>
-            game && game.phase !== "finished"
-              ? setExit(true)
-              : router.push(backHref)
-          }
-          disabled={pending}
-        >
-          <span aria-hidden="true">
-            <DesignAsset src={sharedGameAssets.back} />
-          </span>
-          Back
-        </button>
-        <GameTimer game={game} remaining={remaining} />
-      </div>
+    <main
+      className={`${styles.screen} ${showingResults ? styles.resultsScreen : ""}`}
+    >
+      {!showingResults && (
+        <div className={styles.top}>
+          <button
+            type="button"
+            className={styles.back}
+            onClick={() =>
+              game && game.phase !== "finished"
+                ? setExit(true)
+                : router.push(backHref)
+            }
+            disabled={pending}
+          >
+            <span aria-hidden="true">
+              <DesignAsset src={sharedGameAssets.back} />
+            </span>
+            Back
+          </button>
+          <GameTimer game={game} remaining={remaining} />
+        </div>
+      )}
       <div ref={main} className={styles.content} aria-busy={pending}>
         {error ? (
           <GameError
@@ -114,11 +119,13 @@ export function GamePlayer({
                 : "Incorrect answer saved. The correct answer is highlighted."
               : ""}
         </p>
-        <p id="timer-notice" className={styles.notice}>
-          The time limit applies to the whole quiz, including feedback and time
-          away. Pause is unavailable.
-        </p>
-        {game && (
+        {!showingResults && (
+          <p id="timer-notice" className={styles.notice}>
+            The time limit applies to the whole quiz, including feedback and
+            time away. Pause is unavailable.
+          </p>
+        )}
+        {game && !showingResults && (
           <p className={styles.notice}>
             Attempt {attemptId} · {game.answered}/{game.total} answers saved
           </p>
