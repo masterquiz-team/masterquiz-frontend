@@ -17,7 +17,14 @@ export function FinishedPhase({
       <p>
         {game.summary.correct}/{game.total} correct answers
       </p>
-      <p>All {game.answered} answers were saved.</p>
+      <p>
+        {game.answered}/{game.total} answers saved.
+      </p>
+      {game.answered < game.total && (
+        <p>{game.total - game.answered} questions unanswered.</p>
+      )}
+      <p>Points earned in this attempt: {game.summary.pointsEarned}</p>
+      <p>Your total score: {game.summary.totalScore ?? "Unavailable"}</p>
       <Link className={styles.primaryButton} href={`/categories?page=${page}`}>
         Back to categories
       </Link>

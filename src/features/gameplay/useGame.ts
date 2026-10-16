@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameView } from "@/features/quiz/types";
 import {
   attemptKey,
@@ -9,6 +9,7 @@ import {
   submitGameAnswer,
 } from "@/features/quiz/client";
 import type { GameFailure } from "./types";
+import { useCountdown } from "./useCountdown";
 
 export function useGame(
   attemptId: number,
@@ -21,6 +22,14 @@ export function useGame(
   const [pending, setPending] = useState(false);
   const [transition, setTransition] = useState(0);
   const busy = useRef(false);
+  const timeoutRequested = useRef(false);
+  const remaining = useCountdown(
+    game?.phase === "finished" ? undefined : game?.timer,
+  );
+  const expired =
+    !!game &&
+    game.phase !== "finished" &&
+    (game.phase === "timed-out" || remaining === 0);
   useEffect(() => {
     if (!game) return;
     try {
@@ -33,7 +42,7 @@ export function useGame(
     }
   }, [game, attemptId]);
 
-  async function run(work: () => Promise<GameView>) {
+  const run = useCallback(async (work: () => Promise<GameView>) => {
     if (busy.current) return;
     busy.current = true;
     setPending(true);
@@ -55,15 +64,28 @@ export function useGame(
       setPending(false);
       setTransition((value) => value + 1);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    if (!expired || pending || error || timeoutRequested.current) return;
+    const task = window.setTimeout(() => {
+      if (busy.current) return;
+      timeoutRequested.current = true;
+      void run(() => finishGame(attemptId));
+    }, 0);
+    return () => window.clearTimeout(task);
+  }, [attemptId, expired, pending, error, run]);
+
   function submit() {
-    if (selected === null) return;
+    if (selected === null || expired || game?.phase !== "question") return;
     void run(() => submitGameAnswer(attemptId, selected));
   }
   function advance() {
     if (!game) return;
     void run(() =>
-      game.answered === game.total ? finishGame(attemptId) : getGame(attemptId),
+      expired || game.answered === game.total
+        ? finishGame(attemptId)
+        : getGame(attemptId),
     );
   }
   return {
@@ -73,8 +95,13 @@ export function useGame(
     setSelected,
     pending,
     transition,
+    remaining,
+    expired,
     submit,
     advance,
-    reload: () => void run(() => getGame(attemptId)),
+    reload: () => {
+      timeoutRequested.current = false;
+      void run(() => getGame(attemptId));
+    },
   };
 }

@@ -3,12 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { GameView } from "@/features/quiz/types";
 import { sharedGameAssets } from "./assets/shared";
-import { assets } from "./assets";
 import { DesignAsset } from "./GameplayArtwork";
 import { ExitDialog } from "./ExitDialog";
 import { FeedbackPhase } from "./FeedbackPhase";
 import { FinishedPhase } from "./FinishedPhase";
 import { GameError } from "./GameError";
+import { GameTimer } from "./GameTimer";
+import { TimedOutPhase } from "./TimedOutPhase";
 import { QuestionPhase } from "./QuestionPhase";
 import { ReadyToFinishPhase } from "./ReadyToFinishPhase";
 import type { GameFailure } from "./types";
@@ -33,6 +34,8 @@ export function GamePlayer({
     setSelected,
     pending,
     transition,
+    remaining,
+    expired,
     submit,
     advance,
     reload,
@@ -70,18 +73,7 @@ export function GamePlayer({
           </span>
           Back
         </button>
-        <div className={styles.timer} aria-describedby="timer-notice">
-          <span>Timer</span>
-          <span className={styles.timerValue}>Unavailable</span>
-          <button
-            type="button"
-            className={styles.timerControl}
-            disabled
-            aria-label="Pause unavailable"
-          >
-            <DesignAsset src={assets.pause} />
-          </button>
-        </div>
+        <GameTimer game={game} remaining={remaining} />
       </div>
       <div ref={main} className={styles.content} aria-busy={pending}>
         {error ? (
@@ -92,6 +84,8 @@ export function GamePlayer({
             pending={pending}
             onReload={reload}
           />
+        ) : expired ? (
+          <TimedOutPhase pending={pending} />
         ) : game?.phase === "question" ? (
           <QuestionPhase
             game={game}
@@ -121,7 +115,8 @@ export function GamePlayer({
               : ""}
         </p>
         <p id="timer-notice" className={styles.notice}>
-          No time limit. Timer and pause are unavailable.
+          The time limit applies to the whole quiz, including feedback and time
+          away. Pause is unavailable.
         </p>
         {game && (
           <p className={styles.notice}>

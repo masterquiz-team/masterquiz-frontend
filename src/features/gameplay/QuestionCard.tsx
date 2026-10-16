@@ -17,7 +17,12 @@ export function CardMeta({
   return (
     <div className={styles.cardMeta}>
       <span className={styles.category}>{category}</span>
-      <span className={styles.progress}>{progress}</span>
+      <span
+        className={styles.progress}
+        aria-label={`Question ${progress.replace("/", " of ")}`}
+      >
+        {progress}
+      </span>
     </div>
   );
 }
@@ -58,6 +63,7 @@ export function QuestionCard({
   onSelect,
   next,
   disabled = false,
+  explanation,
 }: {
   category: string;
   progress: string;
@@ -67,6 +73,7 @@ export function QuestionCard({
   feedback?: readonly AnswerFeedback[];
   onSelect: (id: number) => void;
   disabled?: boolean;
+  explanation?: string | null;
   next?: { onClick: () => void; disabled?: boolean; label?: string };
 }) {
   const id = useId();
@@ -165,6 +172,14 @@ export function QuestionCard({
             )
             .join("; ")}
         </p>
+      )}
+      {explanation !== undefined && (
+        <aside className={styles.funFact}>
+          <div>
+            <h2>Explanation</h2>
+            <p>{explanation ?? "Additional information unavailable."}</p>
+          </div>
+        </aside>
       )}
       {next && (
         <NextButton

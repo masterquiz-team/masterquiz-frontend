@@ -41,14 +41,20 @@ export function POST(
             context.quiz.listOfQuestions[index].id,
           );
       const game = buildGameView(context, history);
+      if (game.phase === "timed-out") return game;
       if (
         game.phase !== "question" ||
         !game.question.options.some((a) => a.id === answerId)
       )
         throw new ApiError(409, "Choose an answer for the current question.");
-      await recordAnswer(id, answerId);
+      const submission = await recordAnswer(id, answerId);
       // Re-read confirmed history, reusing the same validated quiz/options/category.
-      return reviewGame(context, await getHistory(id), game.question.id);
+      return reviewGame(
+        context,
+        await getHistory(id),
+        game.question.id,
+        submission,
+      );
     });
   }, 201);
 }
