@@ -7,7 +7,15 @@ import { logout } from "../services/auth";
 import type { AuthSessionState } from "../types";
 import styles from "./AuthControls.module.scss";
 
-export function AuthControls({ state }: { state: AuthSessionState }) {
+export function AuthControls({
+  status,
+  name,
+  score,
+}: {
+  status: AuthSessionState["status"];
+  name: string | null;
+  score: number | null;
+}) {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,8 +36,10 @@ export function AuthControls({ state }: { state: AuthSessionState }) {
   }
 
   return (
-    <div className={styles.controls}>
-      {state.status === "unavailable" ? (
+    <div
+      className={`${styles.controls} ${status === "authenticated" ? styles.authenticated : ""}`}
+    >
+      {status === "unavailable" ? (
         <>
           <span role="status">Session unavailable</span>
           <button
@@ -39,11 +49,18 @@ export function AuthControls({ state }: { state: AuthSessionState }) {
             Try again
           </button>
         </>
-      ) : state.status === "authenticated" ? (
+      ) : status === "authenticated" ? (
         <>
-          <span className={styles.email} title={state.session.email}>
-            {state.session.email}
-          </span>
+          <div className={styles.user}>
+            <span className={styles.nickname} title={name ?? undefined}>
+              {name}
+            </span>
+            {score !== null && (
+              <span className={styles.score} role="status">
+                Score: {score}
+              </span>
+            )}
+          </div>
           <button
             className={styles.action}
             onClick={handleLogout}
