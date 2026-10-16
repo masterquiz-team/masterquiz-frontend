@@ -1,3 +1,4 @@
+import { SectionScroll } from "@/components/layout/Navigation";
 import { Hero } from "@/features/home/components/Hero";
 import { Benefits } from "@/features/home/components/Benefits";
 
@@ -9,6 +10,7 @@ export default function Home() {
       <Hero />
       <Benefits />
       <JoinCommunity />
+      <SectionScroll />
     </main>
   );
 }

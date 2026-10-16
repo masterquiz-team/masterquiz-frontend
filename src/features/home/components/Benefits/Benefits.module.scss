@@ -2,6 +2,7 @@
 @use "../../../../styles/breakpoints";
 
 .section {
+  scroll-margin-top: 24px;
   background: tokens.$surface-subtle;
 }
 .container {
