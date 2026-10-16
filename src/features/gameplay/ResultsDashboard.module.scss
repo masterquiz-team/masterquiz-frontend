@@ -1,0 +1,376 @@
+@use "../../styles/tokens";
+@use "../../styles/patterns";
+
+.srOnly {
+  @include patterns.visually-hidden;
+}
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+  width: min(100%, 1060px);
+  color: tokens.$foreground;
+}
+.overview,
+.answersPanel {
+  min-width: 0;
+  border: 1px solid tokens.$primary-overlay;
+  border-radius: tokens.$radius-control;
+  box-shadow: 0 8px 28px tokens.$primary-tint;
+}
+.overview {
+  padding: 24px 32px;
+  background: tokens.$surface;
+}
+.intro {
+  text-align: center;
+  h1 {
+    margin: 12px 0 10px;
+    font-size: tokens.$font-size-4xl;
+    font-weight: 700;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  p {
+    color: tokens.$text-muted;
+    font-size: tokens.$font-size-md;
+  }
+}
+.trophy {
+  width: 240px;
+  max-width: 100%;
+  height: 144px;
+  margin: 0 auto 10px;
+  color: tokens.$primary;
+}
+.trophyBackdrop {
+  fill: tokens.$primary-tint;
+}
+.trophyStar {
+  fill: tokens.$accent-purple-soft;
+}
+.completed {
+  display: inline-block;
+  padding: 3px 14px;
+  border-radius: tokens.$radius-pill;
+  background: tokens.$primary-tint;
+  color: tokens.$primary-hover;
+  font-size: tokens.$font-size-sm;
+  font-weight: 600;
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 30px;
+  > div {
+    min-width: 0;
+    padding: 16px 12px;
+    border: 1px solid tokens.$border-subtle;
+    border-radius: tokens.$radius-control;
+  }
+  dt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: tokens.$text-muted;
+    font-size: tokens.$font-size-sm;
+  }
+  dt > span {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: tokens.$radius-circle;
+    background: tokens.$surface;
+    color: tokens.$primary;
+    font-size: tokens.$font-size-xl;
+  }
+  dd {
+    display: grid;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  strong {
+    font-size: tokens.$font-size-xl;
+    color: tokens.$primary-hover;
+    font-variant-numeric: tabular-nums;
+  }
+  dd > span {
+    color: tokens.$text-muted;
+    font-size: tokens.$font-size-xs;
+  }
+}
+.scoreTile {
+  background: tokens.$primary-tint;
+}
+.timeTile {
+  background: tokens.$surface-subtle;
+}
+.accuracyTile {
+  background: tokens.$difficulty-easy-surface;
+}
+.totalScore {
+  margin-top: 12px;
+  text-align: center;
+  color: tokens.$text-muted;
+  font-size: tokens.$font-size-xs;
+  strong {
+    font-weight: 600;
+  }
+}
+.breakdown {
+  margin-top: 28px;
+}
+.sectionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+  > span {
+    padding: 3px 10px;
+    border-radius: tokens.$radius-pill;
+    background: tokens.$primary-tint;
+    color: tokens.$text-muted;
+    font-size: tokens.$font-size-xs;
+  }
+}
+.dashboard h2 {
+  font-size: tokens.$font-size-md;
+  font-weight: 600;
+}
+.questionGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 20px 12px;
+  justify-items: center;
+  padding: 18px 10px;
+  border: 1px solid tokens.$border-subtle;
+  border-radius: tokens.$radius-control;
+}
+.correct {
+  color: tokens.$foreground;
+  background: tokens.$success-surface;
+  border-color: tokens.$success;
+}
+.wrong {
+  color: tokens.$danger;
+  background: tokens.$danger-surface;
+  border-color: tokens.$danger-border;
+}
+.skipped {
+  color: tokens.$text-muted;
+  background: tokens.$surface-subtle;
+  border-color: tokens.$border;
+}
+.questionNumber {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: tokens.$radius-circle;
+  font-size: tokens.$font-size-sm;
+  font-weight: 600;
+  .outcomeIcon {
+    position: absolute;
+    bottom: -6px;
+    right: -5px;
+    width: 19px;
+    height: 19px;
+    border: 1px solid;
+    font-size: tokens.$font-size-xs;
+    background: tokens.$surface;
+  }
+}
+.outcomeIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: tokens.$radius-circle;
+  font-weight: 700;
+}
+.correct .outcomeIcon {
+  color: tokens.$foreground;
+  background: tokens.$success-surface;
+}
+.wrong .outcomeIcon {
+  color: tokens.$danger;
+  background: tokens.$danger-surface;
+}
+.skipped .outcomeIcon {
+  color: tokens.$text-muted;
+  background: tokens.$surface-subtle;
+}
+.legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 12px;
+  color: tokens.$text-muted;
+  font-size: tokens.$font-size-xs;
+}
+.replay {
+  margin-top: 26px;
+}
+.playAgain {
+  @include patterns.primary-button;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 16px;
+  border-radius: tokens.$radius-control;
+  cursor: pointer;
+  font-weight: 600;
+  &:hover {
+    background: tokens.$primary-hover;
+  }
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+.secondaryLink {
+  @include patterns.primary-link;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin: 14px auto 0;
+  text-align: center;
+  font-size: tokens.$font-size-sm;
+  cursor: pointer;
+}
+.startError {
+  margin-top: 12px;
+  font-size: tokens.$font-size-sm;
+  color: tokens.$danger;
+}
+.answersPanel {
+  padding: 20px 16px;
+  background: tokens.$primary-tint;
+  > h2 {
+    margin: 0 4px 12px;
+  }
+}
+.answers {
+  display: grid;
+  gap: 8px;
+}
+.answerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: tokens.$radius-control;
+  scroll-margin-top: 24px;
+  &:not(.wrong) {
+    background: tokens.$surface;
+  }
+}
+.answerNumber {
+  font-size: tokens.$font-size-xs;
+  padding-top: 2px;
+}
+.answerContent {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  h3 {
+    font-size: tokens.$font-size-xs;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  p {
+    margin-top: 4px;
+    color: tokens.$text-muted;
+    font-size: tokens.$font-size-xs;
+  }
+}
+.outcomeLabel {
+  color: tokens.$foreground;
+  font-size: tokens.$font-size-xs;
+  font-weight: 600;
+}
+.wrong .outcomeLabel {
+  color: tokens.$danger;
+}
+.quickStats {
+  margin-top: 18px;
+  padding: 14px 10px;
+  background: tokens.$surface;
+  border: 1px solid tokens.$border-subtle;
+  border-radius: tokens.$radius-control;
+  dl {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+  dl > div {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 4px;
+    border-radius: tokens.$radius-control;
+    text-align: center;
+  }
+  dd {
+    order: -1;
+    font-size: tokens.$font-size-xl;
+    font-weight: 700;
+  }
+  dt {
+    font-size: tokens.$font-size-xs;
+  }
+}
+.dashboard a:focus-visible,
+.dashboard button:focus-visible,
+.answerRow:focus {
+  @include patterns.focus-ring($width: 3px);
+}
+@media (max-width: 800px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    max-width: 620px;
+  }
+}
+@media (max-width: 480px) {
+  .overview {
+    padding: 20px 16px;
+  }
+  .intro h1 {
+    font-size: tokens.$font-size-3xl;
+  }
+  .tiles {
+    gap: 8px;
+    > div {
+      padding: 12px 8px;
+    }
+    dt {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    strong {
+      font-size: tokens.$font-size-md;
+    }
+  }
+  .sectionHeading {
+    align-items: flex-start;
+  }
+  .questionGrid {
+    gap: 20px 8px;
+    padding-inline: 4px;
+  }
+  .questionNumber {
+    width: 36px;
+    height: 36px;
+  }
+}

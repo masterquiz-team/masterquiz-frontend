@@ -48,6 +48,12 @@ export type GameReview = {
   correctOptionIds: number[];
   explanation: string | null;
 };
+export type GameResultAnswer = {
+  questionId: number;
+  questionText: string;
+  answerText: string | null;
+  outcome: "correct" | "wrong" | "skipped";
+};
 type GameBase = {
   attempt: PlayerAttempt;
   category: { id: number; name: string };
@@ -65,11 +71,16 @@ export type GameView = GameBase &
     | { phase: "timed-out" }
     | {
         phase: "finished";
+        nickname: string | null;
+        results: GameResultAnswer[];
         summary: {
           correct: number;
           answered: number;
           total: number;
           pointsEarned: number;
+          maxPoints: number;
+          elapsedSeconds: number;
+          durationSeconds: number;
           totalScore: number | null;
         };
       }
