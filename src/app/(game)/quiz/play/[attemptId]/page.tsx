@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Header } from "@/components/layout/Header";
 import { getPageSession } from "@/features/auth/server/page-session";
 import { loadGame } from "@/features/quiz/server/game";
 import { ApiError, parseId, parsePage } from "@/lib/api/server";
@@ -46,25 +45,20 @@ export default async function PlayPage({
           : "The game could not be loaded. Please try again.",
     };
   }
-  return (
-    <>
-      <Header />
-      {id > 0 && !login ? (
-        <GamePlayer
-          key={id}
-          attemptId={id}
-          page={page}
-          initialGame={game}
-          initialError={error}
-        />
-      ) : (
-        <main className={`${styles.screen} ${styles.state}`}>
-          <h1>Game unavailable</h1>
-          <p role="alert">{error?.message}</p>
-          {login && <Link href={login}>Log in</Link>}
-          <Link href={`/categories?page=${page}`}>Back to categories</Link>
-        </main>
-      )}
-    </>
+  return id > 0 && !login ? (
+    <GamePlayer
+      key={id}
+      attemptId={id}
+      page={page}
+      initialGame={game}
+      initialError={error}
+    />
+  ) : (
+    <main className={`${styles.screen} ${styles.state}`}>
+      <h1>Game unavailable</h1>
+      <p role="alert">{error?.message}</p>
+      {login && <Link href={login}>Log in</Link>}
+      <Link href={`/categories?page=${page}`}>Back to categories</Link>
+    </main>
   );
 }
