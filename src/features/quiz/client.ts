@@ -1,3 +1,4 @@
+import type { Difficulty } from "./difficulty";
 import type { GameView, PlayerAttempt } from "./types";
 
 export class GameRequestError extends Error {
@@ -41,18 +42,22 @@ export async function gameRequest<T>(
     );
   return value as T;
 }
-export const attemptKey = (categoryId: number) =>
-  `masterquiz-easy-attempt:${categoryId}`;
-export async function startEasy(categoryId: number): Promise<PlayerAttempt> {
+export const attemptKey = (categoryId: number, difficulty: Difficulty) =>
+  `masterquiz-attempt:${categoryId}:${difficulty}`;
+export async function startNewGame(
+  categoryId: number,
+  difficulty: Difficulty,
+): Promise<PlayerAttempt> {
+  const key = attemptKey(categoryId, difficulty);
   // Write before the request: a lost response must not create another attempt on reload.
-  sessionStorage.setItem(attemptKey(categoryId), "unknown");
+  sessionStorage.setItem(key, "unknown");
   try {
     const attempt = await gameRequest<PlayerAttempt>(
       "/api/quiz-attempts",
       "POST",
-      { categoryId, difficulty: "easy" },
+      { categoryId, difficulty },
     );
-    sessionStorage.setItem(attemptKey(categoryId), String(attempt.id));
+    sessionStorage.setItem(key, String(attempt.id));
     return attempt;
   } catch (error) {
     if (
@@ -60,7 +65,7 @@ export async function startEasy(categoryId: number): Promise<PlayerAttempt> {
       error.status >= 400 &&
       error.status < 500
     )
-      sessionStorage.removeItem(attemptKey(categoryId));
+      sessionStorage.removeItem(key);
     throw error;
   }
 }

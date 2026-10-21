@@ -1,7 +1,9 @@
-// BFF time limits; the Java backend currently has no timer contract.
+// The backend random-quiz endpoint always picks 10 questions. Time limits are
+// BFF-only; the Java backend has no timer contract.
 export const difficulties = [
   {
     id: "easy",
+    apiName: "EASY",
     label: "Easy",
     questionCount: 10,
     durationMinutes: 5,
@@ -9,23 +11,26 @@ export const difficulties = [
   },
   {
     id: "medium",
+    apiName: "MEDIUM",
     label: "Medium",
-    questionCount: 15,
+    questionCount: 10,
     durationMinutes: 7,
-    available: false,
+    available: true,
   },
   {
     id: "hard",
+    apiName: "HARD",
     label: "Hard",
-    questionCount: 20,
+    questionCount: 10,
     durationMinutes: 10,
-    available: false,
+    available: true,
   },
 ] as const;
 export type Difficulty = (typeof difficulties)[number]["id"];
-export const easyDifficulty = difficulties[0];
-export const difficultyPoints = { EASY: 10, MEDIUM: 20, HARD: 30 } as const;
-export type QuestionDifficulty = keyof typeof difficultyPoints;
+export type DifficultyConfig = (typeof difficulties)[number];
 export function getDifficulty(value: unknown) {
   return difficulties.find((difficulty) => difficulty.id === value);
+}
+export function getDifficultyByApiName(value: unknown) {
+  return difficulties.find((difficulty) => difficulty.apiName === value);
 }

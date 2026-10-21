@@ -1,13 +1,12 @@
-import { easyDifficulty } from "./difficulty";
 import type { PlayerAttempt } from "./types";
 
-export function getAttemptDeadline(attempt: PlayerAttempt): number {
+export function getAttemptDeadline(
+  attempt: PlayerAttempt,
+  durationMinutes: number,
+): number {
   // Java uses LocalDateTime.now() without a zone. Assume the backend JVM is UTC;
   // never interpret this value in the browser's or frontend host's local zone.
-  return (
-    Date.parse(`${attempt.startedAt}Z`) +
-    easyDifficulty.durationMinutes * 60_000
-  );
+  return Date.parse(`${attempt.startedAt}Z`) + durationMinutes * 60_000;
 }
 
 export function remainingSeconds(deadline: number, now: number): number {

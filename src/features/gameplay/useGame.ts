@@ -37,12 +37,18 @@ export function useGame(
         // A completed page can be reloaded after an uncertain Play again POST.
         // Clear only this attempt, preserving a newer attempt or unknown start.
         if (
-          sessionStorage.getItem(attemptKey(game.category.id)) ===
-          String(attemptId)
+          sessionStorage.getItem(
+            attemptKey(game.category.id, game.difficulty),
+          ) === String(attemptId)
         )
-          sessionStorage.removeItem(attemptKey(game.category.id));
+          sessionStorage.removeItem(
+            attemptKey(game.category.id, game.difficulty),
+          );
       } else
-        sessionStorage.setItem(attemptKey(game.category.id), String(attemptId));
+        sessionStorage.setItem(
+          attemptKey(game.category.id, game.difficulty),
+          String(attemptId),
+        );
     } catch {
       // The attempt URL remains sufficient for reload/resume.
     }

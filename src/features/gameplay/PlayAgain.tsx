@@ -2,15 +2,18 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { attemptKey, startEasy } from "@/features/quiz/client";
+import { attemptKey, startNewGame } from "@/features/quiz/client";
+import { getDifficulty, type Difficulty } from "@/features/quiz/difficulty";
 import styles from "./ResultsDashboard.module.scss";
 
 export function PlayAgain({
   categoryId,
+  difficulty,
   page,
   previousAttemptId,
 }: {
   categoryId: number;
+  difficulty: Difficulty;
   page: number;
   previousAttemptId: number;
 }) {
@@ -26,7 +29,7 @@ export function PlayAgain({
     setPending(true);
     setError(null);
     try {
-      const key = attemptKey(categoryId);
+      const key = attemptKey(categoryId, difficulty);
       if (another) sessionStorage.removeItem(key);
       const saved = sessionStorage.getItem(key);
       if (saved === "unknown")
@@ -44,7 +47,7 @@ export function PlayAgain({
         router.push(`/quiz/play/${Number(saved)}?page=${page}`);
         return;
       }
-      const attempt = await startEasy(categoryId);
+      const attempt = await startNewGame(categoryId, difficulty);
       router.push(`/quiz/play/${attempt.id}?page=${page}`);
     } catch (cause) {
       setError(
@@ -54,7 +57,8 @@ export function PlayAgain({
       );
       try {
         setUncertain(
-          sessionStorage.getItem(attemptKey(categoryId)) === "unknown",
+          sessionStorage.getItem(attemptKey(categoryId, difficulty)) ===
+            "unknown",
         );
       } catch {
         setUncertain(false);
@@ -72,7 +76,9 @@ export function PlayAgain({
         disabled={pending}
         onClick={() => void start()}
       >
-        {pending ? "Opening your Easy game…" : "Play again"}
+        {pending
+          ? `Opening your ${getDifficulty(difficulty)?.label ?? ""} game…`
+          : "Play again"}
         {!pending && <span aria-hidden="true">→</span>}
       </button>
       {error && (

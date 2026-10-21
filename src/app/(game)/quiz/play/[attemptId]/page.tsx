@@ -6,7 +6,7 @@ import { ApiError, parseId, parsePage } from "@/lib/api/server";
 import { GamePlayer } from "@/features/gameplay/GamePlayer";
 import type { GameView } from "@/features/quiz/types";
 import styles from "@/features/gameplay/Gameplay.module.scss";
-export const metadata: Metadata = { title: "Easy quiz" };
+export const metadata: Metadata = { title: "Quiz" };
 export default async function PlayPage({
   params,
   searchParams,

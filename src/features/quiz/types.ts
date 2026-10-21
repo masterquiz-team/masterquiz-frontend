@@ -1,19 +1,12 @@
+import type { Difficulty } from "./difficulty";
+
 export type PlayerQuestion = { id: number; text: string };
 export type PlayerQuiz = {
   id: number;
   title: string;
+  difficulty: Difficulty;
   categoryId: number;
   listOfQuestions: PlayerQuestion[];
-};
-export type PlayerQuizPage = {
-  content: PlayerQuiz[];
-  number: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
-  empty: boolean;
 };
 export type PlayerAttempt = {
   id: number;
@@ -28,12 +21,15 @@ export type RecordedAnswer = {
   quizAttemptId: number;
   answerId: number;
   correctAnswer: boolean;
+  // Present only when the backend fills these fields in answer history.
+  reveal?: AnswerReveal;
 };
-export type SubmittedAnswer = RecordedAnswer & {
+export type AnswerReveal = {
   questionId: number;
   correctAnswerIds: number[];
   feedback: string | null;
 };
+export type SubmittedAnswer = RecordedAnswer & AnswerReveal;
 export type PlayerOption = { id: number; text: string; questionId: number };
 export type GameQuestion = {
   id: number;
@@ -57,6 +53,7 @@ export type GameResultAnswer = {
 type GameBase = {
   attempt: PlayerAttempt;
   category: { id: number; name: string };
+  difficulty: Difficulty;
   title: string;
   total: number;
   answered: number;

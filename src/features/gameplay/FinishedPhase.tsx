@@ -132,6 +132,7 @@ export function FinishedPhase({
         </section>
         <PlayAgain
           categoryId={game.category.id}
+          difficulty={game.difficulty}
           page={page}
           previousAttemptId={game.attempt.id}
         />

@@ -13,31 +13,16 @@ import {
   parseRecordedAnswer,
   parseSubmittedAnswer,
 } from "../contracts";
-import type {
-  GameView,
-  PlayerOption,
-  RecordedAnswer,
-  SubmittedAnswer,
-} from "../types";
-import {
-  difficultyPoints,
-  easyDifficulty,
-  getDifficulty,
-  type Difficulty,
-  type QuestionDifficulty,
-} from "../difficulty";
+import type { GameView, RecordedAnswer, SubmittedAnswer } from "../types";
+import { getDifficulty, type Difficulty } from "../difficulty";
 import {
   buildGameView as buildView,
   getAnsweredQuestions as answeredQuestions,
   GameStateError,
+  type ContextOption,
   type GameContext,
 } from "@/features/gameplay/server/game-view";
-import {
-  getQuizAttempt,
-  getQuizzesByCategory,
-  startQuizAttempt,
-  quizRequest,
-} from "./api";
+import { getQuizAttempt, startRandomQuizAttempt, quizRequest } from "./api";
 
 export async function getHistory(attemptId: number) {
   return quizRequest(`/quiz-attempts/answers/${attemptId}`, (value) => {
@@ -81,21 +66,14 @@ export async function finishAttempt(attemptId: number) {
   );
 }
 
-type PrivateQuestion = {
-  id: number;
-  text: string;
-  feedback: string | null;
-  difficultyName: QuestionDifficulty;
-};
-type PrivateQuiz = ReturnType<typeof parsePlayerQuiz> & {
-  listOfQuestions: PrivateQuestion[];
-};
+type PrivateQuiz = GameContext["quiz"];
 export async function getPrivateQuiz(id: number): Promise<PrivateQuiz> {
   return quizRequest(`/quiz/${id}`, (value) => {
     const quiz = parsePlayerQuiz(value);
     if (
       quiz.id !== id ||
-      quiz.listOfQuestions.length !== easyDifficulty.questionCount ||
+      quiz.listOfQuestions.length !==
+        getDifficulty(quiz.difficulty)!.questionCount ||
       !isRecord(value) ||
       !Array.isArray(value.listOfQuestions)
     )
@@ -103,31 +81,27 @@ export async function getPrivateQuiz(id: number): Promise<PrivateQuiz> {
     const rawQuestions = value.listOfQuestions;
     return {
       ...quiz,
-      listOfQuestions: quiz.listOfQuestions.map((q, index) => {
-        const raw = rawQuestions[index];
-        if (
-          !isRecord(raw) ||
-          typeof raw.difficultyName !== "string" ||
-          !Object.hasOwn(difficultyPoints, raw.difficultyName)
-        )
-          invalidContract();
-        return {
-          ...q,
-          feedback:
-            isRecord(raw) &&
-            typeof raw.feedback === "string" &&
-            raw.feedback.trim()
-              ? raw.feedback
-              : null,
-          difficultyName: raw.difficultyName as QuestionDifficulty,
-        };
-      }),
+      // The backend list has no explicit order; sort so resume stays stable.
+      listOfQuestions: quiz.listOfQuestions
+        .map((q, index) => {
+          const raw = rawQuestions[index];
+          return {
+            ...q,
+            feedback:
+              isRecord(raw) &&
+              typeof raw.feedback === "string" &&
+              raw.feedback.trim()
+                ? raw.feedback
+                : null,
+          };
+        })
+        .sort((a, b) => a.id - b.id),
     };
   });
 }
 export async function getPlayerOptions(
   questionId: number,
-): Promise<PlayerOption[]> {
+): Promise<ContextOption[]> {
   return quizRequest(`/answers/question/${questionId}/quiz`, (value) => {
     if (!Array.isArray(value) || value.length < 2) invalidContract();
     const options = value.map((raw) => {
@@ -136,11 +110,18 @@ export async function getPlayerOptions(
         !isId(raw.id) ||
         typeof raw.text !== "string" ||
         !raw.text.trim() ||
-        raw.questionId !== questionId
+        raw.questionId !== questionId ||
+        !Number.isSafeInteger(raw.points) ||
+        (raw.points as number) < 0
       )
         invalidContract();
       // The Java player endpoint currently leaks correct. Discard it here.
-      return { id: raw.id, text: raw.text, questionId };
+      return {
+        id: raw.id,
+        text: raw.text,
+        questionId,
+        points: raw.points as number,
+      };
     });
     if (new Set(options.map((a) => a.id)).size !== options.length)
       invalidContract();
@@ -209,10 +190,13 @@ export async function reviewGame(
   const index = context.quiz.listOfQuestions.findIndex(
     (q) => q.id === questionId,
   );
-  if (!getAnsweredQuestions(context, history).has(index))
+  const record = getAnsweredQuestions(context, history).get(index);
+  if (!record)
     throw new ApiError(409, "Feedback is available only for a saved answer.");
-  // Wrong submits currently return [] for correctAnswerIds. History also lacks
-  // feedback/correct IDs: reveal options only after history proves submission.
+  // History has no correct IDs/feedback yet (null fields). Use them when the
+  // backend fills them; otherwise reveal options only after history proves
+  // the submission.
+  submission ??= record.reveal && { ...record, ...record.reveal };
   const options = submission?.correctAnswerIds.length
     ? undefined
     : await getRevealedOptions(questionId);
@@ -266,29 +250,26 @@ export async function startGame(categoryId: number, difficulty: Difficulty) {
   const configuration = getDifficulty(difficulty);
   if (!configuration?.available)
     throw new ApiError(400, "This difficulty is unavailable.");
-  // Preserve the existing bounded, ID-sorted search, but perform it on the server.
-  for (let page = 0; page < 100; page++) {
-    const quizzes = await getQuizzesByCategory(categoryId, page);
-    const candidate = quizzes.content.find(
-      (quiz) => quiz.listOfQuestions.length === configuration.questionCount,
-    );
-    if (candidate) {
-      const quiz = await getPrivateQuiz(candidate.id);
-      if (quiz.categoryId !== categoryId) invalidContract();
-      const options = await Promise.all(
-        quiz.listOfQuestions.map((q) => getPlayerOptions(q.id)),
+  const category = await getCategory(categoryId);
+  if (category.id !== categoryId) invalidContract();
+  try {
+    return await startRandomQuizAttempt({
+      // Backend requires 2–20 characters; the title is not shown to players.
+      quizTitle: `${configuration.label} quiz`,
+      category: category.name,
+      difficulty: configuration.apiName,
+    });
+  } catch (error) {
+    if (
+      error instanceof ApiError &&
+      (error.status === 400 || error.status === 404)
+    )
+      throw new ApiError(
+        error.status,
+        "A quiz could not be started for this category and difficulty yet.",
       );
-      // Validate membership and global option uniqueness before creating an attempt.
-      const ids = options.flat().map((option) => option.id);
-      if (new Set(ids).size !== ids.length) invalidContract();
-      return startQuizAttempt(quiz.id);
-    }
-    if (quizzes.last || page + 1 >= quizzes.totalPages) break;
+    throw error;
   }
-  throw new ApiError(
-    404,
-    "No ten-question quiz is available in this category yet.",
-  );
 }
 
 // Best-effort exclusion in this module's process only: not a distributed lock,

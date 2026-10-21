@@ -2,8 +2,12 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { difficulties, type Difficulty } from "@/features/quiz/difficulty";
-import { attemptKey, startEasy } from "@/features/quiz/client";
+import {
+  difficulties,
+  getDifficulty,
+  type Difficulty,
+} from "@/features/quiz/difficulty";
+import { attemptKey, startNewGame } from "@/features/quiz/client";
 import Image from "next/image";
 import { DesignAsset } from "@/components/ui/DesignAsset";
 import { getCategoryArtwork } from "@/features/categories/design-preview";
@@ -41,14 +45,14 @@ export function DifficultyPicker({
   const [uncertainStart, setUncertainStart] = useState(false);
   const starting = useRef(false);
   const router = useRouter();
-  async function chooseEasy() {
+  async function choose(difficulty: Difficulty) {
     if (starting.current) return;
     starting.current = true;
-    setSelected("easy");
+    setSelected(difficulty);
     setPending(true);
     setError(null);
     try {
-      const saved = sessionStorage.getItem(attemptKey(category.id));
+      const saved = sessionStorage.getItem(attemptKey(category.id, difficulty));
       if (saved === "unknown")
         throw new Error(
           "A previous start request could not be confirmed. Starting again may create another attempt. Please check the existing attempt before restarting.",
@@ -59,7 +63,7 @@ export function DifficultyPicker({
         Number.isSafeInteger(Number(saved)) &&
         Number(saved) > 0
           ? Number(saved)
-          : (await startEasy(category.id)).id;
+          : (await startNewGame(category.id, difficulty)).id;
       router.push(`/quiz/play/${id}?page=${page}`);
     } catch (cause) {
       setError(
@@ -71,7 +75,8 @@ export function DifficultyPicker({
       setPending(false);
       try {
         setUncertainStart(
-          sessionStorage.getItem(attemptKey(category.id)) === "unknown",
+          sessionStorage.getItem(attemptKey(category.id, difficulty)) ===
+            "unknown",
         );
       } catch {
         setUncertainStart(false);
@@ -115,7 +120,7 @@ export function DifficultyPicker({
             className={`${styles.difficultyChoice} ${styles[choice.id]}`}
             aria-pressed={selected === choice.id}
             disabled={!choice.available || pending}
-            onClick={chooseEasy}
+            onClick={() => void choose(choice.id)}
           >
             <ChoiceArtwork kind={choice.id} />
             <span className={styles.choiceTitle}>{choice.label}</span>
@@ -141,8 +146,8 @@ export function DifficultyPicker({
         ))}
       </div>
       <p id="difficulty-note" className={styles.note}>
-        Easy starts a ten-question quiz. Medium and Hard are unavailable. Times
-        shown are design estimates; this game has no time limit.
+        Each difficulty starts a ten-question quiz with random questions. The
+        time limit depends on the difficulty.
       </p>
       <p
         className={styles.selectionNotice}
@@ -150,7 +155,9 @@ export function DifficultyPicker({
         aria-live="polite"
         aria-atomic="true"
       >
-        {pending && "Opening your Easy game…"}
+        {pending &&
+          selected &&
+          `Opening your ${getDifficulty(selected)?.label} game…`}
       </p>
       {error && (
         <p className={styles.selectionNotice} role="alert">
@@ -162,9 +169,10 @@ export function DifficultyPicker({
           type="button"
           className={styles.newAttempt}
           onClick={() => {
-            sessionStorage.removeItem(attemptKey(category.id));
+            if (!selected) return;
+            sessionStorage.removeItem(attemptKey(category.id, selected));
             setUncertainStart(false);
-            void chooseEasy();
+            void choose(selected);
           }}
         >
           Start another attempt

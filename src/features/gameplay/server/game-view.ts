@@ -6,13 +6,11 @@ import type {
   RecordedAnswer,
   SubmittedAnswer,
 } from "@/features/quiz/types";
-import {
-  difficultyPoints,
-  easyDifficulty,
-  type QuestionDifficulty,
-} from "@/features/quiz/difficulty";
+import { getDifficulty } from "@/features/quiz/difficulty";
 import { getAttemptDeadline } from "@/features/quiz/timer";
 
+// Server-only option: points stay in the BFF, players get PlayerOption.
+export type ContextOption = PlayerOption & { points: number };
 export type GameContext = {
   attempt: PlayerAttempt;
   quiz: Omit<PlayerQuiz, "listOfQuestions"> & {
@@ -20,11 +18,10 @@ export type GameContext = {
       id: number;
       text: string;
       feedback: string | null;
-      difficultyName: QuestionDifficulty;
     }[];
   };
   category: { id: number; name: string };
-  options: PlayerOption[][];
+  options: ContextOption[][];
 };
 export type RevealedOption = { id: number; correct: boolean };
 export class GameStateError extends Error {
@@ -49,7 +46,8 @@ export function getAnsweredQuestions(
     attempt.quizId !== quiz.id ||
     category.id !== quiz.categoryId ||
     !category.name.trim() ||
-    quiz.listOfQuestions.length !== easyDifficulty.questionCount ||
+    quiz.listOfQuestions.length !==
+      getDifficulty(quiz.difficulty)?.questionCount ||
     new Set(quiz.listOfQuestions.map((q) => q.id)).size !==
       quiz.listOfQuestions.length ||
     options.length !== quiz.listOfQuestions.length
@@ -99,21 +97,24 @@ export function buildGameView(
 ): GameView {
   const { attempt, quiz, category, options } = context;
   const answered = getAnsweredQuestions(context, history);
-  const total = easyDifficulty.questionCount;
-  const deadline = getAttemptDeadline(attempt);
+  const difficulty = getDifficulty(quiz.difficulty)!;
+  const total = quiz.listOfQuestions.length;
+  const deadline = getAttemptDeadline(attempt, difficulty.durationMinutes);
   if (!Number.isFinite(deadline)) invalid();
+  // Every answer carries the question's points; only a correct one earns them.
+  const earned = (index: number, record: RecordedAnswer) =>
+    record.correctAnswer
+      ? options[index].find((option) => option.id === record.answerId)!.points
+      : 0;
   const base = {
     attempt,
     category,
+    difficulty: difficulty.id,
     title: quiz.title,
     total,
     answered: answered.size,
     score: [...answered].reduce(
-      (points, [index, record]) =>
-        points +
-        (record.correctAnswer
-          ? difficultyPoints[quiz.listOfQuestions[index].difficultyName]
-          : 0),
+      (points, [index, record]) => points + earned(index, record),
       0,
     ),
     timer: {
@@ -127,7 +128,7 @@ export function buildGameView(
       ? Date.parse(`${attempt.finishedAt}Z`)
       : NaN;
     if (!Number.isFinite(finishedAt) || finishedAt < startedAt) invalid();
-    const durationSeconds = easyDifficulty.durationMinutes * 60;
+    const durationSeconds = difficulty.durationMinutes * 60;
     return {
       ...base,
       phase: "finished",
@@ -155,9 +156,9 @@ export function buildGameView(
         answered: history.length,
         total,
         pointsEarned: base.score,
-        maxPoints: quiz.listOfQuestions.reduce(
-          (points, question) =>
-            points + difficultyPoints[question.difficultyName],
+        maxPoints: options.reduce(
+          (points, items) =>
+            points + Math.max(...items.map((option) => option.points)),
           0,
         ),
         elapsedSeconds: Math.min(
@@ -184,7 +185,16 @@ export function buildGameView(
       "Feedback is available only for a saved answer.",
     );
   // Explicit allowlist: private feedback and correctness never enter a question view.
-  const question = { id: q.id, text: q.text, index, options: options[index] };
+  const question = {
+    id: q.id,
+    text: q.text,
+    index,
+    options: options[index].map(({ id, text, questionId }) => ({
+      id,
+      text,
+      questionId,
+    })),
+  };
   if (!feedback) return { ...base, phase: "question", question };
   const record = answered.get(index);
   if (!record)
@@ -230,9 +240,7 @@ export function buildGameView(
     review: {
       answerId: record.answerId,
       correct: record.correctAnswer,
-      pointsEarned: record.correctAnswer
-        ? difficultyPoints[q.difficultyName]
-        : 0,
+      pointsEarned: earned(index, record),
       correctOptionIds,
       explanation: submission ? submission.feedback : q.feedback,
     },

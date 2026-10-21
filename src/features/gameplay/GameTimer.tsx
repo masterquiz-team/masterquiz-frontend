@@ -1,5 +1,5 @@
 import type { GameView } from "@/features/quiz/types";
-import { easyDifficulty } from "@/features/quiz/difficulty";
+import { getDifficulty } from "@/features/quiz/difficulty";
 import { assets } from "./assets";
 import { DesignAsset } from "./GameplayArtwork";
 import styles from "./Gameplay.module.scss";
@@ -12,10 +12,10 @@ export function GameTimer({
   remaining: number;
 }) {
   const running = game?.phase === "question";
-  const fraction = Math.max(
-    0,
-    Math.min(1, remaining / (easyDifficulty.durationMinutes * 60)),
-  );
+  const duration = game ? getDifficulty(game.difficulty)!.durationMinutes : 0;
+  const fraction = duration
+    ? Math.max(0, Math.min(1, remaining / (duration * 60)))
+    : 0;
   const minutes = Math.floor(remaining / 60);
   const seconds = String(remaining % 60).padStart(2, "0");
   const announcement =

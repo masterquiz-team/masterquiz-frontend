@@ -5,12 +5,7 @@ import {
   jsonBody,
   requireId,
 } from "@/lib/api/server";
-import { requirePagination } from "@/lib/validation";
-import {
-  parsePlayerAttempt,
-  parsePlayerQuizPage,
-  QuizContractError,
-} from "../contracts";
+import { parsePlayerAttempt, QuizContractError } from "../contracts";
 
 async function request<T>(
   path: string,
@@ -41,32 +36,32 @@ async function request<T>(
     throw error;
   }
 }
-export function getQuizzesByCategory(categoryId: number, page = 0, size = 12) {
-  requireId(categoryId, "categoryId");
-  requirePagination(page, size);
-  return request(
-    `/quiz/category/${categoryId}?${new URLSearchParams({ page: String(page), size: String(size), sort: "id,asc" })}`,
-    (value) => {
-      const result = parsePlayerQuizPage(value);
-      if (
-        result.number !== page ||
-        result.content.some((q) => q.categoryId !== categoryId)
-      )
-        throw new QuizContractError();
-      return result;
-    },
-  );
+function parseStartedAttempt(value: unknown) {
+  const attempt = parsePlayerAttempt(value);
+  if (attempt.status !== "IN_PROGRESS") throw new QuizContractError();
+  return attempt;
 }
 export function startQuizAttempt(quizId: number) {
   return request(
-    "/quiz-attempts",
+    `/quiz-attempts/${requireId(quizId, "quizId")}`,
     (value) => {
-      const attempt = parsePlayerAttempt(value);
-      if (attempt.quizId !== quizId || attempt.status !== "IN_PROGRESS")
-        throw new QuizContractError();
+      const attempt = parseStartedAttempt(value);
+      if (attempt.quizId !== quizId) throw new QuizContractError();
       return attempt;
     },
-    jsonBody("POST", { quizId: requireId(quizId, "quizId") }),
+    { method: "POST" },
+  );
+}
+// The backend builds a new quiz from random questions of this difficulty.
+export function startRandomQuizAttempt(body: {
+  quizTitle: string;
+  category: string;
+  difficulty: "EASY" | "MEDIUM" | "HARD";
+}) {
+  return request(
+    "/quiz-attempts/random-quiz",
+    parseStartedAttempt,
+    jsonBody("POST", body),
   );
 }
 export function getQuizAttempt(id: number) {
