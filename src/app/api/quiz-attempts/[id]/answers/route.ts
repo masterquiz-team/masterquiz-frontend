@@ -13,7 +13,7 @@ import {
   recordAnswer,
   reviewGame,
   withAttemptMutation,
-} from "@/features/quiz/server/game";
+} from "@/features/game/server/game";
 export function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

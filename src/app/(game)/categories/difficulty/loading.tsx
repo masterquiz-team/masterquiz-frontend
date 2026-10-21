@@ -1,4 +1,4 @@
-import styles from "@/features/difficulty/Difficulty.module.scss";
+import styles from "@/features/game/components/difficulty/Difficulty.module.scss";
 
 export default function LoadingDifficultyPage() {
   return (

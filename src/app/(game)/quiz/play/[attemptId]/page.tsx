@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getPageSession } from "@/features/auth/server/page-session";
-import { loadGame } from "@/features/quiz/server/game";
+import { loadGame } from "@/features/game/server/game";
 import { ApiError, parseId, parsePage } from "@/lib/api/server";
-import { GamePlayer } from "@/features/gameplay/GamePlayer";
-import type { GameView } from "@/features/quiz/types";
-import styles from "@/features/gameplay/Gameplay.module.scss";
+import { GamePlayer } from "@/features/game/components/play/GamePlayer";
+import type { GameView } from "@/features/game/types";
+import styles from "@/features/game/components/play/Gameplay.module.scss";
 export const metadata: Metadata = { title: "Quiz" };
 export default async function PlayPage({
   params,

@@ -5,11 +5,11 @@ import { getPageSession } from "@/features/auth/server/page-session";
 import { getLoginHref } from "@/features/auth/utils/page-session";
 import { getHttpStatusMessage } from "@/lib/http-status-messages";
 import { ApiError, parseId, parsePage } from "@/lib/api/server";
-import { assets } from "@/features/difficulty/assets";
-import { DifficultyPicker } from "@/features/difficulty/DifficultyPicker";
+import { assets } from "@/features/game/assets/difficulty";
+import { DifficultyPicker } from "@/features/game/components/difficulty/DifficultyPicker";
 import { DesignAsset } from "@/components/ui/DesignAsset";
 import type { Category } from "@/features/categories/types";
-import styles from "@/features/difficulty/Difficulty.module.scss";
+import styles from "@/features/game/components/difficulty/Difficulty.module.scss";
 
 export const metadata: Metadata = { title: "Choose your difficulty" };
 
