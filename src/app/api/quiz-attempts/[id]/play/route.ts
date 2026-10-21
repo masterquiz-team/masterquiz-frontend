@@ -1,5 +1,5 @@
 import { ApiError, apiResponse, parseId } from "@/lib/api/server";
-import { loadGame } from "@/features/quiz/server/game";
+import { loadGame } from "@/features/game/server/game";
 export function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },

@@ -4,8 +4,8 @@ import {
   readMutation,
   requireId,
 } from "@/lib/api/server";
-import { getDifficulty } from "@/features/quiz/difficulty";
-import { startGame } from "@/features/quiz/server/game";
+import { getDifficulty } from "@/features/game/difficulty";
+import { startGame } from "@/features/game/server/game";
 export function POST(request: Request) {
   return apiResponse(async () => {
     const body = await readMutation(request);
