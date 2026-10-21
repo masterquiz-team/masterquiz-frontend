@@ -11,6 +11,11 @@
   line-height: 19px;
 }
 
+.authenticated {
+  gap: 24px;
+  margin-inline-start: 16px;
+}
+
 .link:hover {
   color: var(--primary);
 }
@@ -40,11 +45,30 @@
   @include patterns.disabled-control($cursor: wait, $opacity: 0.5);
 }
 
-.email {
+.user {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  max-width: 220px;
+  min-width: 0;
+}
+
+.nickname {
   max-width: 170px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.score {
+  max-width: 100%;
+  padding: 6px 10px;
+  border-radius: tokens.$radius-badge;
+  background: tokens.$primary-overlay;
+  color: tokens.$primary;
+  font-size: tokens.$font-size-sm;
+  overflow-wrap: anywhere;
 }
 
 .error {
@@ -62,6 +86,9 @@
   .controls {
     gap: 24px;
   }
+  .authenticated {
+    margin-inline-start: 0;
+  }
 }
 
 @include breakpoints.down(sm) {
@@ -73,7 +100,17 @@
     width: 80px;
     min-height: 40px;
   }
-  .email {
-    max-width: 100px;
+  .authenticated {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    max-width: 150px;
+  }
+  .user {
+    justify-content: flex-end;
+    max-width: 150px;
+  }
+  .nickname {
+    max-width: 150px;
   }
 }

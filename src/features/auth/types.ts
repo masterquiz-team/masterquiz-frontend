@@ -23,6 +23,11 @@ export type AuthSessionState =
   | { status: "authenticated"; session: AuthSession }
   | { status: "unavailable"; session: null };
 
+export type UserProfile = {
+  nickname: string | null;
+  score: number | null;
+};
+
 export type RegisteredUser = {
   id: number;
   email: string;

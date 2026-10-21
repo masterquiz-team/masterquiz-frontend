@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type { GamePhase, GameResultAnswer } from "@/features/game/types";
 import { PlayAgain } from "./PlayAgain";
 import { ResultsTrophy } from "./ResultsTrophy";
@@ -33,9 +34,12 @@ export function FinishedPhase({
   page: number;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const router = useRouter();
   useEffect(() => {
     heading.current?.focus();
-  }, []);
+    // Manual finish, timeout and resumed results all refresh the server header.
+    router.refresh();
+  }, [router]);
   const { summary, results } = game;
   const incorrect = summary.answered - summary.correct;
   const skipped = summary.total - summary.answered;

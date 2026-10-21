@@ -7,6 +7,7 @@ import {
   jsonBody,
 } from "@/lib/api/server";
 import { getCategory } from "@/features/categories/server/api";
+import { getUserProfile } from "@/features/auth/server/profile";
 import {
   parsePlayerAttempt,
   parsePlayerQuiz,
@@ -207,31 +208,14 @@ export async function reviewGame(
 
 export async function withTotalScore(game: GameView): Promise<GameView> {
   if (game.phase !== "finished") return game;
-  try {
-    const profile = await quizRequest("/user-profile", (value) => {
-      if (!isRecord(value)) invalidContract();
-      // Optional fields degrade independently; no other profile data is sent
-      // to the player, including email, user ID and backend entity fields.
-      return {
-        totalScore:
-          Number.isSafeInteger(value.score) && (value.score as number) >= 0
-            ? (value.score as number)
-            : null,
-        nickname:
-          typeof value.nickname === "string" && value.nickname.trim()
-            ? value.nickname.trim()
-            : null,
-      };
-    });
-    return {
-      ...game,
-      nickname: profile.nickname,
-      summary: { ...game.summary, totalScore: profile.totalScore },
-    };
-  } catch {
-    // Results remain available when the optional profile read fails; keep JWT.
-    return game;
-  }
+  const profile = await getUserProfile();
+  return profile
+    ? {
+        ...game,
+        nickname: profile.nickname,
+        summary: { ...game.summary, totalScore: profile.score },
+      }
+    : game;
 }
 export async function loadGame(
   attemptId: number,
