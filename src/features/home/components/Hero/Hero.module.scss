@@ -53,7 +53,9 @@
   color: tokens.$surface;
   font-size: tokens.$font-size-xl;
   line-height: 24px;
-  transition: background-color 150ms;
+  @include patterns.interactive-lift(
+    (background-color 150ms, transform 180ms ease)
+  );
 }
 .startButton:hover {
   background: var(--primary-hover);

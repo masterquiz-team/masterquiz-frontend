@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { GameView } from "@/features/game/types";
 import {
   attemptKey,
+  gameStartOf,
   finishGame,
   getGame,
   GameRequestError,
@@ -32,23 +33,14 @@ export function useGame(
     (game.phase === "timed-out" || remaining === 0);
   useEffect(() => {
     if (!game) return;
+    const key = attemptKey(gameStartOf(game));
     try {
       if (game.phase === "finished") {
         // A completed page can be reloaded after an uncertain Play again POST.
         // Clear only this attempt, preserving a newer attempt or unknown start.
-        if (
-          sessionStorage.getItem(
-            attemptKey(game.category.id, game.difficulty),
-          ) === String(attemptId)
-        )
-          sessionStorage.removeItem(
-            attemptKey(game.category.id, game.difficulty),
-          );
-      } else
-        sessionStorage.setItem(
-          attemptKey(game.category.id, game.difficulty),
-          String(attemptId),
-        );
+        if (sessionStorage.getItem(key) === String(attemptId))
+          sessionStorage.removeItem(key);
+      } else sessionStorage.setItem(key, String(attemptId));
     } catch {
       // The attempt URL remains sufficient for reload/resume.
     }

@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { submitAuth } from "../services/auth";
 import { createAuthPayload, emptyAuthValues } from "../utils/form";
 import { getAuthSuccessRedirect } from "../utils/redirect";
-import { validateAuthValues } from "../validation";
+import { validateAuthValues } from "../validators/auth";
 import type {
   AuthFeedback,
   AuthFieldErrors,

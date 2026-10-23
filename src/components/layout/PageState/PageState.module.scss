@@ -1,3 +1,6 @@
+@use "../../../styles/tokens";
+@use "../../../styles/patterns";
+
 .main {
   flex: 1;
   width: min(1100px, calc(100% - 48px));
@@ -6,32 +9,26 @@
 }
 
 .state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  padding: 64px 24px;
-  border-radius: 23px;
-  background: white;
-  text-align: center;
+  @include patterns.state-card {
+    gap: 16px;
+    padding: 64px 24px;
+    border-radius: tokens.$radius-card;
+    background: tokens.$surface;
+  }
 
   h1 {
-    font-size: 32px;
-    font-weight: 600;
     line-height: 1.25;
   }
 
   a,
   button {
-    color: var(--primary);
-    text-decoration: underline;
+    @include patterns.primary-link;
     text-underline-offset: 3px;
     cursor: pointer;
   }
 
   a:focus-visible,
   button:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 4px;
+    @include patterns.focus-ring;
   }
 }

@@ -52,6 +52,18 @@
   gap: 8px 12px;
   max-width: 220px;
   min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  border-radius: tokens.$radius-control;
+
+  &:hover .nickname,
+  &[aria-current="page"] .nickname {
+    color: var(--primary);
+  }
+
+  &:focus-visible {
+    @include patterns.focus-ring($offset: 4px);
+  }
 }
 
 .nickname {

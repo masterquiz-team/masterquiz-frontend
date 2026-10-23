@@ -72,7 +72,9 @@
   border-radius: 34px;
   color: var(--primary);
   font-size: tokens.$font-size-xl;
-  transition: background-color 150ms;
+  @include patterns.interactive-lift(
+    (background-color 150ms, transform 180ms ease)
+  );
 }
 .signUp:hover {
   background: tokens.$primary-tint;

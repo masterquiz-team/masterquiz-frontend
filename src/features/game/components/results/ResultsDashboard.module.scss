@@ -4,6 +4,11 @@
 .srOnly {
   @include patterns.visually-hidden;
 }
+
+.playAgain,
+.questionNumber {
+  @include patterns.interactive-lift;
+}
 .dashboard {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);

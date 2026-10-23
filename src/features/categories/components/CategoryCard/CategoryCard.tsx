@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
-import { getCategoryArtwork } from "../../design-preview";
+import { getCategoryArtwork } from "../../artwork";
 import styles from "./CategoryCard.module.scss";
 
 type Props = {

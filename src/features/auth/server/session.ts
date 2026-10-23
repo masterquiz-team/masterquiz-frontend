@@ -13,8 +13,6 @@ import { cache } from "react";
 import type { NextResponse } from "next/server";
 import type { AuthSession, AuthSessionState } from "../types";
 
-export { getSessionToken, SESSION_COOKIE } from "@/lib/backend/token";
-
 // Claim decoding does not verify the signature; getSessionState asks Java.
 export function readTokenSession(token: string): AuthSession | null {
   const claims = readTokenClaims(token);
@@ -44,11 +42,11 @@ export const getSessionState = cache(async (): Promise<AuthSessionState> => {
   }
 });
 
-export async function getSession(): Promise<AuthSession | null> {
-  const state = await getSessionState();
-  if (state.status === "unavailable")
-    throw new Error("The session could not be verified.");
-  return state.session;
+// The backend answers unhandled database errors (for example a foreign key
+// that blocks a delete) with 401, because its error page requires login.
+// A 401 is a real logout only when the token no longer verifies.
+export async function isSessionStillValid() {
+  return (await getSessionState()).status === "authenticated";
 }
 
 export function setSessionCookie(

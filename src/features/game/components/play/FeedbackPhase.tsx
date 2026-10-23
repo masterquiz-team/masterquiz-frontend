@@ -1,6 +1,7 @@
 import type { GamePhase } from "@/features/game/types";
 import { assets } from "../../assets/play";
-import { CorrectArtwork, DesignAsset } from "./GameplayArtwork";
+import { DesignAsset } from "@/components/ui/DesignAsset";
+import { CorrectArtwork } from "./GameplayArtwork";
 import { CardMeta, NextButton, QuestionCard } from "./QuestionCard";
 import styles from "./Gameplay.module.scss";
 export function FeedbackPhase({

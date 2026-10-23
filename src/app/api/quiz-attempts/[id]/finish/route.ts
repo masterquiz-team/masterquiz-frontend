@@ -1,4 +1,10 @@
-import { ApiError, apiResponse, parseId, readMutation } from "@/lib/api/server";
+import {
+  ApiError,
+  apiResponse,
+  parseId,
+  readMutation,
+  requireExactKeys,
+} from "@/lib/api/server";
 import {
   buildGameView,
   finishAttempt,
@@ -13,8 +19,7 @@ export function PUT(
 ) {
   return apiResponse(async () => {
     const body = await readMutation(request);
-    if (Object.keys(body).length)
-      throw new ApiError(400, "No finish parameters are accepted.");
+    requireExactKeys(body, [], "No finish parameters are accepted.");
     const id = parseId((await params).id);
     return withAttemptMutation(id, async () => {
       const [context, history] = await Promise.all([

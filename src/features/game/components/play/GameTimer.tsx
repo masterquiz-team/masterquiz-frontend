@@ -1,7 +1,7 @@
 import type { GameView } from "@/features/game/types";
 import { getDifficulty } from "@/features/game/difficulty";
 import { assets } from "../../assets/play";
-import { DesignAsset } from "./GameplayArtwork";
+import { DesignAsset } from "@/components/ui/DesignAsset";
 import styles from "./Gameplay.module.scss";
 
 export function GameTimer({

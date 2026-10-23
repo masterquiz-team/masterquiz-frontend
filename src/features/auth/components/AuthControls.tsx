@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { logout } from "../services/auth";
 import type { AuthSessionState } from "../types";
@@ -17,6 +17,7 @@ export function AuthControls({
   score: number | null;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,16 +52,19 @@ export function AuthControls({
         </>
       ) : status === "authenticated" ? (
         <>
-          <div className={styles.user}>
+          <Link
+            href="/profile"
+            className={styles.user}
+            aria-label={`Profile: ${name ?? "your account"}${score !== null ? `, score ${score}` : ""}`}
+            aria-current={pathname === "/profile" ? "page" : undefined}
+          >
             <span className={styles.nickname} title={name ?? undefined}>
               {name}
             </span>
             {score !== null && (
-              <span className={styles.score} role="status">
-                Score: {score}
-              </span>
+              <span className={styles.score}>Score: {score}</span>
             )}
-          </div>
+          </Link>
           <button
             className={styles.action}
             onClick={handleLogout}
