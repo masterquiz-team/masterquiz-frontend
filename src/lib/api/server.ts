@@ -1,5 +1,6 @@
 import "server-only";
 
+import type { NextResponse } from "next/server";
 import { backendFetch, BackendConfigurationError } from "../backend/transport";
 import { getSessionToken } from "../backend/token";
 
@@ -15,8 +16,7 @@ export {
   parseId,
   parsePage,
   requireId,
-  requireText,
-  requireBoolean,
+  requireExactKeys,
 } from "../validation";
 
 // Read the token once; the shared transport owns timeout and cache policy.
@@ -88,7 +88,7 @@ export async function readMutation(
   return value;
 }
 
-export function assertSameOrigin(request: Request): void {
+function assertSameOrigin(request: Request): void {
   const rejected = checkMutationRequest(request);
   if (rejected)
     throw new ApiError(
@@ -103,7 +103,7 @@ export async function apiResponse(
   work: () => Promise<unknown>,
   status = 200,
   context = "apiResponse",
-): Promise<Response> {
+): Promise<NextResponse> {
   try {
     return jsonResponse(await work(), status);
   } catch (error) {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { Reveal } from "@/components/ui/Entrance";
 import {
   CategoriesHeading,
   CategoriesLoading,
@@ -13,11 +14,11 @@ export default function CategoriesPage({
   searchParams,
 }: PageProps<"/categories">) {
   return (
-    <main className={styles.main}>
+    <Reveal as="main" className={styles.main}>
       <CategoriesHeading />
       <Suspense fallback={<CategoriesLoading />}>
         <CategoriesScreen searchParams={searchParams} />
       </Suspense>
-    </main>
+    </Reveal>
   );
 }

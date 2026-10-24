@@ -1,72 +1,27 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { attemptKey, startNewGame } from "@/features/game/services/game";
+import { useStartGame } from "@/features/game/hooks/useStartGame";
 import { getDifficulty, type Difficulty } from "@/features/game/difficulty";
+import type { GameStart } from "@/features/game/services/game";
 import styles from "./ResultsDashboard.module.scss";
 
 export function PlayAgain({
-  categoryId,
+  target,
   difficulty,
   page,
   previousAttemptId,
 }: {
-  categoryId: number;
+  target: GameStart;
   difficulty: Difficulty;
   page: number;
   previousAttemptId: number;
 }) {
-  const router = useRouter();
-  const starting = useRef(false);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [uncertain, setUncertain] = useState(false);
-
-  async function start(another = false) {
-    if (starting.current) return;
-    starting.current = true;
-    setPending(true);
-    setError(null);
-    try {
-      const key = attemptKey(categoryId, difficulty);
-      if (another) sessionStorage.removeItem(key);
-      const saved = sessionStorage.getItem(key);
-      if (saved === "unknown")
-        throw new Error(
-          "A previous start could not be confirmed. Starting another attempt may create a duplicate. Check the existing attempt before restarting.",
-        );
-      // Reopening results must not discard a confirmed newer start either.
-      if (
-        saved &&
-        /^\d+$/.test(saved) &&
-        Number.isSafeInteger(Number(saved)) &&
-        Number(saved) > 0 &&
-        Number(saved) !== previousAttemptId
-      ) {
-        router.push(`/quiz/play/${Number(saved)}?page=${page}`);
-        return;
-      }
-      const attempt = await startNewGame(categoryId, difficulty);
-      router.push(`/quiz/play/${attempt.id}?page=${page}`);
-    } catch (cause) {
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : "The game could not be started.",
-      );
-      try {
-        setUncertain(
-          sessionStorage.getItem(attemptKey(categoryId, difficulty)) ===
-            "unknown",
-        );
-      } catch {
-        setUncertain(false);
-      }
-      setPending(false);
-      starting.current = false;
-    }
-  }
+  const { pending, error, uncertain, start } = useStartGame({
+    page,
+    previousAttemptId,
+    unconfirmedMessage:
+      "A previous start could not be confirmed. Starting another attempt may create a duplicate. Check the existing attempt before restarting.",
+  });
 
   return (
     <div className={styles.replay}>
@@ -74,7 +29,7 @@ export function PlayAgain({
         type="button"
         className={styles.playAgain}
         disabled={pending}
-        onClick={() => void start()}
+        onClick={() => void start(target)}
       >
         {pending
           ? `Opening your ${getDifficulty(difficulty)?.label ?? ""} game…`
@@ -97,7 +52,7 @@ export function PlayAgain({
             className={styles.secondaryLink}
             disabled={pending}
             aria-describedby="replay-warning"
-            onClick={() => void start(true)}
+            onClick={() => void start(target, true)}
           >
             Start another attempt
           </button>

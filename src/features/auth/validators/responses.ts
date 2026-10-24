@@ -7,7 +7,6 @@ import type {
 } from "../types";
 
 import { isRecord } from "@/lib/validation";
-export { isRecord } from "@/lib/validation";
 
 export function isAuthSession(value: unknown): value is AuthSession {
   return (

@@ -4,7 +4,7 @@ import { useId } from "react";
 import type { ReactNode } from "react";
 import type { AnswerFeedback, GameplayOption } from "../../types";
 import { assets } from "../../assets/play";
-import { DesignAsset } from "./GameplayArtwork";
+import { DesignAsset } from "@/components/ui/DesignAsset";
 import styles from "./Gameplay.module.scss";
 
 export function CardMeta({
@@ -43,6 +43,7 @@ export function NextButton({
       type="button"
       className={`${styles.next} ${filled ? styles.filled : ""}`}
       disabled={disabled}
+      aria-keyshortcuts="Enter"
       onClick={onClick}
     >
       {children}
@@ -89,7 +90,7 @@ export function QuestionCard({
       </h1>
       <fieldset className={styles.options} disabled={reviewed || disabled}>
         <legend className={styles.srOnly}>Choose an answer</legend>
-        {options.map((option) => {
+        {options.map((option, index) => {
           const outcome = feedback.find(
             (item) => item.optionId === option.id,
           )?.outcome;
@@ -113,6 +114,9 @@ export function QuestionCard({
                 value={option.id}
                 checked={selected}
                 onChange={() => onSelect(option.id)}
+                aria-keyshortcuts={
+                  !reviewed && index < 4 ? String(index + 1) : undefined
+                }
                 aria-describedby={
                   outcome ? `${id}-${option.id}-outcome` : undefined
                 }

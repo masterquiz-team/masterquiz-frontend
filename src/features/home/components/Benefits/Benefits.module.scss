@@ -1,5 +1,6 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
 
 .section {
   scroll-margin-top: 24px;
@@ -34,22 +35,7 @@
   width: 100px;
   height: 100px;
   margin-bottom: 34px;
-  border: 2px solid var(--foreground);
-  background:
-    linear-gradient(
-      45deg,
-      transparent calc(50% - 0.7px),
-      var(--foreground) calc(50% - 0.7px),
-      var(--foreground) calc(50% + 0.7px),
-      transparent calc(50% + 0.7px)
-    ),
-    linear-gradient(
-      -45deg,
-      transparent calc(50% - 0.7px),
-      var(--foreground) calc(50% - 0.7px),
-      var(--foreground) calc(50% + 0.7px),
-      transparent calc(50% + 0.7px)
-    );
+  @include patterns.image-placeholder;
 }
 .itemTitle {
   font-size: tokens.$font-size-xl;

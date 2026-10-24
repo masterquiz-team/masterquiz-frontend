@@ -3,8 +3,8 @@ import { authJson, checkAuthRequest } from "@/features/auth/server/request";
 import {
   parseAuthPayload,
   validateAuthValues,
-} from "@/features/auth/validation";
-import { isRecord } from "@/features/auth/validators/responses";
+} from "@/features/auth/validators/auth";
+import { isRecord } from "@/lib/validation";
 
 export async function POST(
   request: Request,

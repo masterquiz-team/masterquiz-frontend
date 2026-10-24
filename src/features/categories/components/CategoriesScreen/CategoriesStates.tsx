@@ -1,16 +1,17 @@
 import Link from "next/link";
-import { categoryArtwork } from "../../design-preview";
+import { Stagger } from "@/components/ui/Entrance";
+import { categoryArtwork } from "../../artwork";
 import type { Category, CategoryPage } from "../../types";
 import { CategoryCard } from "../CategoryCard";
 import styles from "./CategoriesScreen.module.scss";
 
 export function CategoriesPreview({ loginHref }: { loginHref: string }) {
   return (
-    <ul className={styles.grid}>
+    <Stagger as="ul" className={styles.grid}>
       {categoryArtwork.map(({ name }) => (
         <CategoryCard key={name} name={name} href={loginHref} requiresLogin />
       ))}
-    </ul>
+    </Stagger>
   );
 }
 
@@ -58,7 +59,7 @@ export function CategoriesList({
   page: number;
 }) {
   return (
-    <ul className={styles.grid}>
+    <Stagger as="ul" className={styles.grid} key={page}>
       {categories.map((category) => (
         <CategoryCard
           key={category.id}
@@ -67,6 +68,6 @@ export function CategoriesList({
           href={`/categories/difficulty?${new URLSearchParams({ page: String(page), category: String(category.id) })}`}
         />
       ))}
-    </ul>
+    </Stagger>
   );
 }

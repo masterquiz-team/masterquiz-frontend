@@ -1,6 +1,6 @@
 import type { AuthFieldErrors, AuthFormMode, AuthValues } from "../types";
 import { createAuthPayload } from "../utils/form";
-import { isRecord } from "./responses";
+import { isRecord } from "@/lib/validation";
 
 // JSON has no TypeScript guarantees. Narrow its fields before normalizing them.
 export function parseAuthPayload(

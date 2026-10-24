@@ -1,5 +1,6 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
 
 .card {
   display: flex;
@@ -11,9 +12,12 @@
   border: 2px solid tokens.$surface;
   border-radius: tokens.$radius-card;
   background: tokens.$surface;
-  transition:
-    border-color 150ms,
-    box-shadow 150ms;
+}
+
+a.card {
+  @include patterns.interactive-lift(
+    (border-color 150ms, box-shadow 150ms, transform 180ms ease)
+  );
 }
 
 @media (hover: hover) and (pointer: fine) {

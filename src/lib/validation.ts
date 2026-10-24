@@ -36,27 +36,23 @@ export function parsePage(value: string | undefined): number {
   return page;
 }
 
-export function requireText(
-  value: unknown,
-  name: string,
-  min: number,
-  max: number,
-): string {
-  if (!isText(value, min, max))
-    throw new ApiError(400, `${name} must contain ${min}–${max} characters.`);
-  return value;
-}
-
 export function requireId(value: unknown, name = "id"): number {
   if (!isId(value))
     throw new ApiError(400, `${name} must be a positive integer.`);
   return value;
 }
 
-export function requireBoolean(value: unknown, name: string): boolean {
-  if (typeof value !== "boolean")
-    throw new ApiError(400, `${name} must be a boolean.`);
-  return value;
+// Rejects bodies with missing or unexpected properties.
+export function requireExactKeys(
+  body: Record<string, unknown>,
+  keys: string[],
+  message: string,
+): void {
+  if (
+    Object.keys(body).length !== keys.length ||
+    !keys.every((key) => key in body)
+  )
+    throw new ApiError(400, message);
 }
 
 export function requirePagination(

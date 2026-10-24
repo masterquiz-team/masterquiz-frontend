@@ -1,9 +1,9 @@
 import "client-only";
 
 import type { AuthFormMode, AuthSubmitResult, AuthValues } from "../types";
+import { isRecord } from "@/lib/validation";
 import {
   isAuthSession,
-  isRecord,
   isRegisteredUser,
   parseAuthError,
 } from "../validators/responses";

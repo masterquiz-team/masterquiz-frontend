@@ -1,12 +1,9 @@
 import "server-only";
 
 import type { AuthFormMode, AuthValues } from "../types";
-import {
-  isRecord,
-  isRegisteredUser,
-  parseAuthError,
-} from "../validators/responses";
+import { isRegisteredUser, parseAuthError } from "../validators/responses";
 import { backendFetch } from "@/lib/backend/transport";
+import { isRecord } from "@/lib/validation";
 import { authJson } from "./request";
 import { readTokenSession, setSessionCookie } from "./session";
 

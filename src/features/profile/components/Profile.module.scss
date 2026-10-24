@@ -1,0 +1,73 @@
+@use "../../../styles/tokens";
+@use "../../../styles/patterns";
+
+.profile {
+  display: grid;
+  gap: 32px;
+  max-width: 520px;
+  h1 {
+    font-size: tokens.$font-size-4xl;
+    font-weight: 600;
+  }
+  h2 {
+    margin-bottom: 12px;
+    font-size: tokens.$font-size-lg;
+    font-weight: 600;
+  }
+  section > p {
+    margin-bottom: 12px;
+    color: tokens.$text-muted;
+  }
+}
+.details {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 24px;
+  dt {
+    color: tokens.$text-muted;
+  }
+  dd {
+    overflow-wrap: anywhere;
+  }
+}
+.form {
+  display: grid;
+  gap: 12px;
+}
+.formActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.primaryButton,
+.dangerButton {
+  padding: 10px 20px;
+  border-radius: tokens.$radius-control;
+  cursor: pointer;
+  @include patterns.interactive-lift;
+  &:disabled {
+    @include patterns.disabled-control($opacity: 0.6);
+  }
+}
+.primaryButton {
+  @include patterns.primary-button;
+}
+.dangerButton {
+  border: 1px solid tokens.$danger;
+  color: tokens.$danger;
+}
+.textButton {
+  @include patterns.primary-link;
+  cursor: pointer;
+}
+.successText {
+  color: tokens.$success;
+}
+.errorText {
+  color: tokens.$danger;
+}
+.primaryButton:focus-visible,
+.dangerButton:focus-visible,
+.textButton:focus-visible {
+  @include patterns.focus-ring;
+}

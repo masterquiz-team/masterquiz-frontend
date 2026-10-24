@@ -1,5 +1,6 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
 
 .card {
   display: flex;
@@ -14,22 +15,7 @@
   flex-shrink: 0;
   width: 100px;
   height: 100px;
-  border: 2px solid var(--foreground);
-  background:
-    linear-gradient(
-      45deg,
-      transparent calc(50% - 0.7px),
-      var(--foreground) calc(50% - 0.7px),
-      var(--foreground) calc(50% + 0.7px),
-      transparent calc(50% + 0.7px)
-    ),
-    linear-gradient(
-      -45deg,
-      transparent calc(50% - 0.7px),
-      var(--foreground) calc(50% - 0.7px),
-      var(--foreground) calc(50% + 0.7px),
-      transparent calc(50% + 0.7px)
-    );
+  @include patterns.image-placeholder;
 }
 .content {
   flex: 1;

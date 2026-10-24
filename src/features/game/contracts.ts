@@ -5,6 +5,7 @@ import type {
   RecordedAnswer,
   SubmittedAnswer,
 } from "./types";
+import type { ContextOption, RevealedOption } from "./server/game-view";
 import { getDifficultyByApiName } from "./difficulty";
 
 import { invalidContract } from "@/lib/api/errors";
@@ -118,4 +119,50 @@ export function parsePlayerAttempt(v: unknown): PlayerAttempt {
     finishedAt: v.finishedAt,
     status: v.status,
   };
+}
+
+export function parsePlayerOptions(
+  value: unknown,
+  questionId: number,
+): ContextOption[] {
+  if (!Array.isArray(value) || value.length < 2) return invalid();
+  const options = value.map((raw) => {
+    if (
+      !record(raw) ||
+      !id(raw.id) ||
+      typeof raw.text !== "string" ||
+      !raw.text.trim() ||
+      raw.questionId !== questionId ||
+      !Number.isSafeInteger(raw.points) ||
+      (raw.points as number) < 0
+    )
+      return invalid();
+    // The Java player endpoint currently leaks correct. Discard it here.
+    return {
+      id: raw.id,
+      text: raw.text,
+      questionId,
+      points: raw.points as number,
+    };
+  });
+  if (new Set(options.map((a) => a.id)).size !== options.length)
+    return invalid();
+  return options;
+}
+
+export function parseRevealedOptions(
+  value: unknown,
+  questionId: number,
+): RevealedOption[] {
+  if (!Array.isArray(value)) return invalid();
+  return value.map((raw) => {
+    if (
+      !record(raw) ||
+      !id(raw.id) ||
+      raw.questionId !== questionId ||
+      typeof raw.correct !== "boolean"
+    )
+      return invalid();
+    return { id: raw.id, correct: raw.correct };
+  });
 }

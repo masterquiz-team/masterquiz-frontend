@@ -3,27 +3,18 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type { GamePhase, GameResultAnswer } from "@/features/game/types";
+import { Reveal } from "@/components/ui/Entrance";
+import type { GamePhase } from "@/features/game/types";
+import { answerOutcomes, AnswerOutcomeIcon } from "./AnswerOutcome";
+import { ResultsAnswers } from "./ResultsAnswers";
 import { PlayAgain } from "./PlayAgain";
+import { gameStartOf } from "@/features/game/services/game";
+import { quizListHref } from "@/features/game/routes";
 import { ResultsTrophy } from "./ResultsTrophy";
 import styles from "./ResultsDashboard.module.scss";
 
-const outcomes = {
-  correct: { label: "Correct", icon: "✓" },
-  wrong: { label: "Wrong", icon: "×" },
-  skipped: { label: "Skipped", icon: "−" },
-} as const;
-
 function formatTime(seconds: number) {
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
-}
-
-function OutcomeIcon({ outcome }: { outcome: GameResultAnswer["outcome"] }) {
-  return (
-    <span className={styles.outcomeIcon} aria-hidden="true">
-      {outcomes[outcome].icon}
-    </span>
-  );
 }
 
 export function FinishedPhase({
@@ -41,12 +32,10 @@ export function FinishedPhase({
     router.refresh();
   }, [router]);
   const { summary, results } = game;
-  const incorrect = summary.answered - summary.correct;
-  const skipped = summary.total - summary.answered;
   const accuracy = Math.round((summary.correct / summary.total) * 100);
 
   return (
-    <div className={styles.dashboard}>
+    <Reveal className={styles.dashboard}>
       <section className={styles.overview} aria-labelledby="results-heading">
         <div className={styles.intro}>
           <ResultsTrophy />
@@ -114,10 +103,10 @@ export function FinishedPhase({
                 <a
                   className={`${styles.questionNumber} ${styles[answer.outcome]}`}
                   href={`#result-answer-${answer.questionId}`}
-                  aria-label={`Question ${index + 1}: ${outcomes[answer.outcome].label}`}
+                  aria-label={`Question ${index + 1}: ${answerOutcomes[answer.outcome].label}`}
                 >
                   <span>{index + 1}</span>
-                  <OutcomeIcon outcome={answer.outcome} />
+                  <AnswerOutcomeIcon outcome={answer.outcome} />
                 </a>
               </li>
             ))}
@@ -127,77 +116,29 @@ export function FinishedPhase({
             role="list"
             aria-label="Answer status legend"
           >
-            {Object.entries(outcomes).map(([outcome, { label, icon }]) => (
-              <li key={outcome}>
-                <span aria-hidden="true">{icon}</span> {label}
-              </li>
-            ))}
+            {Object.entries(answerOutcomes).map(
+              ([outcome, { label, icon }]) => (
+                <li key={outcome}>
+                  <span aria-hidden="true">{icon}</span> {label}
+                </li>
+              ),
+            )}
           </ul>
         </section>
         <PlayAgain
-          categoryId={game.category.id}
+          target={gameStartOf(game)}
           difficulty={game.difficulty}
           page={page}
           previousAttemptId={game.attempt.id}
         />
         <Link
           className={styles.secondaryLink}
-          href={`/categories?page=${page}`}
+          href={quizListHref(game.category.id, game.difficulty, page)}
         >
-          Back to categories
+          Choose another quiz
         </Link>
       </section>
-      <aside className={styles.answersPanel} aria-labelledby="answers-heading">
-        <h2 id="answers-heading">Your answers</h2>
-        <ol className={styles.answers} role="list">
-          {results.map((answer, index) => (
-            <li
-              key={answer.questionId}
-              id={`result-answer-${answer.questionId}`}
-              tabIndex={-1}
-              className={`${styles.answerRow} ${styles[answer.outcome]}`}
-            >
-              <OutcomeIcon outcome={answer.outcome} />
-              <span className={styles.answerNumber} aria-hidden="true">
-                {index + 1}.
-              </span>
-              <div className={styles.answerContent}>
-                <h3>
-                  <span className={styles.srOnly}>Question {index + 1}: </span>
-                  {answer.questionText}
-                </h3>
-                <p>
-                  Your answer: {answer.answerText ?? "Not answered"}
-                  <span className={styles.outcomeLabel}>
-                    {" · "}
-                    {outcomes[answer.outcome].label}
-                  </span>
-                </p>
-              </div>
-            </li>
-          ))}
-        </ol>
-        <section
-          className={styles.quickStats}
-          aria-labelledby="quick-stats-heading"
-        >
-          <h2 id="quick-stats-heading">Quick stats</h2>
-          <dl>
-            <div className={styles.correct}>
-              <dt>Correct</dt>
-              <dd>{summary.correct}</dd>
-            </div>
-            <div className={styles.wrong}>
-              <dt>Incorrect</dt>
-              <dd>{incorrect}</dd>
-            </div>
-            <div className={styles.skipped}>
-              <dt>Skipped</dt>
-              <dd>{skipped}</dd>
-            </div>
-          </dl>
-        </section>
-      </aside>
-    </div>
+      <ResultsAnswers results={results} summary={summary} />
+    </Reveal>
   );
 }

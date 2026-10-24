@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useId, useRef } from "react";
-import { DesignAsset } from "./GameplayArtwork";
+import { DesignAsset } from "@/components/ui/DesignAsset";
 import { assets } from "../../assets/play";
 import styles from "./Gameplay.module.scss";
 
@@ -45,6 +45,7 @@ export function ExitDialog({
         type="button"
         className={styles.dialogClose}
         aria-label="Close dialog"
+        aria-keyshortcuts="Escape"
         onClick={onCancel}
       >
         <DesignAsset src={assets.dialog.close} />

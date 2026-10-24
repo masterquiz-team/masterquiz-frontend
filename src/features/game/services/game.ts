@@ -1,5 +1,6 @@
 import type { Difficulty } from "../difficulty";
 import type { GameView, PlayerAttempt } from "../types";
+import { isGeneratedQuiz } from "../quizzes";
 
 export class GameRequestError extends Error {
   constructor(
@@ -42,20 +43,41 @@ export async function gameRequest<T>(
     );
   return value as T;
 }
-export const attemptKey = (categoryId: number, difficulty: Difficulty) =>
-  `masterquiz-attempt:${categoryId}:${difficulty}`;
-export async function startNewGame(
-  categoryId: number,
-  difficulty: Difficulty,
-): Promise<PlayerAttempt> {
-  const key = attemptKey(categoryId, difficulty);
+// What a start request asks for: a chosen quiz, or a random quiz of a
+// category and difficulty.
+export type GameStart =
+  { quizId: number } | { categoryId: number; difficulty: Difficulty };
+export const attemptKey = (start: GameStart) =>
+  "quizId" in start
+    ? `masterquiz-attempt:quiz:${start.quizId}`
+    : `masterquiz-attempt:${start.categoryId}:${start.difficulty}`;
+// Rebuilds the start of a loaded game so resume and Play again use one key.
+export const gameStartOf = (game: {
+  attempt: { quizId: number };
+  category: { id: number };
+  difficulty: Difficulty;
+  title: string;
+}): GameStart =>
+  isGeneratedQuiz(game.title)
+    ? { categoryId: game.category.id, difficulty: game.difficulty }
+    : { quizId: game.attempt.quizId };
+export function parseSavedAttemptId(saved: string | null): number | null {
+  return saved &&
+    /^\d+$/.test(saved) &&
+    Number.isSafeInteger(Number(saved)) &&
+    Number(saved) > 0
+    ? Number(saved)
+    : null;
+}
+export async function startNewGame(start: GameStart): Promise<PlayerAttempt> {
+  const key = attemptKey(start);
   // Write before the request: a lost response must not create another attempt on reload.
   sessionStorage.setItem(key, "unknown");
   try {
     const attempt = await gameRequest<PlayerAttempt>(
       "/api/quiz-attempts",
       "POST",
-      { categoryId, difficulty },
+      start,
     );
     sessionStorage.setItem(key, String(attempt.id));
     return attempt;

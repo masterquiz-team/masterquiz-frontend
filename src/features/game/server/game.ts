@@ -2,13 +2,14 @@ import "server-only";
 import {
   ApiError,
   invalidContract,
-  isId,
   isRecord,
   jsonBody,
 } from "@/lib/api/server";
 import { getCategory } from "@/features/categories/server/api";
 import { getUserProfile } from "@/features/auth/server/profile";
 import {
+  parsePlayerOptions,
+  parseRevealedOptions,
   parsePlayerAttempt,
   parsePlayerQuiz,
   parseRecordedAnswer,
@@ -24,6 +25,7 @@ import {
   type GameContext,
 } from "@/features/game/server/game-view";
 import { getQuizAttempt, startRandomQuizAttempt, quizRequest } from "./api";
+import { canStartRandomQuiz } from "./availability";
 
 export async function getHistory(attemptId: number) {
   return quizRequest(`/quiz-attempts/answers/${attemptId}`, (value) => {
@@ -103,46 +105,14 @@ export async function getPrivateQuiz(id: number): Promise<PrivateQuiz> {
 export async function getPlayerOptions(
   questionId: number,
 ): Promise<ContextOption[]> {
-  return quizRequest(`/answers/question/${questionId}/quiz`, (value) => {
-    if (!Array.isArray(value) || value.length < 2) invalidContract();
-    const options = value.map((raw) => {
-      if (
-        !isRecord(raw) ||
-        !isId(raw.id) ||
-        typeof raw.text !== "string" ||
-        !raw.text.trim() ||
-        raw.questionId !== questionId ||
-        !Number.isSafeInteger(raw.points) ||
-        (raw.points as number) < 0
-      )
-        invalidContract();
-      // The Java player endpoint currently leaks correct. Discard it here.
-      return {
-        id: raw.id,
-        text: raw.text,
-        questionId,
-        points: raw.points as number,
-      };
-    });
-    if (new Set(options.map((a) => a.id)).size !== options.length)
-      invalidContract();
-    return options;
-  });
+  return quizRequest(`/answers/question/${questionId}/quiz`, (value) =>
+    parsePlayerOptions(value, questionId),
+  );
 }
 async function getRevealedOptions(questionId: number) {
-  return quizRequest(`/answers/question/${questionId}`, (value) => {
-    if (!Array.isArray(value)) invalidContract();
-    return value.map((raw) => {
-      if (
-        !isRecord(raw) ||
-        !isId(raw.id) ||
-        raw.questionId !== questionId ||
-        typeof raw.correct !== "boolean"
-      )
-        invalidContract();
-      return { id: raw.id, correct: raw.correct };
-    });
-  });
+  return quizRequest(`/answers/question/${questionId}`, (value) =>
+    parseRevealedOptions(value, questionId),
+  );
 }
 
 // Convert pure domain failures to the existing BFF error contract.
@@ -236,6 +206,11 @@ export async function startGame(categoryId: number, difficulty: Difficulty) {
     throw new ApiError(400, "This difficulty is unavailable.");
   const category = await getCategory(categoryId);
   if (category.id !== categoryId) invalidContract();
+  if (!(await canStartRandomQuiz(category, difficulty)))
+    throw new ApiError(
+      409,
+      "Not enough questions for a random quiz at this difficulty yet. Choose another difficulty or a ready-made quiz.",
+    );
   try {
     return await startRandomQuizAttempt({
       // Backend requires 2–20 characters; the title is not shown to players.

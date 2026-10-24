@@ -1,0 +1,64 @@
+@use "../../../styles/tokens";
+@use "../../../styles/patterns";
+
+.dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(498px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 40px 33px 36px;
+  overflow: auto;
+  border: 2px solid var(--primary);
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
+  color: tokens.$text;
+  &::backdrop {
+    background: tokens.$dialog-backdrop;
+  }
+  // Two classes so styles of a surrounding section cannot override it.
+  .title {
+    text-align: center;
+    font-size: tokens.$font-size-4xl;
+    font-weight: 700;
+    line-height: normal;
+  }
+}
+.body {
+  margin: 16px 0 24px;
+  color: tokens.$text-muted;
+  font-size: tokens.$font-size-sm;
+  line-height: 1.5;
+  text-align: center;
+}
+.error {
+  margin: -8px 0 16px;
+  color: tokens.$danger;
+  font-size: tokens.$font-size-sm;
+  text-align: center;
+}
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  button {
+    min-height: 45px;
+    font-size: tokens.$font-size-md;
+    font-weight: 500;
+    cursor: pointer;
+    &:disabled {
+      @include patterns.disabled-control($opacity: 0.7);
+    }
+    &:focus-visible {
+      @include patterns.focus-ring($width: 3px);
+    }
+  }
+}
+.cancel {
+  @include patterns.outline-button;
+}
+.confirm {
+  border-radius: tokens.$radius-control;
+  background: tokens.$danger;
+  color: tokens.$surface;
+}

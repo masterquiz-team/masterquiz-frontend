@@ -70,6 +70,45 @@
   cursor: $cursor;
 }
 
+@mixin interactive-lift($transition: transform 180ms ease) {
+  transition: $transition;
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:disabled, [aria-disabled="true"]):hover {
+      transform: translateY(-2px);
+    }
+  }
+  &:not(:disabled, [aria-disabled="true"]):active {
+    transform: translateY(0) scale(0.98);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &:not(:disabled, [aria-disabled="true"]):hover,
+    &:not(:disabled, [aria-disabled="true"]):active {
+      transform: none;
+    }
+  }
+}
+
+// Crossed-out box standing in for artwork that has not been supplied yet.
+@mixin image-placeholder {
+  border: 2px solid var(--foreground);
+  background:
+    linear-gradient(
+      45deg,
+      transparent calc(50% - 0.7px),
+      var(--foreground) calc(50% - 0.7px),
+      var(--foreground) calc(50% + 0.7px),
+      transparent calc(50% + 0.7px)
+    ),
+    linear-gradient(
+      -45deg,
+      transparent calc(50% - 0.7px),
+      var(--foreground) calc(50% - 0.7px),
+      var(--foreground) calc(50% + 0.7px),
+      transparent calc(50% + 0.7px)
+    );
+}
+
 @mixin visually-hidden {
   position: absolute;
   width: 1px;

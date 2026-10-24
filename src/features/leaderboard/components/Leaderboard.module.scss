@@ -1,0 +1,346 @@
+@use "../../../styles/tokens";
+@use "../../../styles/patterns";
+@use "../../../styles/breakpoints";
+
+$card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
+
+.leaderboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 413px);
+  grid-template-areas:
+    "intro rank"
+    "table side"
+    "note note";
+  gap: 32px;
+  align-items: start;
+}
+.intro {
+  grid-area: intro;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 28px 0 0 12px;
+  h1 {
+    font-size: tokens.$font-size-7xl;
+    font-weight: 700;
+    line-height: 0.95;
+  }
+}
+.textPlaceholder {
+  display: grid;
+  gap: 8px;
+  margin-top: 28px;
+  span {
+    height: 16px;
+    background: tokens.$placeholder;
+  }
+  span:nth-child(1) {
+    width: 298px;
+  }
+  span:nth-child(2) {
+    width: 337px;
+  }
+  span:nth-child(3) {
+    width: 214px;
+  }
+}
+.imagePlaceholder {
+  flex-shrink: 0;
+  width: 185px;
+  height: 184px;
+  margin-right: 112px;
+  @include patterns.image-placeholder;
+  border-width: 1px;
+}
+
+.card {
+  padding: 24px 26px;
+  border-radius: 8px;
+  background: tokens.$surface;
+  box-shadow: $card-shadow;
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: tokens.$font-size-md;
+    font-weight: 500;
+  }
+}
+.rankCard {
+  grid-area: rank;
+  min-height: 204px;
+}
+.rankRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding-right: 16px;
+  border-radius: 8px;
+  background: tokens.$primary-tint;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  margin: -6px 0;
+  border: 7px solid tokens.$surface;
+  border-radius: tokens.$radius-circle;
+  background: var(--primary);
+  color: tokens.$surface;
+  box-shadow: $card-shadow;
+}
+.rankText {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+  strong {
+    font-weight: 400;
+    overflow-wrap: anywhere;
+  }
+  span {
+    font-size: tokens.$font-size-sm;
+  }
+}
+.points {
+  white-space: nowrap;
+}
+
+.tableCard {
+  grid-area: table;
+  padding: 18px 0 8px;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 22px 18px 26px;
+}
+.scope {
+  display: flex;
+  border-radius: tokens.$radius-pill;
+  background: tokens.$primary-tint;
+  button {
+    min-width: 102px;
+    min-height: 35px;
+    padding: 0 24px;
+    border-radius: tokens.$radius-pill;
+    font-size: tokens.$font-size-sm;
+    cursor: pointer;
+    &[aria-pressed="true"] {
+      @include patterns.primary-button;
+    }
+    &:disabled {
+      @include patterns.disabled-control($cursor: not-allowed);
+    }
+  }
+}
+.select {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: min(204px, 100%);
+  select {
+    width: 100%;
+    min-height: 35px;
+    padding: 0 40px 0 16px;
+    border: 1px solid tokens.$text-muted;
+    border-radius: tokens.$radius-pill;
+    background: tokens.$surface;
+    color: tokens.$text-subtle;
+    font-size: tokens.$font-size-sm;
+    appearance: none;
+    cursor: pointer;
+    &:focus-visible {
+      @include patterns.focus-ring($offset: 2px);
+    }
+  }
+  svg {
+    position: absolute;
+    right: 14px;
+    pointer-events: none;
+  }
+}
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: tokens.$font-size-sm;
+  th {
+    padding: 10px 0;
+    background: tokens.$primary-tint;
+    color: tokens.$text-subtle;
+    font-weight: 400;
+    text-align: left;
+  }
+  td {
+    height: 42px;
+    border-bottom: 1px solid tokens.$text-muted;
+  }
+  th:first-child,
+  td:first-child {
+    width: 125px;
+    padding-left: 48px;
+  }
+  td:first-child {
+    padding-left: 48px;
+  }
+  th:nth-child(3),
+  th:nth-child(4),
+  td:nth-child(3),
+  td:nth-child(4) {
+    width: 140px;
+    text-align: center;
+  }
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}
+.rank {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+}
+.gold {
+  color: #e6c84f;
+}
+.silver {
+  color: tokens.$accent-purple-soft;
+}
+.bronze {
+  color: #d8955e;
+}
+.player {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+}
+.currentRow td {
+  border-top: 2px solid var(--primary);
+  border-bottom: 2px solid var(--primary);
+  background: tokens.$primary-tint;
+  color: var(--primary);
+  &:first-child {
+    border-left: 2px solid var(--primary);
+    border-radius: 8px 0 0 8px;
+  }
+  &:last-child {
+    border-right: 2px solid var(--primary);
+    border-radius: 0 8px 8px 0;
+  }
+}
+.empty {
+  padding: 64px 24px;
+  border-top: 1px solid tokens.$border-subtle;
+  color: tokens.$text-muted;
+  text-align: center;
+}
+
+.side {
+  grid-area: side;
+  display: grid;
+  gap: 32px;
+}
+.cardHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.viewAll {
+  color: var(--primary);
+  font-size: tokens.$font-size-sm;
+  cursor: pointer;
+}
+.tiles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  margin-top: 20px;
+  list-style: none;
+}
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 59px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: tokens.$primary-tint;
+  font-size: tokens.$font-size-sm;
+  cursor: pointer;
+  img {
+    flex-shrink: 0;
+  }
+  &:hover {
+    box-shadow: inset 0 0 0 1px var(--primary);
+  }
+  &[aria-pressed="true"] {
+    @include patterns.primary-button;
+  }
+}
+.badges {
+  min-height: 216px;
+  p {
+    margin-top: 24px;
+    color: tokens.$text-muted;
+    font-size: tokens.$font-size-sm;
+  }
+}
+.demoNote {
+  grid-area: note;
+  color: tokens.$text-subtle;
+  font-size: tokens.$font-size-xs;
+  text-align: center;
+}
+.visuallyHidden {
+  @include patterns.visually-hidden;
+}
+
+.scope button:focus-visible,
+.tile:focus-visible,
+.viewAll:focus-visible {
+  @include patterns.focus-ring($width: 3px);
+}
+
+.tile,
+.scope button {
+  @include patterns.interactive-lift;
+}
+
+@include breakpoints.down(lg) {
+  .leaderboard {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "intro"
+      "rank"
+      "table"
+      "side"
+      "note";
+  }
+  .imagePlaceholder {
+    margin-right: 0;
+  }
+}
+@include breakpoints.down(md) {
+  .imagePlaceholder {
+    display: none;
+  }
+  .intro h1 {
+    font-size: tokens.$font-size-5xl;
+  }
+  .table {
+    th:first-child,
+    td:first-child {
+      width: 80px;
+      padding-left: 16px;
+    }
+  }
+}
