@@ -82,6 +82,11 @@ export function QuestionCard({
   return (
     <section
       className={`${styles.card} ${next ? styles.withNext : ""}`}
+      data-reaction={
+        feedback.some((item) => item.outcome === "incorrect")
+          ? "incorrect"
+          : undefined
+      }
       aria-labelledby={`${id}-question`}
     >
       <CardMeta category={category} progress={progress} />

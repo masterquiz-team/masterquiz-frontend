@@ -2,6 +2,7 @@
 @use "../../../styles/patterns";
 
 .dialog {
+  @include patterns.dialog-motion;
   position: fixed;
   inset: 0;
   margin: auto;
@@ -13,9 +14,6 @@
   border-radius: tokens.$radius-card;
   background: tokens.$surface;
   color: tokens.$text;
-  &::backdrop {
-    background: tokens.$dialog-backdrop;
-  }
   // Two classes so styles of a surrounding section cannot override it.
   .title {
     text-align: center;

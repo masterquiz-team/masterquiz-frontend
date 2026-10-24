@@ -2,6 +2,7 @@ import type { GameView } from "@/features/game/types";
 import { getDifficulty } from "@/features/game/difficulty";
 import { assets } from "../../assets/play";
 import { DesignAsset } from "@/components/ui/DesignAsset";
+import { CountUp } from "@/components/ui/CountUp";
 import styles from "./Gameplay.module.scss";
 
 export function GameTimer({
@@ -43,14 +44,32 @@ export function GameTimer({
             : `${minutes}:${seconds}`;
   return (
     <div className={styles.timer} aria-describedby="timer-notice">
-      <span>Score: {game?.score ?? "Unavailable"}</span>
+      <span>
+        Score: {game ? <CountUp value={game.score} /> : "Unavailable"}
+      </span>
       <div className={styles.timerTrack} aria-hidden="true">
         <span
           className={styles.timerFill}
+          data-urgency={
+            running && remaining > 0
+              ? remaining <= 30
+                ? "critical"
+                : remaining <= 60
+                  ? "warning"
+                  : undefined
+              : undefined
+          }
           style={{ width: `${fraction * 100}%` }}
         />
       </div>
-      <span className={styles.timerValue} role="timer" aria-live="off">
+      <span
+        className={styles.timerValue}
+        data-pulse={
+          running && remaining > 0 && remaining <= 10 ? "true" : undefined
+        }
+        role="timer"
+        aria-live="off"
+      >
         {label}
       </span>
       <span

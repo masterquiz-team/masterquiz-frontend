@@ -237,6 +237,7 @@
   margin-top: 29px;
 }
 .dialog {
+  @include patterns.dialog-motion;
   position: fixed;
   inset: 0;
   margin: auto;
@@ -354,6 +355,16 @@
   height: 100%;
   border-radius: inherit;
   background: tokens.$primary;
+  transition:
+    width 250ms linear,
+    background-color 250ms ease;
+  &[data-urgency="warning"] {
+    // Dark amber stays legible against the white surface.
+    background: #854d0e;
+  }
+  &[data-urgency="critical"] {
+    background: tokens.$danger;
+  }
 }
 .timerControl {
   display: grid;
@@ -419,43 +430,126 @@ p[role="alert"]:focus {
   }
 }
 
-.card {
-  animation: question-enter 320ms cubic-bezier(0.22, 1, 0.36, 1);
+.step {
+  width: min(515px, 100%);
+}
+
+.resultsStep {
+  width: 100%;
+}
+
+.correct,
+.feedbackCard {
+  animation: correct-reaction 350ms ease-out;
 }
 
 .feedbackCard {
-  animation-name: feedback-enter;
+  --reaction-shadow: #{tokens.$shadow-question};
+}
+
+.incorrect {
+  animation: incorrect-shake 350ms ease-in-out;
+}
+
+.card[data-reaction="incorrect"] .correct {
+  animation:
+    correct-highlight 300ms ease-out,
+    correct-reaction 350ms ease-out;
+}
+
+.radioDot {
+  animation: radio-pop 200ms ease-out;
 }
 
 .pointsBadge {
-  animation: points-pop 350ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation:
+    points-pop 200ms ease-out,
+    points-float 200ms ease-in 200ms forwards;
+}
+
+.timerValue[data-pulse="true"] {
+  animation: timer-pulse 400ms ease-in-out infinite alternate;
 }
 
 .next,
 .primaryButton,
 .outlineButton {
-  @include patterns.interactive-lift;
+  @include patterns.interactive-lift(
+    $transition: (
+      transform 200ms ease,
+      background-color 250ms ease,
+      color 250ms ease,
+      border-color 250ms ease,
+    )
+  );
 }
 
-@keyframes question-enter {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
+@keyframes correct-reaction {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: var(--reaction-shadow, 0 0 0 transparent);
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 16px 4px rgba(tokens.$success, 0.55);
   }
 }
 
-@keyframes feedback-enter {
+@keyframes incorrect-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  8%,
+  42%,
+  75% {
+    transform: translateX(-6px);
+  }
+  25%,
+  58%,
+  92% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes correct-highlight {
   from {
-    opacity: 0;
-    transform: translateY(6px);
+    background-color: tokens.$surface;
+    border-color: tokens.$border;
   }
   to {
+    background-color: tokens.$success-surface;
+    border-color: tokens.$success;
+  }
+}
+
+@keyframes radio-pop {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+@keyframes timer-pulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes points-float {
+  from {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(-50%);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(calc(-50% - 18px));
   }
 }
 
@@ -463,10 +557,6 @@ p[role="alert"]:focus {
   from {
     opacity: 0;
     transform: translateY(-50%) scale(0.85);
-  }
-  70% {
-    opacity: 1;
-    transform: translateY(-50%) scale(1.04);
   }
   to {
     opacity: 1;
@@ -476,7 +566,15 @@ p[role="alert"]:focus {
 
 @media (prefers-reduced-motion: reduce) {
   .card,
-  .pointsBadge {
+  .correct,
+  .incorrect,
+  .card[data-reaction="incorrect"] .correct,
+  .radioDot,
+  .pointsBadge,
+  .timerValue[data-pulse="true"] {
     animation: none;
+  }
+  .timerFill {
+    transition: none;
   }
 }
