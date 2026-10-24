@@ -89,6 +89,60 @@
   }
 }
 
+// Native showModal()/close() keep focus and interaction handling in the browser.
+@mixin dialog-motion {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 0.24s ease-out,
+    transform 0.24s ease-out,
+    display 0.24s allow-discrete,
+    overlay 0.24s allow-discrete;
+  transition-behavior: allow-discrete;
+
+  &[open] {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &::backdrop {
+    background: rgb(0 0 0 / 45%);
+    opacity: 0;
+    transition:
+      opacity 0.24s ease-out,
+      display 0.24s allow-discrete,
+      overlay 0.24s allow-discrete;
+    transition-behavior: allow-discrete;
+  }
+
+  &[open]::backdrop {
+    opacity: 1;
+  }
+
+  &:not([open]),
+  &:not([open])::backdrop {
+    pointer-events: none;
+  }
+
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    &[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &::backdrop {
+      transition: none;
+      transform: none;
+    }
+  }
+}
+
 // Crossed-out box standing in for artwork that has not been supplied yet.
 @mixin image-placeholder {
   border: 2px solid var(--foreground);

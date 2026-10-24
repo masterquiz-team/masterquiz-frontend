@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Reveal } from "@/components/ui/Entrance";
+import { CountUp } from "@/components/ui/CountUp";
 import type { GamePhase } from "@/features/game/types";
 import { answerOutcomes, AnswerOutcomeIcon } from "./AnswerOutcome";
 import { ResultsAnswers } from "./ResultsAnswers";
@@ -14,6 +15,7 @@ import { ResultsTrophy } from "./ResultsTrophy";
 import styles from "./ResultsDashboard.module.scss";
 
 function formatTime(seconds: number) {
+  seconds = Math.round(seconds);
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
@@ -56,7 +58,8 @@ export function FinishedPhase({
             </dt>
             <dd>
               <strong>
-                {summary.pointsEarned} / {summary.maxPoints}
+                <CountUp value={summary.pointsEarned} from={0} duration={1} /> /{" "}
+                {summary.maxPoints}
               </strong>
               <span>
                 {summary.correct} correct{" "}
@@ -69,7 +72,14 @@ export function FinishedPhase({
               <span aria-hidden="true">◷</span> Time
             </dt>
             <dd>
-              <strong>{formatTime(summary.elapsedSeconds)}</strong>
+              <strong>
+                <CountUp
+                  value={summary.elapsedSeconds}
+                  from={0}
+                  duration={1}
+                  format={formatTime}
+                />
+              </strong>
               <span>out of {formatTime(summary.durationSeconds)}</span>
             </dd>
           </div>
@@ -78,7 +88,9 @@ export function FinishedPhase({
               <span aria-hidden="true">◎</span> Accuracy
             </dt>
             <dd>
-              <strong>{accuracy}%</strong>
+              <strong>
+                <CountUp value={accuracy} from={0} duration={1} />%
+              </strong>
               <span>
                 {summary.correct} / {summary.total}
               </span>

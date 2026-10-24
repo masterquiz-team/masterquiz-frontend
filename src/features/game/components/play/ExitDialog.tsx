@@ -27,7 +27,14 @@ export function ExitDialog({
     cancel.current?.focus();
     return () => {
       dialog.close();
-      previous?.focus();
+      // The question can change while the modal is open (for example on timeout).
+      if (previous?.isConnected) previous.focus();
+      else
+        document
+          .querySelector<HTMLElement>(
+            'main h1[tabindex], main [role="alert"][tabindex]',
+          )
+          ?.focus();
     };
   }, [open]);
   return (

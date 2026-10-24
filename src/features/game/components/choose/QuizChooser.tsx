@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { Reveal, Stagger } from "@/components/ui/Entrance";
 import { useId, useState, type KeyboardEvent } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { getDifficulty, type Difficulty } from "@/features/game/difficulty";
 import { useStartGame } from "@/features/game/hooks/useStartGame";
 import { displayQuizTitle, type QuizSummary } from "@/features/game/quizzes";
@@ -55,6 +56,7 @@ export function QuizChooser({
   randomAvailable: boolean;
 }) {
   const id = useId();
+  const reducedMotion = useReducedMotion();
   const [tab, setTab] = useState<Tab>("all");
   const [search, setSearch] = useState("");
   const { selected, pending, error, uncertain, start, discardSavedAttempt } =
@@ -178,6 +180,22 @@ export function QuizChooser({
                 >
                   {item.icon}
                   {item.label}
+                  {tab === item.id && (
+                    <motion.span
+                      aria-hidden="true"
+                      className={styles.tabUnderline}
+                      layoutId={
+                        reducedMotion === false
+                          ? `${id}-tab-underline`
+                          : undefined
+                      }
+                      initial={false}
+                      transition={{
+                        duration: reducedMotion === false ? 0.24 : 0,
+                        ease: "easeOut",
+                      }}
+                    />
+                  )}
                 </button>
               ))}
             </div>
