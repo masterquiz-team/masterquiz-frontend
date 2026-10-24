@@ -453,8 +453,8 @@ p[role="alert"]:focus {
 
 .card[data-reaction="incorrect"] .correct {
   animation:
-    correct-highlight 300ms ease-out 350ms backwards,
-    correct-reaction 350ms ease-out 350ms;
+    correct-highlight 300ms ease-out,
+    correct-reaction 350ms ease-out;
 }
 
 .radioDot {

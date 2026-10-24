@@ -109,11 +109,12 @@ export function GamePlayer({
     : expired
       ? "timed-out"
       : game?.phase === "question" || game?.phase === "feedback"
-        ? `${game.question.index}-${game.phase}`
+        ? `q-${game.question.index}`
         : (game?.phase ?? "loading");
   const [mountedStep, setMountedStep] = useState<string | null>(null);
   // State can advance before mode="wait" replaces the old DOM. Keep Escape
   // available, but bind answer shortcuts only once the new step has mounted.
+  // Feedback shares its question's mounted step, so Enter stays available.
   const stepReady = mountedStep === stepKey;
   const shortcutGame =
     !error &&
