@@ -1,6 +1,5 @@
-// Proposed backend contract; the Java backend has no leaderboard endpoint yet.
-//   GET /leaderboard?page=0&size=10[&categoryId=1] -> Spring page of entries
-//   GET /leaderboard/me[?categoryId=1]              -> the signed-in player
+// GET /leaderboard and /leaderboard/{categoryId} return paged rankings.
+// GET /leaderboard/me returns the signed-in player's totals and category scores.
 export type LeaderboardEntry = {
   rank: number;
   nickname: string;
@@ -10,12 +9,14 @@ export type LeaderboardEntry = {
 };
 
 export type LeaderboardMe = {
+  nickname: string;
+  totalScore: number;
+  totalGamesPlayed: number;
   rank: number;
-  score: number;
+  scoreByCategoryId: Record<string, number>;
+  flag: boolean;
 };
 
 export type Leaderboard =
   | { status: "ok"; entries: LeaderboardEntry[]; me: LeaderboardMe | null }
-  // The backend does not serve rankings yet.
-  | { status: "pending" }
   | { status: "error" };
