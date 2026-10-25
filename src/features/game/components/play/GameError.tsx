@@ -9,19 +9,24 @@ export function GameError({
   page,
   pending,
   onReload,
+  backHref,
 }: {
   error: GameFailure;
   attemptId: number;
   page: number;
   pending: boolean;
   onReload: () => void;
+  backHref: string;
 }) {
   return (
     <section className={`${styles.card} ${styles.state}`}>
       <h1>Game unavailable</h1>
       <p role="alert" tabIndex={-1}>
-        {error.message}
+        {error.status === 404
+          ? "This saved attempt is no longer available. Start a new quiz to continue."
+          : error.message}
       </p>
+      {error.status === 404 && <Link href={backHref}>Start a new quiz</Link>}
       {error.code === GUEST_PLAY_UNAVAILABLE && (
         <GuestAccessLinks next={`/quiz/play/${attemptId}?page=${page}`} />
       )}

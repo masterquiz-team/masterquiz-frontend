@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   attemptKey,
+  getGame,
   parseSavedAttemptId,
   startNewGame,
   GameRequestError,
@@ -46,10 +47,22 @@ export function useStartGame({
       const saved = sessionStorage.getItem(key);
       if (saved === "unknown") throw new Error(unconfirmedMessage);
       const savedId = parseSavedAttemptId(saved);
-      const id =
-        savedId !== null && savedId !== previousAttemptId
-          ? savedId
-          : (await startNewGame(target)).id;
+      let id: number | null = null;
+      if (savedId !== null && savedId !== previousAttemptId) {
+        try {
+          const game = await getGame(savedId);
+          if (game.attempt.status === "IN_PROGRESS") id = savedId;
+        } catch (cause) {
+          if (
+            !(cause instanceof GameRequestError) ||
+            ![403, 404].includes(cause.status) ||
+            cause.code === GUEST_PLAY_UNAVAILABLE
+          )
+            throw cause;
+        }
+        if (id === null) sessionStorage.removeItem(key);
+      }
+      id ??= (await startNewGame(target)).id;
       router.push(`/quiz/play/${id}?page=${page}`);
     } catch (cause) {
       setGuestRestricted(

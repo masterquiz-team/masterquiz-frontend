@@ -4,25 +4,42 @@ import type { AuthFormMode, AuthValues } from "../types";
 import { isRegisteredUser, parseAuthError } from "../validators/responses";
 import { backendFetch } from "@/lib/backend/transport";
 import { isRecord } from "@/lib/validation";
-import { getSessionToken, isGuestToken } from "@/lib/backend/token";
+import { getSessionToken } from "@/lib/backend/token";
 import { authJson } from "./request";
-import { readTokenSession, setSessionCookie } from "./session";
+import {
+  clearSessionCookie,
+  getSessionState,
+  readTokenSession,
+  setSessionCookie,
+} from "./session";
 
 // Route Handlers validate HTTP input; this function owns the Java auth exchange.
 export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
+  let invalidSession = false;
+  const replyJson: typeof authJson = (body, status) => {
+    const reply = authJson(body, status);
+    if (invalidSession) clearSessionCookie(reply);
+    return reply;
+  };
   try {
+    const state = await getSessionState();
+    invalidSession = state.status === "anonymous";
     const currentToken = await getSessionToken();
-    const guestToken =
-      currentToken && (await isGuestToken(currentToken)) ? currentToken : null;
-    const response = await backendFetch(
-      `/${mode}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      },
-      guestToken,
-    );
+    let guestToken = state.status === "guest" ? currentToken : null;
+    async function exchange(path: string, init: RequestInit) {
+      const response = await backendFetch(path, init, guestToken);
+      if (response.status !== 401 || !guestToken) return response;
+      // The guest may have disappeared after session verification. Retry only
+      // an explicit rejection, never an ambiguous network failure.
+      guestToken = null;
+      invalidSession = true;
+      return backendFetch(path, init);
+    }
+    const response = await exchange(`/${mode}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
     const result: unknown = await response.json().catch(() => null);
     if (!response.ok) {
       const fallback =
@@ -31,10 +48,10 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
           : mode === "register" && response.status === 409
             ? "An account with this email already exists."
             : "The API rejected the request. Please check your details and try again.";
-      return authJson(parseAuthError(result, fallback), response.status);
+      return replyJson(parseAuthError(result, fallback), response.status);
     }
     if (!isRecord(result)) {
-      return authJson(
+      return replyJson(
         { message: "The API returned an unexpected response." },
         502,
       );
@@ -42,7 +59,7 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
 
     if (mode === "register") {
       if (!isRegisteredUser(result)) {
-        return authJson(
+        return replyJson(
           { message: "The API returned an unexpected response." },
           502,
         );
@@ -64,18 +81,14 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
         try {
           let login: unknown = result;
           if (typeof registrationToken !== "string") {
-            const loginResponse = await backendFetch(
-              "/login",
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  email: payload.email,
-                  password: payload.password,
-                }),
-              },
-              guestToken,
-            );
+            const loginResponse = await exchange("/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: payload.email,
+                password: payload.password,
+              }),
+            });
             login = loginResponse.ok ? await loginResponse.json() : null;
           }
           const token =
@@ -84,31 +97,31 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
               : null;
           const session = token ? readTokenSession(token) : null;
           if (token && session?.kind === "user") {
-            const reply = authJson({ ...body, session }, response.status);
+            const reply = replyJson({ ...body, session }, response.status);
             setSessionCookie(reply, token, session);
             return reply;
           }
         } catch {
-          // Preserve the successful registration and the existing guest cookie.
+          // Preserve registration; replyJson clears any rejected guest cookie.
         }
       }
-      return authJson(body, response.status);
+      return replyJson(body, response.status);
     }
 
     const token = typeof result.token === "string" ? result.token : null;
     const session = token ? readTokenSession(token) : null;
     if (!token || !session) {
-      return authJson(
+      return replyJson(
         { message: "The API returned an invalid login session." },
         502,
       );
     }
-    const reply = authJson({ session });
+    const reply = replyJson({ session });
     setSessionCookie(reply, token, session);
     return reply;
   } catch (error) {
     console.error("[authenticate] Backend authentication failed", error);
-    return authJson(
+    return replyJson(
       {
         message:
           "The backend is unavailable or took too long to respond. Please try again later.",
