@@ -1,8 +1,15 @@
 "use client";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import type { GameView } from "@/features/game/types";
 import {
   attemptKey,
+  clearSavedAttempt,
   gameStartOf,
   finishGame,
   getGame,
@@ -22,6 +29,8 @@ export function useGame(
   const [selected, setSelected] = useState<number | null>(null);
   const [pending, setPending] = useState(false);
   const [transition, setTransition] = useState(0);
+  const [recoveryTarget, setRecoveryTarget] =
+    useState<ReturnType<typeof clearSavedAttempt>>(null);
   const busy = useRef(false);
   const timeoutRequested = useRef(false);
   const remaining = useCountdown(
@@ -32,7 +41,16 @@ export function useGame(
     game.phase !== "finished" &&
     (game.phase === "timed-out" || remaining === 0);
   useEffect(() => {
-    if (!game) return;
+    if (error?.status !== 404) return;
+    try {
+      const target = clearSavedAttempt(attemptId);
+      if (target) startTransition(() => setRecoveryTarget(target));
+    } catch {
+      // Recovery navigation remains available if browser storage is blocked.
+    }
+  }, [attemptId, error]);
+  useEffect(() => {
+    if (!game || error?.status === 404) return;
     const key = attemptKey(gameStartOf(game));
     try {
       if (game.phase === "finished") {
@@ -44,7 +62,7 @@ export function useGame(
     } catch {
       // The attempt URL remains sufficient for reload/resume.
     }
-  }, [game, attemptId]);
+  }, [game, attemptId, error?.status]);
 
   const run = useCallback(async (work: () => Promise<GameView>) => {
     if (busy.current) return;
@@ -96,6 +114,7 @@ export function useGame(
   return {
     game,
     error,
+    recoveryTarget,
     selected,
     setSelected,
     pending,

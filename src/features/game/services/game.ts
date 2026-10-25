@@ -1,4 +1,4 @@
-import type { Difficulty } from "../difficulty";
+import { getDifficulty, type Difficulty } from "../difficulty";
 import type { GameView, PlayerAttempt } from "../types";
 import { isGeneratedQuiz } from "../quizzes";
 
@@ -70,6 +70,24 @@ export function parseSavedAttemptId(saved: string | null): number | null {
     Number(saved) > 0
     ? Number(saved)
     : null;
+}
+export function clearSavedAttempt(attemptId: number) {
+  // Collect first: removing keys changes sessionStorage's numeric indexes.
+  const keys = Object.keys(sessionStorage).filter(
+    (key) =>
+      key.startsWith("masterquiz-attempt:") &&
+      parseSavedAttemptId(sessionStorage.getItem(key)) === attemptId,
+  );
+  let target: { categoryId: number; difficulty: Difficulty } | null = null;
+  for (const key of keys) {
+    const match = /^masterquiz-attempt:(\d+):(easy|medium|hard)$/.exec(key);
+    const categoryId = match ? parseSavedAttemptId(match[1]) : null;
+    const difficulty = getDifficulty(match?.[2]);
+    if (categoryId !== null && difficulty)
+      target = { categoryId, difficulty: difficulty.id };
+    sessionStorage.removeItem(key);
+  }
+  return target;
 }
 export async function startNewGame(start: GameStart): Promise<PlayerAttempt> {
   const key = attemptKey(start);

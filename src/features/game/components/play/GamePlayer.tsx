@@ -86,6 +86,7 @@ export function GamePlayer({
   const {
     game,
     error,
+    recoveryTarget,
     selected,
     setSelected,
     pending,
@@ -102,7 +103,9 @@ export function GamePlayer({
   const router = useRouter();
   const backHref = game
     ? quizListHref(game.category.id, game.difficulty, page)
-    : `/categories?page=${page}`;
+    : recoveryTarget
+      ? quizListHref(recoveryTarget.categoryId, recoveryTarget.difficulty, page)
+      : `/categories?page=${page}`;
   const showingResults = !error && game?.phase === "finished";
   const stepKey = error
     ? "error"
@@ -191,6 +194,7 @@ export function GamePlayer({
                 page={page}
                 pending={pending}
                 onReload={reload}
+                backHref={backHref}
               />
             ) : expired ? (
               <TimedOutPhase pending={pending} />
