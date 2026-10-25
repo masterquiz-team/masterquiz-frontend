@@ -8,15 +8,21 @@ import styles from "./Leaderboard.module.scss";
 const formatPoints = (value: number) => value.toLocaleString("en-US");
 const medal = ["gold", "silver", "bronze"] as const;
 
-function TableBody({ board }: { board: Leaderboard }) {
+function TableBody({
+  board,
+  category,
+}: {
+  board: Leaderboard;
+  category: boolean;
+}) {
   if (board.status !== "ok" || !board.entries.length)
     return (
       <p className={styles.empty} role="status">
-        {board.status === "pending"
-          ? "Rankings will appear here once the leaderboard is available."
-          : board.status === "error"
-            ? "The leaderboard could not be loaded. Please try again."
-            : "No one has a score in this category yet."}
+        {board.status === "error"
+          ? "The leaderboard could not be loaded. Please try again."
+          : category
+            ? "No one has a score in this category yet."
+            : "No one has a score yet."}
       </p>
     );
   return (
@@ -25,7 +31,7 @@ function TableBody({ board }: { board: Leaderboard }) {
         <tr>
           <th scope="col">#</th>
           <th scope="col">Player</th>
-          <th scope="col">Total score</th>
+          <th scope="col">{category ? "Category score" : "Total score"}</th>
           <th scope="col">Games played</th>
         </tr>
       </thead>
@@ -75,7 +81,18 @@ export function LeaderboardScreen({
   demo: boolean;
 }) {
   const me = board.status === "ok" ? board.me : null;
-  const score = me?.score ?? player.score;
+  const rank =
+    selected === null
+      ? me?.rank
+      : board.status === "ok"
+        ? board.entries.find((entry) => entry.currentUser)?.rank
+        : undefined;
+  const score =
+    selected === null
+      ? (me?.totalScore ?? player.score)
+      : me
+        ? (me.scoreByCategoryId[String(selected)] ?? 0)
+        : null;
   return (
     <div className={styles.leaderboard}>
       <header className={styles.intro}>
@@ -108,7 +125,7 @@ export function LeaderboardScreen({
           </span>
           <span className={styles.rankText}>
             <strong>{demo ? "You" : (player.nickname ?? "You")}</strong>
-            <span>{me ? `#${me.rank}` : "Rank unavailable"}</span>
+            <span>{rank === undefined ? "Rank unavailable" : `#${rank}`}</span>
           </span>
           <span className={styles.points}>
             {score === null ? "—" : `${formatPoints(score)} pts`}
@@ -140,7 +157,11 @@ export function LeaderboardScreen({
             demo={demo}
           />
         </div>
-        <TableBody key={selected ?? "global"} board={board} />
+        <TableBody
+          key={selected ?? "global"}
+          board={board}
+          category={selected !== null}
+        />
       </section>
 
       <div className={styles.side}>

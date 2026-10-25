@@ -4,7 +4,7 @@ import { loadProtectedPage } from "@/features/auth/server/protected-page";
 import { getUserProfile } from "@/features/auth/server/profile";
 import { getAllCategories } from "@/features/categories/server/api";
 import { getLeaderboard } from "@/features/leaderboard/server/leaderboard";
-import { demoLeaderboard } from "@/features/leaderboard/demo";
+import { getDemoLeaderboard } from "@/features/leaderboard/demo";
 import { LeaderboardScreen } from "@/features/leaderboard/components/LeaderboardScreen";
 import { PageState } from "@/components/layout/PageState";
 import { Reveal } from "@/components/ui/Entrance";
@@ -31,7 +31,9 @@ export default async function LeaderboardPage({
     async () => {
       const [categories, board, profile] = await Promise.all([
         getAllCategories(),
-        demo ? demoLeaderboard : getLeaderboard(request.category),
+        demo
+          ? getDemoLeaderboard(request.category)
+          : getLeaderboard(request.category),
         getUserProfile(),
       ]);
       return { categories, board, profile };

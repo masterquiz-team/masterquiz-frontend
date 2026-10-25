@@ -6,58 +6,86 @@ import {
   isRecord,
 } from "@/lib/api/server";
 import { parseSpringPage } from "@/lib/validation";
+import { isSessionStillValid } from "@/features/auth/server/session";
 import type { Leaderboard, LeaderboardEntry, LeaderboardMe } from "../types";
 
 const isCount = (value: unknown): value is number =>
   Number.isSafeInteger(value) && (value as number) >= 0;
 
-function parseEntry(value: unknown): LeaderboardEntry {
+function parseEntry(value: unknown, category: boolean): LeaderboardEntry {
   if (
     !isRecord(value) ||
+    !isCount(value.userId) ||
     !isCount(value.rank) ||
+    value.rank < 1 ||
     typeof value.nickname !== "string" ||
-    !isCount(value.score) ||
-    !isCount(value.gamesPlayed)
+    typeof value.flag !== "boolean" ||
+    (category && typeof value.categoryName !== "string")
   )
     invalidContract();
+  const score = category ? value.categoryScore : value.score;
+  const gamesPlayed = category ? value.gamesPlayed : value.totalGamesPlayed;
+  if (!isCount(score) || !isCount(gamesPlayed)) invalidContract();
   return {
     rank: value.rank,
     nickname: value.nickname,
-    score: value.score,
-    gamesPlayed: value.gamesPlayed,
-    currentUser: value.currentUser === true,
+    score,
+    gamesPlayed,
+    currentUser: value.flag === true,
   };
 }
 
 function parseMe(value: unknown): LeaderboardMe {
-  if (!isRecord(value) || !isCount(value.rank) || !isCount(value.score))
+  if (
+    !isRecord(value) ||
+    typeof value.nickname !== "string" ||
+    !isCount(value.totalScore) ||
+    !isCount(value.totalGamesPlayed) ||
+    !isCount(value.rank) ||
+    !isRecord(value.scoreByCategoryId) ||
+    typeof value.flag !== "boolean"
+  )
     invalidContract();
-  return { rank: value.rank, score: value.score };
+  const scoreByCategoryId = Object.fromEntries(
+    Object.entries(value.scoreByCategoryId).map(([id, score]) => {
+      if (!isCount(score)) invalidContract();
+      return [id, score];
+    }),
+  );
+  return {
+    nickname: value.nickname,
+    totalScore: value.totalScore,
+    totalGamesPlayed: value.totalGamesPlayed,
+    rank: value.rank,
+    scoreByCategoryId,
+    flag: value.flag,
+  };
 }
-
-// 404/405/501 mean the endpoint does not exist yet.
-const NOT_BUILT = new Set([404, 405, 501]);
 
 export async function getLeaderboard(
   categoryId: number | null,
 ): Promise<Leaderboard> {
   const query = new URLSearchParams({ page: "0", size: "10" });
-  if (categoryId) query.set("categoryId", String(categoryId));
+  const path =
+    categoryId === null ? "/leaderboard" : `/leaderboard/${categoryId}`;
   try {
     const [page, me] = await Promise.all([
-      backendRequest(`/leaderboard?${query}`, (value) =>
-        parseSpringPage(value, parseEntry),
+      backendRequest(`${path}?${query}`, (value) =>
+        parseSpringPage(value, (entry) =>
+          parseEntry(entry, categoryId !== null),
+        ),
       ),
-      backendRequest(
-        `/leaderboard/me${categoryId ? `?categoryId=${categoryId}` : ""}`,
-        parseMe,
-      ).catch(() => null),
+      backendRequest("/leaderboard/me", parseMe).catch(() => null),
     ]);
     return { status: "ok", entries: page.content, me };
   } catch (error) {
-    if (error instanceof ApiError && NOT_BUILT.has(error.status))
-      return { status: "pending" };
-    if (error instanceof ApiError && error.status === 401) throw error;
+    // Spring can mask server errors as 401 because /error requires login.
+    if (
+      error instanceof ApiError &&
+      error.status === 401 &&
+      !(await isSessionStillValid())
+    )
+      throw error;
     return { status: "error" };
   }
 }

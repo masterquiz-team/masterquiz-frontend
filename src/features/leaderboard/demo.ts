@@ -15,14 +15,23 @@ const players: [string, number, number][] = [
   ["Emma", 1500, 10],
 ];
 
-export const demoLeaderboard: Leaderboard = {
-  status: "ok",
-  entries: players.map(([nickname, score, gamesPlayed], index) => ({
-    rank: index + 1,
-    nickname,
-    score,
-    gamesPlayed,
-    currentUser: nickname === "You",
-  })),
-  me: { rank: 4, score: 2440 },
-};
+export function getDemoLeaderboard(categoryId: number | null): Leaderboard {
+  return {
+    status: "ok",
+    entries: players.map(([nickname, score, gamesPlayed], index) => ({
+      rank: index + 1,
+      nickname,
+      score,
+      gamesPlayed,
+      currentUser: nickname === "You",
+    })),
+    me: {
+      nickname: "You",
+      totalScore: 2440,
+      totalGamesPlayed: 18,
+      rank: 4,
+      scoreByCategoryId: categoryId === null ? {} : { [categoryId]: 2440 },
+      flag: true,
+    },
+  };
+}
