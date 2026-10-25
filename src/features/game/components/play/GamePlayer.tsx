@@ -1,5 +1,17 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import {
+  AnimatePresence,
+  motion,
+  useIsPresent,
+  useReducedMotion,
+} from "motion/react";
 import { quizListHref } from "@/features/game/routes";
 import { useRouter } from "next/navigation";
 import type { GameView } from "@/features/game/types";
@@ -17,6 +29,48 @@ import type { GameFailure } from "../../types";
 import { useGame } from "../../hooks/useGame";
 import { useGameShortcuts } from "../../hooks/useGameShortcuts";
 import styles from "./Gameplay.module.scss";
+
+function GameStep({
+  stepKey,
+  results,
+  onMount,
+  children,
+}: {
+  stepKey: string;
+  results: boolean;
+  onMount: (key: string) => void;
+  children: ReactNode;
+}) {
+  const present = useIsPresent();
+  const reducedMotion = useReducedMotion();
+  const animate = !results && reducedMotion === false;
+  const mount = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return;
+      onMount(stepKey);
+      if (!document.querySelector("dialog[open]")) {
+        const heading =
+          node.querySelector<HTMLElement>('[role="alert"][tabindex]') ??
+          node.querySelector<HTMLElement>("h1");
+        heading?.focus({ preventScroll: true });
+      }
+    },
+    [onMount, stepKey],
+  );
+  return (
+    <motion.div
+      ref={mount}
+      className={`${styles.step} ${results ? styles.resultsStep : ""}`}
+      inert={!present}
+      initial={animate ? { x: 24, opacity: 0 } : false}
+      animate={{ x: 0, opacity: 1 }}
+      exit={animate ? { x: -24, opacity: 0 } : { x: 0, opacity: 1 }}
+      transition={{ duration: animate ? 0.3 : 0, ease: "easeOut" }}
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 export function GamePlayer({
   attemptId,
@@ -50,6 +104,18 @@ export function GamePlayer({
     ? quizListHref(game.category.id, game.difficulty, page)
     : `/categories?page=${page}`;
   const showingResults = !error && game?.phase === "finished";
+  const stepKey = error
+    ? "error"
+    : expired
+      ? "timed-out"
+      : game?.phase === "question" || game?.phase === "feedback"
+        ? `q-${game.question.index}`
+        : (game?.phase ?? "loading");
+  const [mountedStep, setMountedStep] = useState<string | null>(null);
+  // State can advance before mode="wait" replaces the old DOM. Keep Escape
+  // available, but bind answer shortcuts only once the new step has mounted.
+  // Feedback shares its question's mounted step, so Enter stays available.
+  const stepReady = mountedStep === stepKey;
   const shortcutGame =
     !error &&
     !expired &&
@@ -66,9 +132,10 @@ export function GamePlayer({
       shortcutGame?.phase === "question"
         ? shortcutGame.question.options.map((option) => option.id)
         : [],
-    onSelect: phase === "question" ? setSelected : undefined,
-    onConfirm:
-      phase === "question" && selected !== null
+    onSelect: stepReady && phase === "question" ? setSelected : undefined,
+    onConfirm: !stepReady
+      ? undefined
+      : phase === "question" && selected !== null
         ? submit
         : phase === "feedback" || phase === "ready-to-finish"
           ? advance
@@ -76,13 +143,14 @@ export function GamePlayer({
     onExit: () => setExit(true),
   });
   useEffect(() => {
-    if (!pending && transition !== focusedTransition.current) {
+    if (stepReady && !pending && transition !== focusedTransition.current) {
       focusedTransition.current = transition;
+      if (document.querySelector("dialog[open]")) return;
       main.current
         ?.querySelector<HTMLElement>(error ? '[role="alert"]' : "h1")
         ?.focus();
     }
-  }, [error, pending, transition]);
+  }, [error, pending, stepReady, transition]);
   return (
     <main
       className={`${styles.screen} ${showingResults ? styles.resultsScreen : ""}`}
@@ -109,35 +177,48 @@ export function GamePlayer({
         </div>
       )}
       <div ref={main} className={styles.content} aria-busy={pending}>
-        {error ? (
-          <GameError
-            error={error}
-            attemptId={attemptId}
-            page={page}
-            pending={pending}
-            onReload={reload}
-          />
-        ) : expired ? (
-          <TimedOutPhase pending={pending} />
-        ) : game?.phase === "question" ? (
-          <QuestionPhase
-            game={game}
-            selected={selected}
-            pending={pending}
-            onSelect={setSelected}
-            onSubmit={submit}
-          />
-        ) : game?.phase === "feedback" ? (
-          <FeedbackPhase game={game} pending={pending} onAdvance={advance} />
-        ) : game?.phase === "ready-to-finish" ? (
-          <ReadyToFinishPhase
-            game={game}
-            pending={pending}
-            onFinish={advance}
-          />
-        ) : game?.phase === "finished" ? (
-          <FinishedPhase game={game} page={page} />
-        ) : null}
+        <AnimatePresence mode="wait" initial={false}>
+          <GameStep
+            key={stepKey}
+            stepKey={stepKey}
+            results={showingResults}
+            onMount={setMountedStep}
+          >
+            {error ? (
+              <GameError
+                error={error}
+                attemptId={attemptId}
+                page={page}
+                pending={pending}
+                onReload={reload}
+              />
+            ) : expired ? (
+              <TimedOutPhase pending={pending} />
+            ) : game?.phase === "question" ? (
+              <QuestionPhase
+                game={game}
+                selected={selected}
+                pending={pending}
+                onSelect={setSelected}
+                onSubmit={submit}
+              />
+            ) : game?.phase === "feedback" ? (
+              <FeedbackPhase
+                game={game}
+                pending={pending}
+                onAdvance={advance}
+              />
+            ) : game?.phase === "ready-to-finish" ? (
+              <ReadyToFinishPhase
+                game={game}
+                pending={pending}
+                onFinish={advance}
+              />
+            ) : game?.phase === "finished" ? (
+              <FinishedPhase game={game} page={page} />
+            ) : null}
+          </GameStep>
+        </AnimatePresence>
         <p className={styles.requestStatus} role="status" aria-live="polite">
           {pending
             ? "Saving or loading your game…"

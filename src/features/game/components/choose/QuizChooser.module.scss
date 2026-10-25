@@ -186,20 +186,30 @@ $panel-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   gap: 34px;
 }
 .tab {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 0 4px;
-  border-bottom: 1px solid transparent;
+  padding: 6px 0 5px;
   color: tokens.$text-subtle;
   font-size: tokens.$font-size-md;
   cursor: pointer;
   &[aria-selected="true"] {
-    border-color: var(--primary);
     color: var(--primary);
   }
   &:hover {
     color: var(--primary);
+  }
+}
+.tabUnderline {
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: var(--primary);
+  pointer-events: none;
+  @media (prefers-reduced-motion: reduce) {
+    transform: none !important;
+    transition: none;
   }
 }
 .search {

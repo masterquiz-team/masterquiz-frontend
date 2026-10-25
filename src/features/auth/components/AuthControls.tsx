@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useReducedMotion } from "motion/react";
+import { CountUp } from "@/components/ui/CountUp";
 import { logout } from "../services/auth";
 import type { AuthSessionState } from "../types";
 import styles from "./AuthControls.module.scss";
@@ -20,6 +22,39 @@ export function AuthControls({
   const pathname = usePathname();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const scoreBadge = useRef<HTMLSpanElement>(null);
+  const previousScore = useRef(score);
+  const reducedMotion = useReducedMotion();
+
+  useEffect(() => {
+    const previous = previousScore.current;
+    previousScore.current = score;
+    if (
+      status !== "authenticated" ||
+      previous === null ||
+      score === null ||
+      previous === score ||
+      reducedMotion !== false ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !scoreBadge.current
+    )
+      return;
+
+    const animation = scoreBadge.current.animate(
+      [
+        {
+          backgroundColor: "var(--score-highlight-background)",
+          color: "var(--score-highlight-color)",
+        },
+        {
+          backgroundColor: "var(--score-background)",
+          color: "var(--score-color)",
+        },
+      ],
+      { duration: 600, easing: "ease-out" },
+    );
+    return () => animation.cancel();
+  }, [score, status, reducedMotion]);
 
   async function handleLogout() {
     if (pending) return;
@@ -74,7 +109,9 @@ export function AuthControls({
               {name}
             </span>
             {score !== null && (
-              <span className={styles.score}>Score: {score}</span>
+              <span ref={scoreBadge} className={styles.score}>
+                Score: <CountUp value={score} />
+              </span>
             )}
           </Link>
           <button

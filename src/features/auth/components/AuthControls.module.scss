@@ -85,13 +85,22 @@
 }
 
 .score {
+  --score-background: #{tokens.$primary-overlay};
+  --score-color: #{tokens.$primary};
+  --score-highlight-background: #{tokens.$primary};
+  --score-highlight-color: #{tokens.$surface};
   max-width: 100%;
   padding: 6px 10px;
   border-radius: tokens.$radius-badge;
-  background: tokens.$primary-overlay;
-  color: tokens.$primary;
+  background: var(--score-background);
+  color: var(--score-color);
+  font-variant-numeric: tabular-nums;
   font-size: tokens.$font-size-sm;
   overflow-wrap: anywhere;
+  @media (prefers-reduced-motion: reduce) {
+    background: var(--score-background) !important;
+    color: var(--score-color) !important;
+  }
 }
 
 .error {
