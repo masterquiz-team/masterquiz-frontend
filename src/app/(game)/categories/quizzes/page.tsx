@@ -6,7 +6,6 @@ import { toCategoryPageState } from "@/features/categories/server/category-page-
 import { ApiError, parseId, parsePage } from "@/lib/api/server";
 import { getDifficulty, type Difficulty } from "@/features/game/difficulty";
 import { listCategoryQuizzes } from "@/features/game/server/quizzes";
-import { canStartRandomQuiz } from "@/features/game/server/availability";
 import { difficultyHref, quizListHref } from "@/features/game/routes";
 import { QuizChooser } from "@/features/game/components/choose/QuizChooser";
 import { assets } from "@/features/game/assets/difficulty";
@@ -46,11 +45,7 @@ export default async function QuizzesPage({
       ]);
       if (category.id !== request.id || !category.name.trim())
         throw new ApiError(502, "Invalid category response.");
-      const randomAvailable = await canStartRandomQuiz(
-        category,
-        request.difficulty!,
-      );
-      return { category, quizzes, randomAvailable };
+      return { category, quizzes };
     },
     { allowGuest: true },
   );
@@ -73,23 +68,12 @@ export default async function QuizzesPage({
         </Link>
       </nav>
       {data && difficulty ? (
-        data.quizzes.length || data.randomAvailable ? (
-          <QuizChooser
-            category={data.category}
-            difficulty={difficulty}
-            page={page}
-            quizzes={data.quizzes}
-            randomAvailable={data.randomAvailable}
-          />
-        ) : (
-          <section className={styles.state} aria-labelledby="quizzes-empty">
-            <h1 id="quizzes-empty">No quizzes for this difficulty yet</h1>
-            <p>Choose another difficulty to find a quiz.</p>
-            <Link href={backHref} prefetch={false}>
-              Back to difficulty choice
-            </Link>
-          </section>
-        )
+        <QuizChooser
+          category={data.category}
+          difficulty={difficulty}
+          page={page}
+          quizzes={data.quizzes}
+        />
       ) : (
         <section className={styles.state} aria-labelledby="quizzes-state">
           <h1 id="quizzes-state">Quizzes unavailable</h1>

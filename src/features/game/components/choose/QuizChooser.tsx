@@ -48,13 +48,11 @@ export function QuizChooser({
   difficulty,
   page,
   quizzes,
-  randomAvailable,
 }: {
   category: Category;
   difficulty: Difficulty;
   page: number;
   quizzes: QuizSummary[];
-  randomAvailable: boolean;
 }) {
   const id = useId();
   const reducedMotion = useReducedMotion();
@@ -105,9 +103,7 @@ export function QuizChooser({
       ? "Community quizzes are coming soon."
       : query
         ? `No quizzes match “${search.trim()}”.`
-        : randomAvailable
-          ? "There are no ready-made quizzes for this difficulty yet. Try a random quiz."
-          : "There are no ready-made quizzes for this difficulty yet.";
+        : "There are no ready-made quizzes for this difficulty yet. Try a random quiz.";
 
   return (
     <Reveal
@@ -122,49 +118,45 @@ export function QuizChooser({
       <h1 id={`${id}-heading`}>Choose a quiz</h1>
       <div className={styles.headingBar} aria-hidden="true" />
 
-      <div
-        className={`${styles.layout} ${randomAvailable ? "" : styles.savedOnly}`}
-      >
-        {randomAvailable && (
-          <aside className={styles.randomPanel} aria-label="Random quiz">
-            <button
-              type="button"
-              className={styles.randomCard}
-              disabled={pending}
-              onClick={() => void start(random)}
-            >
-              <span className={styles.randomIcon}>
-                <ShuffleIcon />
+      <div className={styles.layout}>
+        <aside className={styles.randomPanel} aria-label="Random quiz">
+          <button
+            type="button"
+            className={styles.randomCard}
+            disabled={pending}
+            onClick={() => void start(random)}
+          >
+            <span className={styles.randomIcon}>
+              <ShuffleIcon />
+            </span>
+            <span className={styles.randomText}>
+              <strong>Random Quiz</strong>
+              <span>{config.questionCount} random questions</span>
+              <span>
+                {pending && sameStart(selected, random)
+                  ? "Opening your game…"
+                  : "Start instantly"}
               </span>
-              <span className={styles.randomText}>
-                <strong>Random Quiz</strong>
-                <span>{config.questionCount} random questions</span>
-                <span>
-                  {pending && sameStart(selected, random)
-                    ? "Opening your game…"
-                    : "Start instantly"}
-                </span>
-              </span>
-              <span className={styles.randomArrow}>
-                <ArrowIcon />
-              </span>
-            </button>
-            <div className={styles.reasons}>
-              <h2>Why play a random quiz?</h2>
-              <ul>
-                {randomReasons.map((reason) => (
-                  <li key={reason}>
-                    <CheckIcon />
-                    {reason}
-                  </li>
-                ))}
-              </ul>
-              <span className={styles.randomArtwork}>
-                <RandomQuizArtwork />
-              </span>
-            </div>
-          </aside>
-        )}
+            </span>
+            <span className={styles.randomArrow}>
+              <ArrowIcon />
+            </span>
+          </button>
+          <div className={styles.reasons}>
+            <h2>Why play a random quiz?</h2>
+            <ul>
+              {randomReasons.map((reason) => (
+                <li key={reason}>
+                  <CheckIcon />
+                  {reason}
+                </li>
+              ))}
+            </ul>
+            <span className={styles.randomArtwork}>
+              <RandomQuizArtwork />
+            </span>
+          </div>
+        </aside>
 
         <div className={styles.listPanel}>
           <div className={styles.toolbar}>
