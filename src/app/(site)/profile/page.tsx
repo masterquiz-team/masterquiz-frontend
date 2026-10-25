@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { loadProtectedPage } from "@/features/auth/server/protected-page";
+import { getFavouriteCategories } from "@/features/profile/server/favourites";
 import { getAccount } from "@/features/profile/server/account";
 import { ProfileScreen } from "@/features/profile/components/ProfileScreen";
 import { PageState } from "@/components/layout/PageState";
@@ -11,13 +12,25 @@ import styles from "./page.module.scss";
 export const metadata: Metadata = { title: "Profile" };
 
 export default async function ProfilePage() {
-  const result = await loadProtectedPage(() => "/profile", getAccount);
+  const result = await loadProtectedPage(
+    () => "/profile",
+    async () => {
+      const [account, favourites] = await Promise.all([
+        getAccount(),
+        getFavouriteCategories(),
+      ]);
+      return { account, favourites };
+    },
+  );
   if (result.status === "anonymous") redirect(result.loginHref);
   if (result.status === "guest") redirect("/register?next=%2Fprofile");
   if (result.status === "ok")
     return (
       <Reveal as="main" className={styles.main}>
-        <ProfileScreen account={result.data} />
+        <ProfileScreen
+          account={result.data.account}
+          favourites={result.data.favourites}
+        />
       </Reveal>
     );
   const expired =

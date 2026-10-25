@@ -1,5 +1,11 @@
 .main {
-  width: min(1100px, calc(100% - 48px));
+  width: min(1312px, calc(100% - 64px));
   margin-inline: auto;
-  padding-block: 40px 96px;
+  padding-block: 36px 68px;
+}
+@media (max-width: 600px) {
+  .main {
+    width: calc(100% - 32px);
+    padding-block: 24px 48px;
+  }
 }

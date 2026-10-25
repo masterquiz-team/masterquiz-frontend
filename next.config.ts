@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
           { key: "Content-Security-Policy", value: "frame-ancestors 'self'" },
         ],
       },
+      {
+        // Config headers take precedence over Route Handler response headers.
+        source: "/api/profile/avatar",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: "default-src 'none'; sandbox",
+          },
+        ],
+      },
     ];
   },
 };

@@ -12,6 +12,25 @@ import {
   readTokenSession,
 } from "@/features/auth/server/session";
 import type { Account } from "../types";
+import { levelFromScore } from "../levels";
+
+const countOrZero = (value: unknown): number =>
+  Number.isSafeInteger(value) && (value as number) >= 0 ? (value as number) : 0;
+
+// Java only updates streaks on completion, so expire stale streaks here in UTC.
+function effectiveStreak(
+  streak: unknown,
+  lastTimePlayed: unknown,
+  now = new Date(),
+) {
+  const today = now.toISOString().slice(0, 10);
+  const yesterday = new Date(now.getTime() - 86400000)
+    .toISOString()
+    .slice(0, 10);
+  return lastTimePlayed === today || lastTimePlayed === yesterday
+    ? countOrZero(streak)
+    : 0;
+}
 
 function parseAccount(value: unknown): Account {
   if (
@@ -22,11 +41,25 @@ function parseAccount(value: unknown): Account {
     (value.score as number) < 0
   )
     invalidContract();
+  const parsedLevel =
+    typeof value.level === "string"
+      ? /^LEVEL_([1-9]|10)$/.exec(value.level)
+      : null;
+  const parsedAvatar =
+    typeof value.avatarId === "string"
+      ? /^(?:AVATAR_|avatar-)([1-9]|1[0-9]|20)$/.exec(value.avatarId)
+      : null;
   // The backend user ID is not exposed to the browser.
   return {
     email: value.email,
     nickname: value.nickname,
     score: value.score as number,
+    totalGamesPlayed: countOrZero(value.totalGamesPlayed),
+    level: parsedLevel
+      ? Number(parsedLevel[1])
+      : levelFromScore(value.score as number),
+    avatar: parsedAvatar ? Number(parsedAvatar[1]) : null,
+    streak: effectiveStreak(value.streak, value.lastTimePlayed),
   };
 }
 
@@ -43,6 +76,14 @@ async function accountRequest<T>(
     if (!(error instanceof ApiError)) throw error;
     if (error.status === 401 && (await isSessionStillValid()))
       throw new ApiError(409, refusedMessage);
+    if (
+      error.status === 400 &&
+      /avatar/i.test([error.message, ...(error.errors ?? [])].join(" "))
+    )
+      throw new ApiError(
+        400,
+        "Profile changes are temporarily unavailable. Please try again later.",
+      );
     throw new ApiError(
       error.status,
       error.status === 401
@@ -70,10 +111,20 @@ export async function updateNickname(nickname: string) {
   const session = token ? readTokenSession(token) : null;
   if (!session || session.kind !== "user")
     throw new ApiError(401, "Please log in to continue.");
+  const current = await getAccount();
+  if (current.avatar === null)
+    throw new ApiError(
+      409,
+      "Profile changes are temporarily unavailable. Please try again later.",
+    );
   return accountRequest(
     "/user-profile",
     parseAccount,
-    jsonBody("PUT", { email: session.email, nickname }),
+    jsonBody("PUT", {
+      email: current.email,
+      nickname,
+      avatarId: `avatar-${current.avatar}`,
+    }),
   );
 }
 

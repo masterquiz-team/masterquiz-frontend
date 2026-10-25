@@ -61,10 +61,6 @@ $panel-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   align-items: start;
   margin-top: 30px;
 }
-.savedOnly {
-  grid-template-columns: minmax(0, 1fr);
-}
-
 .randomPanel,
 .listPanel {
   border-radius: 8px;
