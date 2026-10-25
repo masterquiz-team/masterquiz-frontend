@@ -59,11 +59,18 @@
     overflow-wrap: anywhere;
   }
 }
+.tagline {
+  margin-top: 24px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+  color: tokens.$text;
+}
 .stats {
   display: flex;
   flex-wrap: wrap;
   gap: 18px 28px;
-  margin-top: 72px;
+  margin-top: 21px;
   > div {
     display: grid;
     grid-template-columns: 22px max-content;

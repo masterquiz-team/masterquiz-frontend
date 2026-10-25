@@ -59,6 +59,11 @@ export function ProfileHero({ account }: { account: Account }) {
       </div>
       <div className={styles.identity}>
         <h1 id="profile-name">{account.nickname}</h1>
+        <p className={styles.tagline}>
+          Always curious, always learning.
+          <br />
+          One quiz at a time!
+        </p>
         <dl className={styles.stats}>
           {stats.map((stat) => (
             <div key={stat.label}>
