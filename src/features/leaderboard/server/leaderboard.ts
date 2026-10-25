@@ -62,6 +62,10 @@ function parseMe(value: unknown): LeaderboardMe {
   };
 }
 
+export function getLeaderboardMe() {
+  return backendRequest("/leaderboard/me", parseMe);
+}
+
 export async function getLeaderboard(
   categoryId: number | null,
 ): Promise<Leaderboard> {
@@ -75,7 +79,7 @@ export async function getLeaderboard(
           parseEntry(entry, categoryId !== null),
         ),
       ),
-      backendRequest("/leaderboard/me", parseMe).catch(() => null),
+      getLeaderboardMe().catch(() => null),
     ]);
     return { status: "ok", entries: page.content, me };
   } catch (error) {

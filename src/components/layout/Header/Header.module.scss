@@ -3,7 +3,7 @@
 
 .header {
   display: grid;
-  grid-template-columns: minmax(max-content, 1fr) auto auto;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
   gap: 40px;
   align-items: center;
   width: 100%;
@@ -48,14 +48,16 @@
 }
 
 @include breakpoints.down(380px) {
-  .header {
+  .header:has([data-session-unavailable]) {
     grid-template-columns: minmax(0, 1fr);
-  }
-  .header > :last-child {
-    grid-row: 2;
-    justify-self: start;
-  }
-  .header > nav {
-    grid-row: 3;
+
+    > [data-session-unavailable] {
+      grid-row: 2;
+      justify-self: start;
+    }
+
+    > nav {
+      grid-row: 3;
+    }
   }
 }

@@ -25,7 +25,6 @@ import {
   type GameContext,
 } from "@/features/game/server/game-view";
 import { getQuizAttempt, startRandomQuizAttempt, quizRequest } from "./api";
-import { canStartRandomQuiz } from "./availability";
 
 export async function getHistory(attemptId: number) {
   return quizRequest(`/quiz-attempts/answers/${attemptId}`, (value) => {
@@ -206,18 +205,27 @@ export async function startGame(categoryId: number, difficulty: Difficulty) {
     throw new ApiError(400, "This difficulty is unavailable.");
   const category = await getCategory(categoryId);
   if (category.id !== categoryId) invalidContract();
-  if (!(await canStartRandomQuiz(category, difficulty)))
-    throw new ApiError(
-      409,
-      "Not enough questions for a random quiz at this difficulty yet. Choose another difficulty or a ready-made quiz.",
-    );
   try {
-    return await startRandomQuizAttempt({
+    const attempt = await startRandomQuizAttempt({
       // Backend requires 2–20 characters; the title is not shown to players.
       quizTitle: `${configuration.label} quiz`,
       category: category.name,
       difficulty: configuration.apiName,
     });
+    const quiz = await quizRequest(`/quiz/${attempt.quizId}`, parsePlayerQuiz);
+    if (
+      quiz.id !== attempt.quizId ||
+      quiz.categoryId !== categoryId ||
+      quiz.difficulty !== difficulty
+    )
+      invalidContract();
+    // Validate before returning the attempt so the client never saves a short quiz.
+    if (quiz.listOfQuestions.length < configuration.questionCount)
+      throw new ApiError(
+        409,
+        "Not enough questions for a random quiz at this difficulty yet. Choose another difficulty or a ready-made quiz.",
+      );
+    return attempt;
   } catch (error) {
     if (
       error instanceof ApiError &&

@@ -5,7 +5,7 @@ import { backendRequest, invalidContract, isRecord } from "@/lib/api/server";
 import type { UserProfile } from "../types";
 import { getSessionToken, isGuestToken } from "@/lib/backend/token";
 
-// Deduplicate Header/results reads within a render; transport stays no-store.
+// Deduplicate profile reads within a render; transport stays no-store.
 export const getUserProfile = cache(async (): Promise<UserProfile | null> => {
   const token = await getSessionToken();
   if (token && (await isGuestToken(token))) return null;

@@ -16,12 +16,13 @@ export async function backendFetch(
   path: string,
   init: RequestInit = {},
   token: string | null = null,
+  accept = "application/json",
 ): Promise<Response> {
   if (!path.startsWith("/") || path.startsWith("//") || path.includes("\\"))
     throw new Error("A relative backend path is required.");
   const baseUrl = getBackendUrl();
   const headers = new Headers(init.headers);
-  headers.set("Accept", "application/json");
+  headers.set("Accept", accept);
   headers.delete("Authorization");
   if (token) headers.set("Authorization", `Bearer ${token}`);
   return fetch(`${baseUrl}${path}`, {
