@@ -49,8 +49,13 @@ export const Navigation = () => {
           </Link>
         </li>
         <li>
-          <span>Leaderboard</span>{" "}
-          <span className={styles.comingSoon}>Coming soon</span>
+          <Link
+            href="/leaderboard"
+            className={styles.link}
+            aria-current={pathname === "/leaderboard" ? "page" : undefined}
+          >
+            Leaderboard
+          </Link>
         </li>
         <li>
           <Link
