@@ -3,6 +3,7 @@ import "server-only";
 import { getPageSession } from "@/features/auth/server/page-session";
 import { ApiError, parseId, parsePage } from "@/lib/api/server";
 import { getHttpStatusMessage } from "@/lib/http-status-messages";
+import { GuestAccessError } from "@/lib/api/errors";
 import { getCategories, getCategory } from "../../server/api";
 import {
   getCategoriesHref,
@@ -25,7 +26,11 @@ export async function loadCategoriesScreen(
   const currentHref = getCategoriesReturnHref(query);
   const session = await getPageSession(currentHref);
   if (session.status === "anonymous")
-    return { kind: "preview", loginHref: session.loginHref };
+    return {
+      kind: "preview",
+      loginHref: session.loginHref,
+      playHref: currentHref,
+    };
   if (session.status === "unavailable")
     return {
       kind: "error",
@@ -47,6 +52,7 @@ export async function loadCategoriesScreen(
       try {
         selected = await getCategory(parseId(requestedCategory));
       } catch (cause) {
+        if (cause instanceof GuestAccessError) throw cause;
         const unavailable =
           "This category is unavailable. Please choose another category.";
         selectionError = getHttpStatusMessage(
@@ -68,6 +74,14 @@ export async function loadCategoriesScreen(
       retryHref: getCategoriesHref(page, requestedCategory),
     };
   } catch (cause) {
+    if (cause instanceof GuestAccessError)
+      return {
+        kind: "error",
+        message: cause.message,
+        guestRestricted: true,
+        loginHref: session.loginHref,
+        retryHref: currentHref,
+      };
     return {
       kind: "error",
       message: getHttpStatusMessage(

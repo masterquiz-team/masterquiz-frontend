@@ -6,6 +6,7 @@ export class GameRequestError extends Error {
   constructor(
     public status: number,
     message: string,
+    public code?: string,
   ) {
     super(message);
   }
@@ -40,6 +41,7 @@ export async function gameRequest<T>(
       typeof value?.message === "string"
         ? value.message
         : "The game could not be loaded. Please try again.",
+      typeof value?.code === "string" ? value.code : undefined,
     );
   return value as T;
 }

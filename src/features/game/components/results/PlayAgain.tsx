@@ -4,6 +4,7 @@ import { useStartGame } from "@/features/game/hooks/useStartGame";
 import { getDifficulty, type Difficulty } from "@/features/game/difficulty";
 import type { GameStart } from "@/features/game/services/game";
 import styles from "./ResultsDashboard.module.scss";
+import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
 
 export function PlayAgain({
   target,
@@ -16,7 +17,7 @@ export function PlayAgain({
   page: number;
   previousAttemptId: number;
 }) {
-  const { pending, error, uncertain, start } = useStartGame({
+  const { pending, error, guestRestricted, uncertain, start } = useStartGame({
     page,
     previousAttemptId,
     unconfirmedMessage:
@@ -58,6 +59,7 @@ export function PlayAgain({
           </button>
         </>
       )}
+      {guestRestricted && <GuestAccessLinks />}
     </div>
   );
 }

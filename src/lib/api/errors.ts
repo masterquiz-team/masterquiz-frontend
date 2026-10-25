@@ -1,3 +1,8 @@
+import {
+  GUEST_PLAY_UNAVAILABLE,
+  guestPlayMessage,
+} from "@/features/auth/guest-access";
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
@@ -6,6 +11,13 @@ export class ApiError extends Error {
   ) {
     super(message);
     this.name = "ApiError";
+  }
+}
+
+export class GuestAccessError extends ApiError {
+  readonly code = GUEST_PLAY_UNAVAILABLE;
+  constructor() {
+    super(403, guestPlayMessage);
   }
 }
 

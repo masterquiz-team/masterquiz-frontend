@@ -6,6 +6,7 @@ import {
   requireId,
 } from "@/lib/api/server";
 import { parsePlayerAttempt, QuizContractError } from "../contracts";
+import { GuestAccessError } from "@/lib/api/errors";
 
 async function request<T>(
   path: string,
@@ -15,6 +16,7 @@ async function request<T>(
   try {
     return await backendRequest(path, parse, init);
   } catch (error) {
+    if (error instanceof GuestAccessError) throw error;
     if (error instanceof QuizContractError)
       throw new ApiError(
         502,

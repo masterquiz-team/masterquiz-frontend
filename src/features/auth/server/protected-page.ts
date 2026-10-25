@@ -7,6 +7,7 @@ type SessionLinks = { href: string; loginHref: string };
 export type ProtectedPageResult<T> =
   | ({ status: "ok"; data: T } & SessionLinks)
   | ({ status: "anonymous" } & SessionLinks)
+  | ({ status: "guest" } & SessionLinks)
   | ({ status: "unavailable" } & SessionLinks)
   // Links are present only when the failure happened after the session check.
   | ({ status: "error"; cause: unknown } & Partial<SessionLinks>);
@@ -17,6 +18,7 @@ export type ProtectedPageResult<T> =
 export async function loadProtectedPage<T>(
   resolveHref: () => string | Promise<string>,
   load: () => Promise<T>,
+  { allowGuest = false }: { allowGuest?: boolean } = {},
 ): Promise<ProtectedPageResult<T>> {
   let links: SessionLinks | undefined;
   try {
@@ -27,6 +29,8 @@ export async function loadProtectedPage<T>(
       return { status: "anonymous", ...links };
     if (session.status === "unavailable")
       return { status: "unavailable", ...links };
+    if (session.status === "guest" && !allowGuest)
+      return { status: "guest", ...links };
     return { status: "ok", data: await load(), ...links };
   } catch (cause) {
     return { status: "error", cause, ...links };

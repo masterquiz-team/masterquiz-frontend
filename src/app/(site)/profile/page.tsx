@@ -13,6 +13,7 @@ export const metadata: Metadata = { title: "Profile" };
 export default async function ProfilePage() {
   const result = await loadProtectedPage(() => "/profile", getAccount);
   if (result.status === "anonymous") redirect(result.loginHref);
+  if (result.status === "guest") redirect("/register?next=%2Fprofile");
   if (result.status === "ok")
     return (
       <Reveal as="main" className={styles.main}>

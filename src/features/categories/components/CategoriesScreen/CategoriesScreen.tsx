@@ -26,7 +26,7 @@ export async function CategoriesScreen({
       {state.kind === "error" ? (
         <CategoriesError {...state} />
       ) : state.kind === "preview" ? (
-        <CategoriesPreview loginHref={state.loginHref} />
+        <CategoriesPreview playHref={state.playHref} />
       ) : state.data.content.length ? (
         <CategoriesList
           categories={state.data.content}

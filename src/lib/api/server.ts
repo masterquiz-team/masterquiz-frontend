@@ -2,12 +2,13 @@ import "server-only";
 
 import type { NextResponse } from "next/server";
 import { backendFetch, BackendConfigurationError } from "../backend/transport";
-import { getSessionToken } from "../backend/token";
+import { getSessionToken, isGuestToken } from "../backend/token";
 
-import { ApiError } from "./errors";
+import { ApiError, GuestAccessError } from "./errors";
 import { isRecord } from "../validation";
 import { checkMutationRequest } from "./request";
 import { jsonResponse } from "./response";
+import { getSessionState } from "@/features/auth/server/session";
 
 export { ApiError, invalidContract } from "./errors";
 export {
@@ -48,6 +49,14 @@ export async function backendRequest<T>(
     value = null;
   }
   if (!response.ok) {
+    if (
+      (response.status === 403 || response.status === 401) &&
+      (await isGuestToken(token)) &&
+      // The backend's protected error dispatch can mask a role denial as 401.
+      // A guest-allowed probe must still validate the token before remapping it.
+      (response.status === 403 || (await getSessionState()).status === "guest")
+    )
+      throw new GuestAccessError();
     const message =
       isRecord(value) && typeof value.message === "string"
         ? value.message
@@ -111,6 +120,7 @@ export async function apiResponse(
       return jsonResponse(
         {
           message: error.message,
+          ...(error instanceof GuestAccessError ? { code: error.code } : {}),
           ...(error.errors ? { errors: error.errors } : {}),
         },
         error.status,

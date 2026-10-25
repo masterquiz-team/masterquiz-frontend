@@ -9,6 +9,10 @@ import { AuthControlsLoading } from "@/features/auth/components/AuthControlsLoad
 
 async function SessionControls() {
   const state = await getSessionState();
+  if (state.status === "guest")
+    return (
+      <AuthControls status="guest" name={state.session.nickname} score={null} />
+    );
   if (state.status !== "authenticated")
     return <AuthControls status={state.status} name={null} score={null} />;
   const profile = await getUserProfile();

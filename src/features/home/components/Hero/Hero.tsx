@@ -1,5 +1,5 @@
 import styles from "./Hero.module.scss";
-import Link from "next/link";
+import { PlayLink } from "@/features/auth/components/PlayLink";
 import { Icon } from "@/components/ui/Icon";
 import { CategoriesPreview } from "../CategoriesPreview";
 
@@ -20,10 +20,10 @@ export const Hero = () => (
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua.
       </p>
-      <Link href="/categories" className={styles.startButton}>
+      <PlayLink href="/categories" className={styles.startButton}>
         Start Playing
         <Icon name="arrow" className={styles.arrowIcon} />
-      </Link>
+      </PlayLink>
     </div>
     <CategoriesPreview />
   </section>

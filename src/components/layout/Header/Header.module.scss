@@ -3,7 +3,8 @@
 
 .header {
   display: grid;
-  grid-template-columns: 444px 1fr auto;
+  grid-template-columns: minmax(max-content, 1fr) auto auto;
+  gap: 40px;
   align-items: center;
   width: 100%;
   max-width: 1440px;

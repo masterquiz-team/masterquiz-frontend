@@ -1,14 +1,17 @@
 import Link from "next/link";
 import type { CategoriesScreenState } from "./categories-screen-model";
 import styles from "./CategoriesScreen.module.scss";
+import { PlayLink } from "@/features/auth/components/PlayLink";
 
 export function CategoriesNotice({ state }: { state: CategoriesScreenState }) {
   return (
     <div className={styles.notice} role="status">
       {state.kind === "preview" && (
         <p>
-          Design preview — <Link href={state.loginHref}>log in</Link> to browse
-          available categories. Preview cards open the login page.
+          Category preview —{" "}
+          <PlayLink href={state.playHref}>continue as guest</PlayLink> or{" "}
+          <Link href={state.loginHref}>log in</Link> to browse available
+          categories.
         </p>
       )}
       {state.kind === "ready" && (

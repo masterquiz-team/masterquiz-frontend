@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { GameFailure } from "../../types";
 import styles from "./Gameplay.module.scss";
+import { GUEST_PLAY_UNAVAILABLE } from "@/features/auth/guest-access";
+import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
 export function GameError({
   error,
   attemptId,
@@ -20,6 +22,9 @@ export function GameError({
       <p role="alert" tabIndex={-1}>
         {error.message}
       </p>
+      {error.code === GUEST_PLAY_UNAVAILABLE && (
+        <GuestAccessLinks next={`/quiz/play/${attemptId}?page=${page}`} />
+      )}
       <p>
         Attempt {attemptId}. Progress is shown only after it is confirmed by the
         server.

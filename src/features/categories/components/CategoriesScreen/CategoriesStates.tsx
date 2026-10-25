@@ -4,12 +4,13 @@ import { categoryArtwork } from "../../artwork";
 import type { Category, CategoryPage } from "../../types";
 import { CategoryCard } from "../CategoryCard";
 import styles from "./CategoriesScreen.module.scss";
+import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
 
-export function CategoriesPreview({ loginHref }: { loginHref: string }) {
+export function CategoriesPreview({ playHref }: { playHref: string }) {
   return (
     <Stagger as="ul" className={styles.grid}>
       {categoryArtwork.map(({ name }) => (
-        <CategoryCard key={name} name={name} href={loginHref} requiresLogin />
+        <CategoryCard key={name} name={name} href={playHref} guestEntry />
       ))}
     </Stagger>
   );
@@ -19,17 +20,23 @@ export function CategoriesError({
   message,
   retryHref,
   loginHref,
+  guestRestricted = false,
 }: {
   message: string;
   retryHref: string;
   loginHref: string;
+  guestRestricted?: boolean;
 }) {
   return (
     <div className={styles.state} role="alert">
       <p>{message}</p>
       <a href={retryHref}>Try again</a>
       <Link href="/categories">Back to categories</Link>
-      <Link href={loginHref}>Log in</Link>
+      {guestRestricted ? (
+        <GuestAccessLinks next={retryHref} />
+      ) : (
+        <Link href={loginHref}>Log in</Link>
+      )}
     </div>
   );
 }

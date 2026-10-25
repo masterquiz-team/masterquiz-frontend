@@ -38,7 +38,7 @@ export function AuthControls({
 
   return (
     <div
-      className={`${styles.controls} ${status === "authenticated" ? styles.authenticated : ""}`}
+      className={`${styles.controls} ${status === "authenticated" ? styles.authenticated : status === "guest" ? styles.guest : ""}`}
     >
       {status === "unavailable" ? (
         <>
@@ -49,6 +49,18 @@ export function AuthControls({
           >
             Try again
           </button>
+        </>
+      ) : status === "guest" ? (
+        <>
+          <span className={styles.guestLabel} title={name ?? undefined}>
+            Guest
+          </span>
+          <Link href="/login" className={styles.link}>
+            Log in
+          </Link>
+          <Link href="/register" className={styles.action}>
+            Register
+          </Link>
         </>
       ) : status === "authenticated" ? (
         <>

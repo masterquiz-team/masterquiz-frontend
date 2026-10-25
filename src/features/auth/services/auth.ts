@@ -8,7 +8,10 @@ import {
   parseAuthError,
 } from "../validators/responses";
 
-async function postAuth(action: AuthFormMode | "logout", body: unknown) {
+async function postAuth(
+  action: AuthFormMode | "logout" | "guest",
+  body: unknown,
+) {
   return fetch(`/api/auth/${action}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -38,9 +41,30 @@ export async function submitAuth(
   const valid =
     mode === "register"
       ? isRegisteredUser(result.user)
-      : isAuthSession(result.session);
+      : isAuthSession(result.session) && result.session.kind === "user";
   if (!valid) throw new Error("Unexpected authentication response");
-  return { ok: true };
+  return {
+    ok: true,
+    signedIn: isAuthSession(result.session) && result.session.kind === "user",
+  };
+}
+
+let guestRequest: Promise<void> | null = null;
+
+export function ensurePlaySession(): Promise<void> {
+  if (guestRequest) return guestRequest;
+  guestRequest = (async () => {
+    const response = await postAuth("guest", {});
+    const result: unknown = await response.json().catch(() => null);
+    if (!response.ok || !isRecord(result) || !isAuthSession(result.session))
+      throw new Error(
+        parseAuthError(result, "Unable to start guest play. Please try again.")
+          .message,
+      );
+  })().finally(() => {
+    guestRequest = null;
+  });
+  return guestRequest;
 }
 
 export async function logout(): Promise<void> {

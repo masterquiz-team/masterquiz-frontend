@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { PlayLink } from "@/features/auth/components/PlayLink";
 import { Icon } from "@/components/ui/Icon";
 import { getCategoryArtwork } from "../../artwork";
 import styles from "./CategoryCard.module.scss";
@@ -8,16 +9,17 @@ type Props = {
   name: string;
   href?: string;
   selected?: boolean;
-  requiresLogin?: boolean;
+  guestEntry?: boolean;
 };
 
 export function CategoryCard({
   name,
   href,
   selected = false,
-  requiresLogin = false,
+  guestEntry = false,
 }: Props) {
   const artwork = getCategoryArtwork(name);
+  const CardLink = guestEntry ? PlayLink : Link;
   const content = (
     <>
       <div className={styles.illustration} aria-hidden="true">
@@ -42,17 +44,19 @@ export function CategoryCard({
   return (
     <li>
       {href ? (
-        <Link
+        <CardLink
           href={href}
           prefetch={false}
           className={`${styles.card} ${selected ? styles.selected : ""}`}
           aria-current={selected ? "true" : undefined}
           aria-label={
-            requiresLogin ? `${name} — log in to browse categories` : undefined
+            guestEntry
+              ? `${name} — continue as guest to browse categories`
+              : undefined
           }
         >
           {content}
-        </Link>
+        </CardLink>
       ) : (
         <div className={styles.card}>{content}</div>
       )}

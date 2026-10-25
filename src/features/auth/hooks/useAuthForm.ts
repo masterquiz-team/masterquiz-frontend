@@ -62,7 +62,9 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
       }
 
       setValues(emptyAuthValues);
-      router.replace(getAuthSuccessRedirect(mode, redirectTo));
+      router.replace(
+        getAuthSuccessRedirect(result.signedIn ? "login" : mode, redirectTo),
+      );
       // Refresh Server Components so the header reads the new cookie.
       router.refresh();
     } catch {

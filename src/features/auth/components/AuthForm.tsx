@@ -9,6 +9,7 @@ import type { AuthFormMode } from "../types";
 import { AuthFormFields } from "./AuthFormFields";
 import { AuthFormFeedback } from "./AuthFormFeedback";
 import { AuthSubmitButton } from "./AuthSubmitButton";
+import { PlayLink } from "./PlayLink";
 
 export function AuthForm({
   mode,
@@ -101,6 +102,13 @@ export function AuthForm({
         />
         <AuthFormFeedback feedback={feedback} registered={registered} />
       </form>
+      {!isRegister && (
+        <p className={styles.register}>
+          <PlayLink href={redirectTo === "/" ? "/categories" : redirectTo}>
+            Continue as guest
+          </PlayLink>
+        </p>
+      )}
       <p className={styles.register}>
         {isRegister ? "Already have an account? " : "New to MasterQuiz? "}
         <Link href={`${isRegister ? "/login" : "/register"}${nextQuery}`}>

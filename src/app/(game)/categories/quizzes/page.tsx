@@ -12,6 +12,8 @@ import { QuizChooser } from "@/features/game/components/choose/QuizChooser";
 import { assets } from "@/features/game/assets/difficulty";
 import { DesignAsset } from "@/components/ui/DesignAsset";
 import styles from "@/features/game/components/choose/QuizChooser.module.scss";
+import { PlayLink } from "@/features/auth/components/PlayLink";
+import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
 
 export const metadata: Metadata = { title: "Choose a quiz" };
 
@@ -50,12 +52,13 @@ export default async function QuizzesPage({
       );
       return { category, quizzes, randomAvailable };
     },
+    { allowGuest: true },
   );
-  const { data, message, loginHref, retryHref } = toCategoryPageState(result, {
-    anonymous:
-      "Log in to choose a quiz for this category. Guest gameplay is unavailable.",
-    fallback: "The quizzes could not be loaded. Please try again.",
-  });
+  const { data, message, loginHref, retryHref, playHref, guestRestricted } =
+    toCategoryPageState(result, {
+      anonymous: "Continue as guest or log in to choose a quiz.",
+      fallback: "The quizzes could not be loaded. Please try again.",
+    });
   const { id, page, difficulty } = request;
   const backHref =
     id > 0 ? difficultyHref(id, page) : `/categories?page=${page}`;
@@ -91,6 +94,8 @@ export default async function QuizzesPage({
         <section className={styles.state} aria-labelledby="quizzes-state">
           <h1 id="quizzes-state">Quizzes unavailable</h1>
           <p role="alert">{message}</p>
+          {playHref && <PlayLink href={playHref}>Continue as guest</PlayLink>}
+          {guestRestricted && <GuestAccessLinks next={result.href} />}
           {loginHref && <Link href={loginHref}>Log in</Link>}
           {retryHref && <a href={retryHref}>Try again</a>}
         </section>

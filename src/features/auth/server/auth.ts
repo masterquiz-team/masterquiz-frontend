@@ -4,17 +4,25 @@ import type { AuthFormMode, AuthValues } from "../types";
 import { isRegisteredUser, parseAuthError } from "../validators/responses";
 import { backendFetch } from "@/lib/backend/transport";
 import { isRecord } from "@/lib/validation";
+import { getSessionToken, isGuestToken } from "@/lib/backend/token";
 import { authJson } from "./request";
 import { readTokenSession, setSessionCookie } from "./session";
 
 // Route Handlers validate HTTP input; this function owns the Java auth exchange.
 export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
   try {
-    const response = await backendFetch(`/${mode}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    const currentToken = await getSessionToken();
+    const guestToken =
+      currentToken && (await isGuestToken(currentToken)) ? currentToken : null;
+    const response = await backendFetch(
+      `/${mode}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      },
+      guestToken,
+    );
     const result: unknown = await response.json().catch(() => null);
     if (!response.ok) {
       const fallback =
@@ -39,16 +47,52 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
           502,
         );
       }
-      return authJson(
-        {
-          user: {
-            id: result.id,
-            email: result.email,
-            nickname: result.nickname,
-          },
+      const body = {
+        user: {
+          id: result.id,
+          email: result.email,
+          nickname: result.nickname,
         },
-        response.status,
-      );
+      };
+      const registrationToken: unknown =
+        "token" in result ? result.token : null;
+      if (guestToken) {
+        // Registration currently returns a user DTO without a JWT. Sign in
+        // with the submitted credentials, forwarding the guest token again.
+        // If sign-in fails, registration still succeeded: retain the guest
+        // session and let the existing registered -> login flow take over.
+        try {
+          let login: unknown = result;
+          if (typeof registrationToken !== "string") {
+            const loginResponse = await backendFetch(
+              "/login",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  email: payload.email,
+                  password: payload.password,
+                }),
+              },
+              guestToken,
+            );
+            login = loginResponse.ok ? await loginResponse.json() : null;
+          }
+          const token =
+            isRecord(login) && typeof login.token === "string"
+              ? login.token
+              : null;
+          const session = token ? readTokenSession(token) : null;
+          if (token && session?.kind === "user") {
+            const reply = authJson({ ...body, session }, response.status);
+            setSessionCookie(reply, token, session);
+            return reply;
+          }
+        } catch {
+          // Preserve the successful registration and the existing guest cookie.
+        }
+      }
+      return authJson(body, response.status);
     }
 
     const token = typeof result.token === "string" ? result.token : null;

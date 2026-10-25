@@ -5,6 +5,7 @@ import { Reveal, Stagger } from "@/components/ui/Entrance";
 import { useId, useState, type KeyboardEvent } from "react";
 import { getDifficulty, type Difficulty } from "@/features/game/difficulty";
 import { useStartGame } from "@/features/game/hooks/useStartGame";
+import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
 import { displayQuizTitle, type QuizSummary } from "@/features/game/quizzes";
 import type { GameStart } from "@/features/game/services/game";
 import { getCategoryArtwork } from "@/features/categories/artwork";
@@ -57,12 +58,19 @@ export function QuizChooser({
   const id = useId();
   const [tab, setTab] = useState<Tab>("all");
   const [search, setSearch] = useState("");
-  const { selected, pending, error, uncertain, start, discardSavedAttempt } =
-    useStartGame({
-      page,
-      unconfirmedMessage:
-        "A previous start request could not be confirmed. Starting again may create another attempt. Please check the existing attempt before restarting.",
-    });
+  const {
+    selected,
+    pending,
+    error,
+    guestRestricted,
+    uncertain,
+    start,
+    discardSavedAttempt,
+  } = useStartGame({
+    page,
+    unconfirmedMessage:
+      "A previous start request could not be confirmed. Starting again may create another attempt. Please check the existing attempt before restarting.",
+  });
   const config = getDifficulty(difficulty)!;
   const artwork = getCategoryArtwork(category.name);
   const random: GameStart = { categoryId: category.id, difficulty };
@@ -259,6 +267,7 @@ export function QuizChooser({
           {error}
         </p>
       )}
+      {guestRestricted && <GuestAccessLinks />}
       {uncertain && selected && (
         <button
           type="button"

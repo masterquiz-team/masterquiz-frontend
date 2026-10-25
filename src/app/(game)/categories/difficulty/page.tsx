@@ -8,6 +8,8 @@ import { assets } from "@/features/game/assets/difficulty";
 import { DifficultyPicker } from "@/features/game/components/difficulty/DifficultyPicker";
 import { DesignAsset } from "@/components/ui/DesignAsset";
 import styles from "@/features/game/components/difficulty/Difficulty.module.scss";
+import { PlayLink } from "@/features/auth/components/PlayLink";
+import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
 
 export const metadata: Metadata = { title: "Choose your difficulty" };
 
@@ -31,15 +33,17 @@ export default async function DifficultyPage({
         throw new ApiError(502, "Invalid category response.");
       return category;
     },
+    { allowGuest: true },
   );
   const {
     data: category,
     message,
     loginHref,
     retryHref,
+    playHref,
+    guestRestricted,
   } = toCategoryPageState(result, {
-    anonymous:
-      "Log in to choose difficulty for an available category. Guest gameplay is unavailable.",
+    anonymous: "Continue as guest or log in to choose a difficulty.",
     fallback: "The category could not be loaded. Please try again.",
   });
   const { page } = request;
@@ -64,6 +68,8 @@ export default async function DifficultyPage({
         <section className={styles.state} aria-labelledby="difficulty-state">
           <h1 id="difficulty-state">Difficulty unavailable</h1>
           <p role="alert">{message}</p>
+          {playHref && <PlayLink href={playHref}>Continue as guest</PlayLink>}
+          {guestRestricted && <GuestAccessLinks next={result.href} />}
           {loginHref && <Link href={loginHref}>Log in</Link>}
           {retryHref && <a href={retryHref}>Try again</a>}
         </section>

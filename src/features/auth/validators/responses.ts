@@ -11,8 +11,10 @@ import { isRecord } from "@/lib/validation";
 export function isAuthSession(value: unknown): value is AuthSession {
   return (
     isRecord(value) &&
-    typeof value.email === "string" &&
-    typeof value.expiresAt === "string"
+    typeof value.expiresAt === "string" &&
+    Number.isFinite(Date.parse(value.expiresAt)) &&
+    ((value.kind === "user" && typeof value.email === "string") ||
+      (value.kind === "guest" && typeof value.nickname === "string"))
   );
 }
 

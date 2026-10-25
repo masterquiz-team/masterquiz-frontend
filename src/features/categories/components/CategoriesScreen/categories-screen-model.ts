@@ -3,8 +3,14 @@ import type { Category, CategoryPage } from "../../types";
 export type CategoriesQuery = Record<string, string | string[] | undefined>;
 
 export type CategoriesScreenState =
-  | { kind: "preview"; loginHref: string }
-  | { kind: "error"; message: string; loginHref: string; retryHref: string }
+  | { kind: "preview"; loginHref: string; playHref: string }
+  | {
+      kind: "error";
+      message: string;
+      loginHref: string;
+      retryHref: string;
+      guestRestricted?: boolean;
+    }
   | {
       kind: "ready";
       data: CategoryPage;

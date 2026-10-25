@@ -58,6 +58,7 @@ export function useGame(
     } catch (cause) {
       setError({
         status: cause instanceof GameRequestError ? cause.status : 0,
+        code: cause instanceof GameRequestError ? cause.code : undefined,
         message:
           cause instanceof Error
             ? cause.message

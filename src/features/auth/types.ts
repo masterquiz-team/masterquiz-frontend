@@ -13,14 +13,24 @@ export type AuthFieldName = keyof AuthValues;
 
 export type AuthFieldErrors = Partial<Record<AuthFieldName, string>>;
 
-export type AuthSession = {
+export type UserSession = {
+  kind: "user";
   email: string;
   expiresAt: string;
 };
 
+export type GuestSession = {
+  kind: "guest";
+  nickname: string;
+  expiresAt: string;
+};
+
+export type AuthSession = UserSession | GuestSession;
+
 export type AuthSessionState =
   | { status: "anonymous"; session: null }
-  | { status: "authenticated"; session: AuthSession }
+  | { status: "authenticated"; session: UserSession }
+  | { status: "guest"; session: GuestSession }
   | { status: "unavailable"; session: null };
 
 export type UserProfile = {
@@ -40,7 +50,8 @@ export type AuthError = {
   fieldErrors?: AuthFieldErrors;
 };
 
-export type AuthSubmitResult = { ok: true } | { ok: false; error: AuthError };
+export type AuthSubmitResult =
+  { ok: true; signedIn: boolean } | { ok: false; error: AuthError };
 
 export type AuthFeedback = {
   kind: "success" | "error";

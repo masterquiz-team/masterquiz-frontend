@@ -16,6 +16,17 @@
   margin-inline-start: 16px;
 }
 
+.guest {
+  flex-wrap: nowrap;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.guestLabel {
+  color: var(--muted);
+  font-size: tokens.$font-size-sm;
+}
+
 .link:hover {
   color: var(--primary);
 }
@@ -95,7 +106,7 @@
 }
 
 @include breakpoints.down(lg) {
-  .controls {
+  .controls:not(.guest) {
     gap: 24px;
   }
   .authenticated {

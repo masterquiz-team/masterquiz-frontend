@@ -38,6 +38,8 @@ export default async function LeaderboardPage({
     },
   );
   if (result.status === "anonymous") redirect(result.loginHref);
+  if (result.status === "guest")
+    redirect(`/register?${new URLSearchParams({ next: result.href })}`);
   if (
     result.status === "error" &&
     result.cause instanceof ApiError &&

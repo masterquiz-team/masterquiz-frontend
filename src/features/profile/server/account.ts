@@ -6,7 +6,7 @@ import {
   isRecord,
   jsonBody,
 } from "@/lib/api/server";
-import { getSessionToken } from "@/lib/backend/token";
+import { getSessionToken, isGuestToken } from "@/lib/backend/token";
 import {
   isSessionStillValid,
   readTokenSession,
@@ -65,8 +65,11 @@ export function getAccount() {
 // The backend checks that the email in the body matches the token subject.
 export async function updateNickname(nickname: string) {
   const token = await getSessionToken();
+  if (token && (await isGuestToken(token)))
+    throw new ApiError(403, "Register to manage your profile.");
   const session = token ? readTokenSession(token) : null;
-  if (!session) throw new ApiError(401, "Please log in to continue.");
+  if (!session || session.kind !== "user")
+    throw new ApiError(401, "Please log in to continue.");
   return accountRequest(
     "/user-profile",
     parseAccount,

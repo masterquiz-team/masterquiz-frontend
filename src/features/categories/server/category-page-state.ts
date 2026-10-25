@@ -2,12 +2,15 @@ import "server-only";
 import type { ProtectedPageResult } from "@/features/auth/server/protected-page";
 import { getHttpStatusMessage } from "@/lib/http-status-messages";
 import { ApiError } from "@/lib/api/server";
+import { GuestAccessError } from "@/lib/api/errors";
 
 export type CategoryPageState<T> = {
   data: T | null;
   message: string | null;
   loginHref: string | null;
   retryHref: string | null;
+  playHref?: string;
+  guestRestricted?: boolean;
 };
 
 // Shared error copy for the game screens that start from a category.
@@ -29,6 +32,15 @@ export function toCategoryPageState<T>(
         message: anonymous,
         loginHref: result.loginHref,
         retryHref: null,
+        playHref: result.href,
+      };
+    case "guest":
+      return {
+        data: null,
+        message: "Register to continue.",
+        loginHref: result.loginHref,
+        retryHref: null,
+        guestRestricted: true,
       };
     case "unavailable":
       return {
@@ -39,6 +51,14 @@ export function toCategoryPageState<T>(
         retryHref: result.href,
       };
     case "error": {
+      if (result.cause instanceof GuestAccessError)
+        return {
+          data: null,
+          message: result.cause.message,
+          loginHref: null,
+          retryHref: result.href ?? null,
+          guestRestricted: true,
+        };
       const status =
         result.cause instanceof ApiError ? result.cause.status : undefined;
       return {

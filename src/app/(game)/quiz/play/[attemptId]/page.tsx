@@ -9,6 +9,12 @@ import { ApiError, parseId, parsePage } from "@/lib/api/server";
 import { GamePlayer } from "@/features/game/components/play/GamePlayer";
 import type { GameFailure, GameView } from "@/features/game/types";
 import styles from "@/features/game/components/play/Gameplay.module.scss";
+import { GuestAccessError } from "@/lib/api/errors";
+import { PlayLink } from "@/features/auth/components/PlayLink";
+import {
+  GUEST_PLAY_UNAVAILABLE,
+  guestPlayMessage,
+} from "@/features/auth/guest-access";
 export const metadata: Metadata = { title: "Quiz" };
 
 function toGameFailure(
@@ -16,7 +22,17 @@ function toGameFailure(
 ): GameFailure {
   switch (result.status) {
     case "anonymous":
-      return { status: 401, message: "Log in to resume this attempt." };
+      return {
+        status: 401,
+        message:
+          "Continue as guest or log in to open this attempt. Only its owner can resume it.",
+      };
+    case "guest":
+      return {
+        status: 403,
+        message: guestPlayMessage,
+        code: GUEST_PLAY_UNAVAILABLE,
+      };
     case "unavailable":
       return {
         status: 503,
@@ -25,7 +41,13 @@ function toGameFailure(
       };
     case "error":
       return result.cause instanceof ApiError
-        ? { status: result.cause.status, message: result.cause.message }
+        ? {
+            status: result.cause.status,
+            message: result.cause.message,
+            ...(result.cause instanceof GuestAccessError
+              ? { code: result.cause.code }
+              : {}),
+          }
         : {
             status: 502,
             message: "The game could not be loaded. Please try again.",
@@ -52,6 +74,7 @@ export default async function PlayPage({
       return `/quiz/play/${request.id}?page=${request.page}`;
     },
     () => loadGame(request.id),
+    { allowGuest: true },
   );
   const game = result.status === "ok" ? result.data : null;
   const error = result.status === "ok" ? null : toGameFailure(result);
@@ -69,6 +92,11 @@ export default async function PlayPage({
     <main className={`${styles.screen} ${styles.state}`}>
       <h1>Game unavailable</h1>
       <p role="alert">{error?.message}</p>
+      {login && (
+        <PlayLink href={result.href ?? `/quiz/play/${id}?page=${page}`}>
+          Continue as guest
+        </PlayLink>
+      )}
       {login && <Link href={login}>Log in</Link>}
       <Link href={`/categories?page=${page}`}>Back to categories</Link>
     </main>
