@@ -3,28 +3,13 @@
 @use "../../../styles/patterns";
 
 .controls {
-  position: relative;
   display: flex;
   align-items: center;
+  justify-self: end;
   gap: 39px;
   font-size: tokens.$font-size-md;
   line-height: 19px;
-}
-
-.authenticated {
-  gap: 24px;
-  margin-inline-start: 16px;
-}
-
-.guest {
-  flex-wrap: nowrap;
-  gap: 12px;
   white-space: nowrap;
-}
-
-.guestLabel {
-  color: var(--muted);
-  font-size: tokens.$font-size-sm;
 }
 
 .link:hover {
@@ -52,74 +37,37 @@
   background: var(--primary-hover);
 }
 
-.action:disabled {
-  @include patterns.disabled-control($cursor: wait, $opacity: 0.5);
-}
-
 .user {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  max-width: 220px;
-  min-width: 0;
-  color: inherit;
-  text-decoration: none;
-  border-radius: tokens.$radius-control;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  @include patterns.interactive-lift;
 
-  &:hover .nickname,
-  &[aria-current="page"] .nickname {
-    color: var(--primary);
+  &:hover {
+    background: tokens.$primary-overlay;
   }
 
   &:focus-visible {
-    @include patterns.focus-ring($offset: 4px);
+    @include patterns.focus-ring;
   }
 }
 
-.nickname {
-  max-width: 170px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.skeleton {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: tokens.$primary-overlay;
 }
 
-.score {
-  --score-background: #{tokens.$primary-overlay};
-  --score-color: #{tokens.$primary};
-  --score-highlight-background: #{tokens.$primary};
-  --score-highlight-color: #{tokens.$surface};
-  max-width: 100%;
-  padding: 6px 10px;
-  border-radius: tokens.$radius-badge;
-  background: var(--score-background);
-  color: var(--score-color);
-  font-variant-numeric: tabular-nums;
-  font-size: tokens.$font-size-sm;
-  overflow-wrap: anywhere;
-  @media (prefers-reduced-motion: reduce) {
-    background: var(--score-background) !important;
-    color: var(--score-color) !important;
-  }
-}
-
-.error {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 230px;
-  margin-top: 8px;
-  color: tokens.$danger;
-  font-size: tokens.$font-size-sm;
-  line-height: 20px;
+.srOnly {
+  @include patterns.visually-hidden;
 }
 
 @include breakpoints.down(lg) {
-  .controls:not(.guest) {
+  .controls {
     gap: 24px;
-  }
-  .authenticated {
-    margin-inline-start: 0;
   }
 }
 
@@ -131,18 +79,5 @@
   .action {
     width: 80px;
     min-height: 40px;
-  }
-  .authenticated {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-    max-width: 150px;
-  }
-  .user {
-    justify-content: flex-end;
-    max-width: 150px;
-  }
-  .nickname {
-    max-width: 150px;
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import { CountUp } from "@/components/ui/CountUp";
+import { useLogout } from "@/features/auth/hooks/useLogout";
 import type { Account } from "../types";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { ProfileAsset } from "./ProfileAsset";
@@ -13,6 +14,7 @@ const formatCount = (value: number) =>
   Math.round(value).toLocaleString("en-US");
 
 export function ProfileHero({ account }: { account: Account }) {
+  const { handleLogout, pending, error } = useLogout();
   const [editing, setEditing] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const close = useRef<HTMLButtonElement>(null);
@@ -82,14 +84,30 @@ export function ProfileHero({ account }: { account: Account }) {
             </div>
           ))}
         </dl>
-        <button
-          type="button"
-          className={styles.editButton}
-          onClick={() => setEditing(true)}
-        >
-          <ProfileAsset src="/images/profile/profile-settings.svg" />
-          Edit profile
-        </button>
+        <div className={styles.heroActions}>
+          <button
+            type="button"
+            className={styles.editButton}
+            onClick={() => setEditing(true)}
+          >
+            <ProfileAsset src="/images/profile/profile-settings.svg" />
+            Edit profile
+          </button>
+          <button
+            type="button"
+            className={styles.editButton}
+            onClick={handleLogout}
+            disabled={pending}
+            aria-busy={pending}
+          >
+            {pending ? "Please wait…" : "Log out"}
+          </button>
+        </div>
+        {error && (
+          <p className={styles.logoutError} role="alert">
+            {error}
+          </p>
+        )}
       </div>
       <dialog
         ref={dialog}

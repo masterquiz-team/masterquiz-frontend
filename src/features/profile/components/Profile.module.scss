@@ -99,18 +99,32 @@
     font-weight: 600;
   }
 }
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
 .editButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
-  margin-top: 28px;
   padding: 10px 16px;
   border: 1px solid tokens.$primary;
   border-radius: 23px;
   color: tokens.$primary;
   cursor: pointer;
   @include patterns.interactive-lift;
+  &:disabled {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.6);
+  }
+}
+.logoutError {
+  margin-top: 12px;
+  color: tokens.$danger;
+  font-size: tokens.$font-size-sm;
 }
 .card {
   min-width: 0;
