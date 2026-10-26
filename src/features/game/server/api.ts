@@ -6,7 +6,28 @@ import {
   requireId,
 } from "@/lib/api/server";
 import { parsePlayerAttempt, QuizContractError } from "../contracts";
-import { GuestAccessError } from "@/lib/api/errors";
+import { ATTEMPT_ACCESS_DENIED, GuestAccessError } from "@/lib/api/errors";
+
+// Only calls concerning an existing attempt opt into ownership denial copy.
+// backendRequest still owns guest verification, including masked-401 handling.
+export async function attemptRequest<T>(
+  path: string,
+  parse: (v: unknown) => T,
+  init?: RequestInit,
+): Promise<T> {
+  try {
+    return await request(path, parse, init);
+  } catch (error) {
+    if (error instanceof GuestAccessError)
+      throw new ApiError(
+        403,
+        "This game belongs to another session. Start a new quiz.",
+        undefined,
+        ATTEMPT_ACCESS_DENIED,
+      );
+    throw error;
+  }
+}
 
 async function request<T>(
   path: string,
@@ -67,7 +88,7 @@ export function startRandomQuizAttempt(body: {
   );
 }
 export function getQuizAttempt(id: number) {
-  return request(`/quiz-attempts/${requireId(id)}`, (value) => {
+  return attemptRequest(`/quiz-attempts/${requireId(id)}`, (value) => {
     const attempt = parsePlayerAttempt(value);
     if (attempt.id !== id) throw new QuizContractError();
     return attempt;

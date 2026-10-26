@@ -24,10 +24,15 @@ import {
   type ContextOption,
   type GameContext,
 } from "@/features/game/server/game-view";
-import { getQuizAttempt, startRandomQuizAttempt, quizRequest } from "./api";
+import {
+  attemptRequest,
+  getQuizAttempt,
+  startRandomQuizAttempt,
+  quizRequest,
+} from "./api";
 
 export async function getHistory(attemptId: number) {
-  return quizRequest(`/quiz-attempts/answers/${attemptId}`, (value) => {
+  return attemptRequest(`/quiz-attempts/answers/${attemptId}`, (value) => {
     if (!Array.isArray(value)) invalidContract();
     const history = value.map(parseRecordedAnswer);
     if (
@@ -40,7 +45,7 @@ export async function getHistory(attemptId: number) {
   });
 }
 export async function recordAnswer(attemptId: number, answerId: number) {
-  return quizRequest(
+  return attemptRequest(
     "/quiz-attempts/answers/create",
     (value) => {
       const answer = parseSubmittedAnswer(value);
@@ -52,7 +57,7 @@ export async function recordAnswer(attemptId: number, answerId: number) {
   );
 }
 export async function finishAttempt(attemptId: number) {
-  return quizRequest(
+  return attemptRequest(
     `/quiz-attempts/${attemptId}/finish`,
     (value) => {
       const attempt = parsePlayerAttempt(value);

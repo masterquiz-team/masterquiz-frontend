@@ -9,7 +9,6 @@ import { ApiError, parseId, parsePage } from "@/lib/api/server";
 import { GamePlayer } from "@/features/game/components/play/GamePlayer";
 import type { GameFailure, GameView } from "@/features/game/types";
 import styles from "@/features/game/components/play/Gameplay.module.scss";
-import { GuestAccessError } from "@/lib/api/errors";
 import { PlayLink } from "@/features/auth/components/PlayLink";
 import {
   GUEST_PLAY_UNAVAILABLE,
@@ -44,9 +43,7 @@ function toGameFailure(
         ? {
             status: result.cause.status,
             message: result.cause.message,
-            ...(result.cause instanceof GuestAccessError
-              ? { code: result.cause.code }
-              : {}),
+            ...(result.cause.code ? { code: result.cause.code } : {}),
           }
         : {
             status: 502,

@@ -3,6 +3,7 @@ import type { GameFailure } from "../../types";
 import styles from "./Gameplay.module.scss";
 import { GUEST_PLAY_UNAVAILABLE } from "@/features/auth/guest-access";
 import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
+import { ATTEMPT_ACCESS_DENIED } from "@/lib/api/errors";
 export function GameError({
   error,
   attemptId,
@@ -26,7 +27,9 @@ export function GameError({
           ? "This saved attempt is no longer available. Start a new quiz to continue."
           : error.message}
       </p>
-      {error.status === 404 && <Link href={backHref}>Start a new quiz</Link>}
+      {(error.status === 404 || error.code === ATTEMPT_ACCESS_DENIED) && (
+        <Link href={backHref}>Start a new quiz</Link>
+      )}
       {error.code === GUEST_PLAY_UNAVAILABLE && (
         <GuestAccessLinks next={`/quiz/play/${attemptId}?page=${page}`} />
       )}

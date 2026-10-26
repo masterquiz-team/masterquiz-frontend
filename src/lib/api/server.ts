@@ -120,7 +120,7 @@ export async function apiResponse(
       return jsonResponse(
         {
           message: error.message,
-          ...(error instanceof GuestAccessError ? { code: error.code } : {}),
+          ...(error.code ? { code: error.code } : {}),
           ...(error.errors ? { errors: error.errors } : {}),
         },
         error.status,
