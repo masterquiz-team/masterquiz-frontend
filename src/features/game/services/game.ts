@@ -1,6 +1,7 @@
 import { getDifficulty, type Difficulty } from "../difficulty";
 import type { GameView, PlayerAttempt } from "../types";
 import { isGeneratedQuiz } from "../quizzes";
+import { ATTEMPT_STORAGE_PREFIX } from "@/lib/attempt-storage";
 
 export class GameRequestError extends Error {
   constructor(
@@ -51,8 +52,8 @@ export type GameStart =
   { quizId: number } | { categoryId: number; difficulty: Difficulty };
 export const attemptKey = (start: GameStart) =>
   "quizId" in start
-    ? `masterquiz-attempt:quiz:${start.quizId}`
-    : `masterquiz-attempt:${start.categoryId}:${start.difficulty}`;
+    ? `${ATTEMPT_STORAGE_PREFIX}quiz:${start.quizId}`
+    : `${ATTEMPT_STORAGE_PREFIX}${start.categoryId}:${start.difficulty}`;
 // Rebuilds the start of a loaded game so resume and Play again use one key.
 export const gameStartOf = (game: {
   attempt: { quizId: number };
@@ -75,7 +76,7 @@ export function clearSavedAttempt(attemptId: number) {
   // Collect first: removing keys changes sessionStorage's numeric indexes.
   const keys = Object.keys(sessionStorage).filter(
     (key) =>
-      key.startsWith("masterquiz-attempt:") &&
+      key.startsWith(ATTEMPT_STORAGE_PREFIX) &&
       parseSavedAttemptId(sessionStorage.getItem(key)) === attemptId,
   );
   let target: { categoryId: number; difficulty: Difficulty } | null = null;
