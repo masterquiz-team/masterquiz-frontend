@@ -1,51 +1,27 @@
+import "client-only";
+
 import { getDifficulty, type Difficulty } from "../difficulty";
-import type { GameView, PlayerAttempt } from "../types";
+import type { PlayerAttempt } from "../types";
 import { isGeneratedQuiz } from "../quizzes";
 import { ATTEMPT_STORAGE_PREFIX } from "@/lib/attempt-storage";
+import {
+  apiRequest,
+  ApiClientError as GameRequestError,
+  GAME_ACTION_TIMEOUT,
+} from "@/lib/api/client";
+import { parseGameView, parsePlayerAttempt } from "../validators/view";
 
-export class GameRequestError extends Error {
-  constructor(
-    public status: number,
-    message: string,
-    public code?: string,
-  ) {
-    super(message);
-  }
-}
-export async function gameRequest<T>(
-  path: string,
-  method = "GET",
-  body?: unknown,
-): Promise<T> {
-  let response: Response;
-  try {
-    response = await fetch(path, {
-      method,
-      cache: "no-store",
-      ...(body === undefined
-        ? {}
-        : {
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body),
-          }),
-    });
-  } catch {
-    throw new GameRequestError(
-      0,
-      "The connection was interrupted. Reload saved progress before trying again.",
-    );
-  }
-  const value = await response.json().catch(() => null);
-  if (!response.ok || value === null)
-    throw new GameRequestError(
-      response.ok ? 502 : response.status,
-      typeof value?.message === "string"
-        ? value.message
-        : "The game could not be loaded. Please try again.",
-      typeof value?.code === "string" ? value.code : undefined,
-    );
-  return value as T;
-}
+export { GameRequestError };
+
+const requestOptions = {
+  fallbackMessage: "The game could not be loaded. Please try again.",
+  networkMessage:
+    "The connection was interrupted. Reload saved progress before trying again.",
+  timeoutMessage:
+    "The request timed out. Reload saved progress before trying again.",
+  // Reading play also assembles a context through multiple backend calls.
+  timeoutMs: GAME_ACTION_TIMEOUT,
+};
 // What a start request asks for: a chosen quiz, or a random quiz of a
 // category and difficulty.
 export type GameStart =
@@ -95,11 +71,12 @@ export async function startNewGame(start: GameStart): Promise<PlayerAttempt> {
   // Write before the request: a lost response must not create another attempt on reload.
   sessionStorage.setItem(key, "unknown");
   try {
-    const attempt = await gameRequest<PlayerAttempt>(
-      "/api/quiz-attempts",
-      "POST",
-      start,
-    );
+    const attempt = await apiRequest("/api/quiz-attempts", {
+      ...requestOptions,
+      method: "POST",
+      body: start,
+      parse: parsePlayerAttempt,
+    });
     sessionStorage.setItem(key, String(attempt.id));
     return attempt;
   } catch (error) {
@@ -113,12 +90,21 @@ export async function startNewGame(start: GameStart): Promise<PlayerAttempt> {
   }
 }
 export const getGame = (id: number, review?: number) =>
-  gameRequest<GameView>(
+  apiRequest(
     `/api/quiz-attempts/${id}/play${review ? `?review=${review}` : ""}`,
+    { ...requestOptions, parse: parseGameView },
   );
 export const submitGameAnswer = (id: number, answerId: number) =>
-  gameRequest<GameView>(`/api/quiz-attempts/${id}/answers`, "POST", {
-    answerId,
+  apiRequest(`/api/quiz-attempts/${id}/answers`, {
+    ...requestOptions,
+    method: "POST",
+    body: { answerId },
+    parse: parseGameView,
   });
 export const finishGame = (id: number) =>
-  gameRequest<GameView>(`/api/quiz-attempts/${id}/finish`, "PUT", {});
+  apiRequest(`/api/quiz-attempts/${id}/finish`, {
+    ...requestOptions,
+    method: "PUT",
+    body: {},
+    parse: parseGameView,
+  });

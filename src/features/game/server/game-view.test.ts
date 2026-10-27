@@ -6,6 +6,7 @@ import {
   getAnsweredQuestions,
   type GameContext,
 } from "./game-view";
+import { parseGameView } from "../validators/view";
 
 const now = Date.parse("2026-10-14T10:01:00Z");
 beforeEach(() => {
@@ -197,4 +198,30 @@ describe("buildGameView", () => {
         ],
       }),
     ).toThrow(expect.objectContaining({ status: 502 })));
+});
+
+// The browser parser must accept every view the BFF builds.
+describe("browser contract", () => {
+  const deadline = Date.parse("2026-10-14T10:05:00Z");
+  it.each([
+    ["question", () => buildGameView(context(), history(2))],
+    [
+      "feedback",
+      () =>
+        buildGameView(context(), [answer(0)], {
+          questionId: 100,
+          options: [
+            { id: 1001, correct: true },
+            { id: 1002, correct: false },
+          ],
+        }),
+    ],
+    ["ready-to-finish", () => buildGameView(context(), history(10))],
+    ["timed-out", () => buildGameView(context(), [], undefined, deadline)],
+    ["finished", () => buildGameView(context("FINISHED"), history(9))],
+  ])("parses a %s view", (phase, build) => {
+    const view = build();
+    expect(view.phase).toBe(phase);
+    expect(parseGameView(view)).toEqual(view);
+  });
 });
