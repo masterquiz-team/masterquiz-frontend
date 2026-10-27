@@ -12,7 +12,7 @@ import styles from "@/features/game/components/play/Gameplay.module.scss";
 import { PlayLink } from "@/features/auth/components/PlayLink";
 import {
   GUEST_PLAY_UNAVAILABLE,
-  guestPlayMessage,
+  accountRequiredMessage,
 } from "@/features/auth/guest-access";
 export const metadata: Metadata = { title: "Quiz" };
 
@@ -29,7 +29,7 @@ function toGameFailure(
     case "guest":
       return {
         status: 403,
-        message: guestPlayMessage,
+        message: accountRequiredMessage,
         code: GUEST_PLAY_UNAVAILABLE,
       };
     case "unavailable":

@@ -2,7 +2,10 @@ import { beforeEach, expect, it, vi } from "vitest";
 import { getQuizAttempt, startRandomQuizAttempt } from "./api";
 import { apiResponse } from "@/lib/api/server";
 import { ATTEMPT_ACCESS_DENIED } from "@/lib/api/errors";
-import { GUEST_PLAY_UNAVAILABLE } from "@/features/auth/guest-access";
+import {
+  GUEST_PLAY_UNAVAILABLE,
+  accountRequiredMessage,
+} from "@/features/auth/guest-access";
 import { guestTokenMarker, GUEST_COOKIE } from "@/lib/backend/token";
 
 const { cookieRead, cookieGet } = vi.hoisted(() => ({
@@ -88,5 +91,8 @@ it("keeps the guest recovery code for creating a new game", async () => {
     }),
   );
   expect(response.status).toBe(403);
-  expect(await response.json()).toMatchObject({ code: GUEST_PLAY_UNAVAILABLE });
+  expect(await response.json()).toEqual({
+    code: GUEST_PLAY_UNAVAILABLE,
+    message: accountRequiredMessage,
+  });
 });

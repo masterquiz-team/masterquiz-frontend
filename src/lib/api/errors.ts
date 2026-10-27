@@ -1,6 +1,6 @@
 import {
   GUEST_PLAY_UNAVAILABLE,
-  guestPlayMessage,
+  accountRequiredMessage,
 } from "@/features/auth/guest-access";
 
 export const ATTEMPT_ACCESS_DENIED = "ATTEMPT_ACCESS_DENIED";
@@ -20,7 +20,7 @@ export class ApiError extends Error {
 export class GuestAccessError extends ApiError {
   readonly code = GUEST_PLAY_UNAVAILABLE;
   constructor() {
-    super(403, guestPlayMessage);
+    super(403, accountRequiredMessage);
   }
 }
 
