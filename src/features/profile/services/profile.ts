@@ -1,28 +1,26 @@
-import type { Account } from "../types";
+import { apiRequest } from "@/lib/api/client";
+import { parseAccount } from "../validators";
 
-async function profileRequest<T>(method: "PUT" | "DELETE", body: unknown) {
-  let response: Response;
-  try {
-    response = await fetch("/api/profile", {
-      method,
-      cache: "no-store",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-  } catch {
-    throw new Error("The connection was interrupted. Please try again.");
-  }
-  const value = await response.json().catch(() => null);
-  if (!response.ok)
-    throw new Error(
-      typeof value?.message === "string"
-        ? value.message
-        : "The account could not be updated. Please try again.",
-    );
-  return value as T;
-}
+const messages = {
+  fallbackMessage: "The account could not be updated. Please try again.",
+  networkMessage: "The connection was interrupted. Please try again.",
+};
 
 export const saveNickname = (nickname: string) =>
-  profileRequest<Account>("PUT", { nickname });
+  apiRequest("/api/profile", {
+    ...messages,
+    method: "PUT",
+    body: { nickname },
+    // The route reads the account and then saves it: two backend calls of
+    // up to 10 s each.
+    timeoutMs: 30_000,
+    parse: parseAccount,
+  });
 
-export const removeAccount = () => profileRequest<unknown>("DELETE", {});
+export const removeAccount = () =>
+  apiRequest("/api/profile", {
+    ...messages,
+    method: "DELETE",
+    body: {},
+    parse: () => undefined,
+  });

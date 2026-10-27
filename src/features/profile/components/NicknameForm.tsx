@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 import { AuthField } from "@/features/auth/components/AuthField";
 import { saveNickname } from "../services/profile";
 import { validateNickname } from "@/lib/nickname";
+import { ApiClientError } from "@/lib/api/client";
 import styles from "./Profile.module.scss";
 
 export function NicknameForm({ nickname }: { nickname: string }) {
@@ -38,7 +39,8 @@ export function NicknameForm({ nickname }: { nickname: string }) {
       const message =
         cause instanceof Error ? cause.message : "The username was not saved.";
       // Validation errors from the backend belong next to the field.
-      if (message.startsWith("Check your username")) setFieldError(message);
+      if (cause instanceof ApiClientError && cause.status === 400)
+        setFieldError(message);
       else setFeedback({ kind: "error", message });
     } finally {
       setPending(false);
