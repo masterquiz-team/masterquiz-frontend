@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { AuthField } from "@/features/auth/components/AuthField";
 import { saveNickname } from "../services/profile";
-import { validateNickname } from "../validation";
+import { validateNickname } from "@/lib/nickname";
 import styles from "./Profile.module.scss";
 
 export function NicknameForm({ nickname }: { nickname: string }) {
