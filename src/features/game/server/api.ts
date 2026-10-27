@@ -5,7 +5,7 @@ import {
   jsonBody,
   requireId,
 } from "@/lib/api/server";
-import { parsePlayerAttempt, QuizContractError } from "../contracts";
+import { parsePlayerAttempt, QuizContractError } from "./contracts";
 import { ATTEMPT_ACCESS_DENIED, GuestAccessError } from "@/lib/api/errors";
 
 // Only calls concerning an existing attempt opt into ownership denial copy.

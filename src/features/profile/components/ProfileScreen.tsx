@@ -5,9 +5,9 @@ import type { Category } from "@/features/categories/types";
 import { difficultyHref } from "@/features/game/routes";
 import type { Account } from "../types";
 import { getLevelProgress } from "../levels";
-import { profileBadges } from "../badges";
+import { profileBadges } from "@/features/achievements/badges";
 import { ProfileHero } from "./ProfileHero";
-import { ProfileAsset } from "./ProfileAsset";
+import { PublicAsset } from "@/components/ui/PublicAsset";
 import { LevelProgress } from "./LevelProgress";
 import styles from "./Profile.module.scss";
 
@@ -29,7 +29,7 @@ export function ProfileScreen({
           <section className={styles.card} aria-labelledby="your-level">
             <h2 id="your-level">Your level</h2>
             <div className={styles.level}>
-              <ProfileAsset src={progress.current.icon} size={90} />
+              <PublicAsset src={progress.current.icon} size={90} />
               <div>
                 <h3>{progress.current.title}</h3>
                 <p className={styles.points}>
@@ -52,7 +52,7 @@ export function ProfileScreen({
           <section className={styles.card} aria-labelledby="your-badges">
             <div className={styles.cardHeading}>
               <h2 id="your-badges">
-                <ProfileAsset src="/images/profile/badges-medal.svg" />
+                <PublicAsset src="/images/profile/badges-medal.svg" />
                 Your badges
               </h2>
               <Link href="/achievements">
@@ -62,7 +62,7 @@ export function ProfileScreen({
             <Stagger as="ul" className={styles.badges}>
               {profileBadges.map((badge) => (
                 <li key={badge.id}>
-                  <ProfileAsset
+                  <PublicAsset
                     src={`/images/achievements/profile-badge-${badge.id}.svg`}
                     size={74}
                     className={styles.lockedBadge}
@@ -71,7 +71,7 @@ export function ProfileScreen({
                     {"profileTitle" in badge ? badge.profileTitle : badge.title}
                   </span>
                   <span className={styles.lockStatus}>
-                    <ProfileAsset
+                    <PublicAsset
                       src="/images/achievements/status-locked.svg"
                       size={14}
                     />
@@ -90,18 +90,18 @@ export function ProfileScreen({
           aria-labelledby="recent-activity"
         >
           <h2 id="recent-activity">
-            <ProfileAsset src="/images/profile/activity-clock.svg" />
+            <PublicAsset src="/images/profile/activity-clock.svg" />
             Recent activity
           </h2>
           <p className={styles.empty}>
-            <ProfileAsset src="/images/profile/activity-clock.svg" size={28} />
+            <PublicAsset src="/images/profile/activity-clock.svg" size={28} />
             <span>Your recent games will appear here soon.</span>
           </p>
         </section>
         <section className={styles.card} aria-labelledby="favourite-categories">
           <div className={styles.cardHeading}>
             <h2 id="favourite-categories">
-              <ProfileAsset src="/images/profile/favourite-star.svg" />
+              <PublicAsset src="/images/profile/favourite-star.svg" />
               Favourite categories
             </h2>
             <Link href="/categories">
@@ -120,7 +120,7 @@ export function ProfileScreen({
                 <li key={category.id}>
                   <Link href={difficultyHref(category.id, 0)}>
                     {artwork?.illustration && (
-                      <ProfileAsset src={artwork.illustration} size={52} />
+                      <PublicAsset src={artwork.illustration} size={52} />
                     )}
                     <span>{category.name}</span>
                   </Link>

@@ -1,8 +1,8 @@
-import styles from "./AuthFieldIcon.module.scss";
+import styles from "./FieldIcon.module.scss";
 
-export type AuthFieldIconName = "email" | "user" | "lock";
+export type FieldIconName = "email" | "user" | "lock";
 
-export function AuthFieldIcon({ name }: { name: AuthFieldIconName }) {
+export function FieldIcon({ name }: { name: FieldIconName }) {
   if (name === "email") {
     return (
       <svg

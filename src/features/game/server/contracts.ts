@@ -1,12 +1,14 @@
+import "server-only";
+
 import type {
   AnswerReveal,
   PlayerAttempt,
   PlayerQuiz,
   RecordedAnswer,
   SubmittedAnswer,
-} from "./types";
-import type { ContextOption, RevealedOption } from "./server/game-view";
-import { getDifficultyByApiName } from "./difficulty";
+} from "../types";
+import type { ContextOption, RevealedOption } from "./game-view";
+import { getDifficultyByApiName } from "../difficulty";
 
 import { invalidContract } from "@/lib/api/errors";
 import {

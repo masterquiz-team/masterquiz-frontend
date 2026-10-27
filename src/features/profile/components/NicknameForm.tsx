@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { AuthField } from "@/features/auth/components/AuthField";
+import { TextField } from "@/components/ui/TextField";
 import { saveNickname } from "../services/profile";
 import { validateNickname } from "@/lib/nickname";
 import { ApiClientError } from "@/lib/api/client";
@@ -49,7 +49,7 @@ export function NicknameForm({ nickname }: { nickname: string }) {
 
   return (
     <form className={styles.form} onSubmit={submit} noValidate>
-      <AuthField
+      <TextField
         name="nickname"
         label="Username"
         icon="user"

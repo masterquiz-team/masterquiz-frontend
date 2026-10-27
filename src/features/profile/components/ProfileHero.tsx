@@ -5,7 +5,7 @@ import { CountUp } from "@/components/ui/CountUp";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import type { Account } from "../types";
 import { ProfileAvatar } from "./ProfileAvatar";
-import { ProfileAsset } from "./ProfileAsset";
+import { PublicAsset } from "@/components/ui/PublicAsset";
 import { NicknameForm } from "./NicknameForm";
 import { DeleteAccount } from "./DeleteAccount";
 import styles from "./Profile.module.scss";
@@ -53,10 +53,7 @@ export function ProfileHero({ account }: { account: Account }) {
           aria-label="Edit profile"
           onClick={() => setEditing(true)}
         >
-          <ProfileAsset
-            src="/images/profile/avatar-edit-pencil.svg"
-            size={20}
-          />
+          <PublicAsset src="/images/profile/avatar-edit-pencil.svg" size={20} />
         </button>
       </div>
       <div className={styles.identity}>
@@ -70,7 +67,7 @@ export function ProfileHero({ account }: { account: Account }) {
           {stats.map((stat) => (
             <div key={stat.label}>
               <dt>
-                <ProfileAsset src={`/images/profile/stat-${stat.icon}.svg`} />
+                <PublicAsset src={`/images/profile/stat-${stat.icon}.svg`} />
                 <span>{stat.label}</span>
               </dt>
               <dd>
@@ -90,7 +87,7 @@ export function ProfileHero({ account }: { account: Account }) {
             className={styles.editButton}
             onClick={() => setEditing(true)}
           >
-            <ProfileAsset src="/images/profile/profile-settings.svg" />
+            <PublicAsset src="/images/profile/profile-settings.svg" />
             Edit profile
           </button>
           <button
