@@ -3,7 +3,8 @@ import "server-only";
 import { backendFetch } from "@/lib/backend/transport";
 import { isRecord } from "@/lib/validation";
 import { authJson } from "./request";
-import { getSessionState, readTokenSession, setSessionCookie } from "./session";
+import { getSessionState, readTokenSession } from "@/lib/backend/session";
+import { setSessionCookie } from "./session";
 
 export async function ensureGuestSession() {
   try {

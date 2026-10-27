@@ -7,10 +7,7 @@ import {
   jsonBody,
 } from "@/lib/api/server";
 import { getSessionToken, isGuestToken } from "@/lib/backend/token";
-import {
-  isSessionStillValid,
-  readTokenSession,
-} from "@/features/auth/server/session";
+import { isSessionStillValid, readTokenSession } from "@/lib/backend/session";
 import type { Account } from "../types";
 import { levelFromScore } from "../levels";
 

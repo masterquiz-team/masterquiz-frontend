@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Navigation } from "@/components/layout/Navigation";
 import { AuthControls } from "@/features/auth/components/AuthControls";
-import { getSessionState } from "@/features/auth/server/session";
+import { getSessionState } from "@/lib/backend/session";
 import { AuthControlsLoading } from "@/features/auth/components/AuthControlsLoading";
 
 async function SessionControls() {

@@ -3,7 +3,7 @@ import type { ProtectedPageResult } from "@/features/auth/server/protected-page"
 import { getHttpStatusMessage } from "@/lib/http-status-messages";
 import { ApiError } from "@/lib/api/server";
 import { GuestAccessError } from "@/lib/api/errors";
-import { accountRequiredMessage } from "@/features/auth/guest-access";
+import { accountRequiredMessage } from "@/lib/api/guest-access";
 
 export type CategoryPageState<T> = {
   data: T | null;

@@ -6,7 +6,7 @@ import {
   isRecord,
 } from "@/lib/api/server";
 import { parseSpringPage } from "@/lib/validation";
-import { isSessionStillValid } from "@/features/auth/server/session";
+import { isSessionStillValid } from "@/lib/backend/session";
 import type { Leaderboard, LeaderboardEntry, LeaderboardMe } from "../types";
 
 const isCount = (value: unknown): value is number =>

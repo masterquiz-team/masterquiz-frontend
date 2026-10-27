@@ -1,8 +1,6 @@
 import { authJson } from "@/features/auth/server/request";
-import {
-  clearSessionCookie,
-  getSessionState,
-} from "@/features/auth/server/session";
+import { getSessionState } from "@/lib/backend/session";
+import { clearSessionCookie } from "@/features/auth/server/session";
 
 export async function GET() {
   try {

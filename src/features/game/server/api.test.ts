@@ -1,11 +1,11 @@
-import { beforeEach, expect, it, vi } from "vitest";
-import { getQuizAttempt, startRandomQuizAttempt } from "./api";
-import { apiResponse } from "@/lib/api/server";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { getQuizAttempt, startRandomQuizAttempt, quizRequest } from "./api";
+import { apiResponse, invalidContract } from "@/lib/api/server";
 import { ATTEMPT_ACCESS_DENIED } from "@/lib/api/errors";
 import {
   GUEST_PLAY_UNAVAILABLE,
   accountRequiredMessage,
-} from "@/features/auth/guest-access";
+} from "@/lib/api/guest-access";
 import { guestTokenMarker, GUEST_COOKIE } from "@/lib/backend/token";
 
 const { cookieRead, cookieGet } = vi.hoisted(() => ({
@@ -94,5 +94,45 @@ it("keeps the guest recovery code for creating a new game", async () => {
   expect(await response.json()).toEqual({
     code: GUEST_PLAY_UNAVAILABLE,
     message: accountRequiredMessage,
+  });
+});
+
+describe("quiz error privacy", () => {
+  const token = () =>
+    `header.${Buffer.from(JSON.stringify({ sub: "user@example.test", exp: Date.now() / 1000 + 3600 })).toString("base64url")}.signature`;
+  beforeEach(() => {
+    cookieGet.mockReset().mockReturnValue({ value: token() });
+    cookieRead.mockReset().mockResolvedValue({ get: cookieGet });
+    fetchMock.mockReset();
+    vi.stubGlobal("fetch", fetchMock);
+    vi.stubEnv("BACKEND_API_URL", "https://backend.test/");
+  });
+
+  it.each([
+    [401, "Please log in"],
+    [403, "session has been kept"],
+    [404, "unavailable"],
+    [500, "could not complete"],
+  ])("does not expose upstream %s errors", async (status, message) => {
+    fetchMock.mockResolvedValue(
+      Response.json(
+        { message: "private entity data", errors: ["secret"] },
+        { status },
+      ),
+    );
+    const response = await apiResponse(() => quizRequest("/quiz/1", (v) => v));
+    expect(response.status).toBe(status);
+    const body = await response.json();
+    expect(body.message).toContain(message);
+    expect(JSON.stringify(body)).not.toMatch(/private|secret|errors/);
+  });
+  it("maps shared contract failures to the quiz-specific response", async () => {
+    fetchMock.mockResolvedValue(Response.json({}));
+    await expect(
+      quizRequest("/quiz/1", () => invalidContract()),
+    ).rejects.toMatchObject({
+      status: 502,
+      message: "The quiz service returned an unexpected response.",
+    });
   });
 });

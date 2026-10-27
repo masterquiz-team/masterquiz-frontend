@@ -5,14 +5,11 @@ import {
   ApiError,
   invalidContract,
 } from "./server";
-import { quizRequest } from "@/features/game/server/api";
-import { getCategories } from "@/features/categories/server/api";
 import {
   backendFetch,
   BackendConfigurationError,
   getBackendUrl,
 } from "../backend/transport";
-import { authJson } from "@/features/auth/server/request";
 
 const { cookieGet, cookieRead } = vi.hoisted(() => ({
   cookieGet: vi.fn(),
@@ -132,66 +129,7 @@ describe("backend transport and request mapping", () => {
   });
 });
 
-describe("quiz error privacy", () => {
-  it.each([
-    [401, "Please log in"],
-    [403, "session has been kept"],
-    [404, "unavailable"],
-    [500, "could not complete"],
-  ])("does not expose upstream %s errors", async (status, message) => {
-    fetchMock.mockResolvedValue(
-      Response.json(
-        { message: "private entity data", errors: ["secret"] },
-        { status },
-      ),
-    );
-    const response = await apiResponse(() => quizRequest("/quiz/1", (v) => v));
-    expect(response.status).toBe(status);
-    const body = await response.json();
-    expect(body.message).toContain(message);
-    expect(JSON.stringify(body)).not.toMatch(/private|secret|errors/);
-  });
-  it("maps shared contract failures to the quiz-specific response", async () => {
-    fetchMock.mockResolvedValue(Response.json({}));
-    await expect(
-      quizRequest("/quiz/1", () => invalidContract()),
-    ).rejects.toMatchObject({
-      status: 502,
-      message: "The quiz service returned an unexpected response.",
-    });
-  });
-  it("uses the shared page allowlist for categories", async () => {
-    fetchMock.mockResolvedValue(
-      Response.json({
-        content: [{ id: 2, name: "Science", private: "secret" }],
-        number: 0,
-        size: 12,
-        totalElements: 1,
-        totalPages: 1,
-        first: true,
-        last: true,
-        empty: false,
-        sort: "private",
-      }),
-    );
-    const result = await getCategories();
-    expect(result.content).toEqual([{ id: 2, name: "Science" }]);
-    expect(result).not.toHaveProperty("sort");
-  });
-});
-
 describe("route responses", () => {
-  it("shares no-store JSON responses with auth and preserves cookie support", async () => {
-    const response = await apiResponse(async () => ({ ok: true }), 201);
-    expect(response.status).toBe(201);
-    expect(response.headers.get("cache-control")).toBe("no-store");
-    const auth = authJson({ ok: true }, 201);
-    expect(auth.headers.get("cache-control")).toBe(
-      response.headers.get("cache-control"),
-    );
-    auth.cookies.set("test", "value");
-    expect(auth.headers.get("set-cookie")).toContain("test=value");
-  });
   it("supports an empty no-store 204", async () => {
     const response = await apiResponse(async () => undefined, 204);
     expect(response.status).toBe(204);

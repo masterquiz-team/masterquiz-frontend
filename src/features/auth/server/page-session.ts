@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getSessionState } from "@/features/auth/server/session";
+import { getSessionState } from "@/lib/backend/session";
 import { toPageSession } from "../utils/page-session";
 
 export async function getPageSession(nextHref: string) {

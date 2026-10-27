@@ -13,7 +13,7 @@ import { PlayLink } from "@/features/auth/components/PlayLink";
 import {
   GUEST_PLAY_UNAVAILABLE,
   accountRequiredMessage,
-} from "@/features/auth/guest-access";
+} from "@/lib/api/guest-access";
 export const metadata: Metadata = { title: "Quiz" };
 
 function toGameFailure(

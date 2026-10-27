@@ -1,8 +1,5 @@
 import { expect, it } from "vitest";
-import {
-  GUEST_PLAY_UNAVAILABLE,
-  accountRequiredMessage,
-} from "@/features/auth/guest-access";
+import { GUEST_PLAY_UNAVAILABLE, accountRequiredMessage } from "./guest-access";
 import { GuestAccessError } from "./errors";
 
 it("explains that guest access requires a registered account", () => {

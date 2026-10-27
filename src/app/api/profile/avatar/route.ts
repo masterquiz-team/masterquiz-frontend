@@ -1,4 +1,4 @@
-import { getSessionState } from "@/features/auth/server/session";
+import { getSessionState } from "@/lib/backend/session";
 import { getSessionToken } from "@/lib/backend/token";
 import { backendFetch } from "@/lib/backend/transport";
 
