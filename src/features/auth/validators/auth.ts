@@ -1,5 +1,6 @@
 import type { AuthFieldErrors, AuthFormMode, AuthValues } from "../types";
 import { createAuthPayload } from "../utils/form";
+import { validateNickname } from "@/lib/nickname";
 import { isRecord } from "@/lib/validation";
 
 // JSON has no TypeScript guarantees. Narrow its fields before normalizing them.
@@ -53,9 +54,8 @@ export function validateAuthValues(
   }
 
   if (mode === "register") {
-    if (!values.nickname?.trim()) {
-      errors.nickname = "Enter your username.";
-    }
+    const nicknameError = validateNickname(values.nickname ?? "");
+    if (nicknameError) errors.nickname = nicknameError;
     if (values.password.length < 8) {
       errors.password = "Use at least 8 characters.";
     }

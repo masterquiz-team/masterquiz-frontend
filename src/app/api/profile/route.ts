@@ -9,7 +9,7 @@ import {
   deleteAccount,
   updateNickname,
 } from "@/features/profile/server/account";
-import { validateNickname } from "@/features/profile/validation";
+import { validateNickname } from "@/lib/nickname";
 
 export function PUT(request: Request) {
   return apiResponse(
