@@ -31,6 +31,9 @@ import {
   quizRequest,
 } from "./api";
 
+const NOT_ENOUGH_QUESTIONS =
+  "Not enough questions for a random quiz at this difficulty yet. Choose another difficulty or a ready-made quiz.";
+
 export async function getHistory(attemptId: number) {
   return attemptRequest(`/quiz-attempts/answers/${attemptId}`, (value) => {
     if (!Array.isArray(value)) invalidContract();
@@ -226,12 +229,12 @@ export async function startGame(categoryId: number, difficulty: Difficulty) {
       invalidContract();
     // Validate before returning the attempt so the client never saves a short quiz.
     if (quiz.listOfQuestions.length < configuration.questionCount)
-      throw new ApiError(
-        409,
-        "Not enough questions for a random quiz at this difficulty yet. Choose another difficulty or a ready-made quiz.",
-      );
+      throw new ApiError(409, NOT_ENOUGH_QUESTIONS);
     return attempt;
   } catch (error) {
+    // The backend answers 409 when a category/difficulty has too few questions.
+    if (error instanceof ApiError && error.status === 409)
+      throw new ApiError(409, NOT_ENOUGH_QUESTIONS);
     if (
       error instanceof ApiError &&
       (error.status === 400 || error.status === 404)
