@@ -17,6 +17,7 @@ import {
   submitGameAnswer,
 } from "@/features/game/services/game";
 import type { GameFailure } from "../types";
+import { ATTEMPT_ACCESS_DENIED } from "@/lib/api/errors";
 import { useCountdown } from "./useCountdown";
 
 export function useGame(
@@ -40,17 +41,19 @@ export function useGame(
     !!game &&
     game.phase !== "finished" &&
     (game.phase === "timed-out" || remaining === 0);
+  // A missing or foreign attempt cannot be resumed from this tab.
+  const lost = error?.status === 404 || error?.code === ATTEMPT_ACCESS_DENIED;
   useEffect(() => {
-    if (error?.status !== 404) return;
+    if (!lost) return;
     try {
       const target = clearSavedAttempt(attemptId);
       if (target) startTransition(() => setRecoveryTarget(target));
     } catch {
       // Recovery navigation remains available if browser storage is blocked.
     }
-  }, [attemptId, error]);
+  }, [attemptId, lost]);
   useEffect(() => {
-    if (!game || error?.status === 404) return;
+    if (!game || lost) return;
     const key = attemptKey(gameStartOf(game));
     try {
       if (game.phase === "finished") {
@@ -62,7 +65,7 @@ export function useGame(
     } catch {
       // The attempt URL remains sufficient for reload/resume.
     }
-  }, [game, attemptId, error?.status]);
+  }, [game, attemptId, lost]);
 
   const run = useCallback(async (work: () => Promise<GameView>) => {
     if (busy.current) return;

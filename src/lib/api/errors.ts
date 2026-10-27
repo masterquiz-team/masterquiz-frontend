@@ -3,11 +3,14 @@ import {
   guestPlayMessage,
 } from "@/features/auth/guest-access";
 
+export const ATTEMPT_ACCESS_DENIED = "ATTEMPT_ACCESS_DENIED";
+
 export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
     public readonly errors?: string[],
+    public readonly code?: string,
   ) {
     super(message);
     this.name = "ApiError";
