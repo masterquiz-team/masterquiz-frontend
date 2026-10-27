@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Category, CategoryPage } from "../../types";
-import { getCategoriesHref } from "./categories-screen-model";
+import { getCategoriesHref } from "../../screen-model";
 import styles from "./CategoriesScreen.module.scss";
 
 export function CategoriesPagination({

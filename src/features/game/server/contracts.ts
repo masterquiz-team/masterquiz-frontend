@@ -17,8 +17,6 @@ import {
   isText as text,
 } from "@/lib/validation";
 
-// Compatibility export: all contract failures now use the shared error type.
-export { ContractError as QuizContractError } from "@/lib/api/errors";
 const invalid = invalidContract;
 
 function parseReveal(

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { CategoriesScreenState } from "./categories-screen-model";
+import type { CategoriesScreenState } from "../../screen-model";
 import styles from "./CategoriesScreen.module.scss";
 import { PlayLink } from "@/features/auth/components/PlayLink";
 

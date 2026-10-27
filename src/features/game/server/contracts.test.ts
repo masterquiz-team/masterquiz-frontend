@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ContractError } from "@/lib/api/errors";
-import {
-  parsePlayerQuiz,
-  parsePlayerAttempt,
-  QuizContractError,
-} from "./contracts";
+import { parsePlayerQuiz, parsePlayerAttempt } from "./contracts";
 
 const quiz = {
   id: 1,
@@ -32,8 +28,6 @@ const attempt = {
   status: "IN_PROGRESS",
 };
 describe("player contracts (migrated from check-quiz-contracts)", () => {
-  it("uses one contract error type", () =>
-    expect(QuizContractError).toBe(ContractError));
   it("discards upstream private question fields", () =>
     expect(parsePlayerQuiz(quiz)).toEqual({
       id: 1,

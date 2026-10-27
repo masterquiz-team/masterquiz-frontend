@@ -6,13 +6,9 @@ import {
   CategoriesList,
   CategoriesPreview,
 } from "./CategoriesStates";
-import { loadCategoriesScreen } from "./load-categories-screen";
-import type { CategoriesQuery } from "./categories-screen-model";
+import { loadCategoriesScreen } from "../../server/load-categories-screen";
+import type { CategoriesQuery } from "../../screen-model";
 import styles from "./CategoriesScreen.module.scss";
-
-// Preserve existing direct imports while new consumers use the folder entrypoint.
-export { CategoriesHeading } from "./CategoriesHeading";
-export { CategoriesLoading } from "./CategoriesLoading";
 
 export async function CategoriesScreen({
   searchParams,

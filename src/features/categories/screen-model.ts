@@ -1,4 +1,4 @@
-import type { Category, CategoryPage } from "../../types";
+import type { Category, CategoryPage } from "./types";
 
 export type CategoriesQuery = Record<string, string | string[] | undefined>;
 
