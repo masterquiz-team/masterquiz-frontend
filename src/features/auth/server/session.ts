@@ -33,10 +33,11 @@ export const getSessionState = cache(async (): Promise<AuthSessionState> => {
   if (!token) return { status: "anonymous", session: null };
   const guest = await isGuestToken(token);
 
-  // There is no /me endpoint. Guests cannot read categories, and the current
-  // backend can mask that denial as 401. Guest-allowed attempt reads enforce
-  // authentication before looking up the ID: 0 cannot be a persisted attempt,
-  // so 404 verifies the JWT without creating an attempt or reading user data.
+  // There is no /me endpoint. Guests use /quiz-attempts/0 instead of
+  // /categories for historical reasons (categories used to be denied to
+  // guests). The probe still works: attempt reads authenticate before looking
+  // up the ID, and 0 cannot be a persisted attempt, so 404 verifies the JWT
+  // without creating an attempt or reading user data.
   try {
     const response = await backendFetch(
       guest ? "/quiz-attempts/0" : "/categories?page=0&size=1",

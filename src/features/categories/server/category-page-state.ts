@@ -3,6 +3,7 @@ import type { ProtectedPageResult } from "@/features/auth/server/protected-page"
 import { getHttpStatusMessage } from "@/lib/http-status-messages";
 import { ApiError } from "@/lib/api/server";
 import { GuestAccessError } from "@/lib/api/errors";
+import { accountRequiredMessage } from "@/features/auth/guest-access";
 
 export type CategoryPageState<T> = {
   data: T | null;
@@ -37,7 +38,7 @@ export function toCategoryPageState<T>(
     case "guest":
       return {
         data: null,
-        message: "Register to continue.",
+        message: accountRequiredMessage,
         loginHref: result.loginHref,
         retryHref: null,
         guestRestricted: true,
