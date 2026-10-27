@@ -51,12 +51,19 @@ export function useStartGame({
       if (savedId !== null && savedId !== previousAttemptId) {
         try {
           const game = await getGame(savedId);
-          if (game.attempt.status === "IN_PROGRESS") id = savedId;
+          // A timed-out attempt only offers "Time's up"; start a fresh game.
+          if (
+            game.attempt.status === "IN_PROGRESS" &&
+            game.phase !== "timed-out"
+          )
+            id = savedId;
         } catch (cause) {
+          // Reading one saved attempt: 403/404 means the marker belongs to
+          // another session or a deleted attempt, never that play is blocked.
+          // If guests really cannot play, startNewGame reports it below.
           if (
             !(cause instanceof GameRequestError) ||
-            ![403, 404].includes(cause.status) ||
-            cause.code === GUEST_PLAY_UNAVAILABLE
+            ![403, 404].includes(cause.status)
           )
             throw cause;
         }
