@@ -49,7 +49,7 @@ export function NicknameForm({ nickname }: { nickname: string }) {
 
   return (
     <form className={styles.form} onSubmit={submit} noValidate>
-      <TextField
+      <TextField<"nickname">
         name="nickname"
         label="Username"
         icon="user"

@@ -2,8 +2,10 @@ import { useId } from "react";
 import { FieldIcon, type FieldIconName } from "./FieldIcon";
 import styles from "./TextField.module.scss";
 
-type TextFieldProps = {
-  name: string;
+// Pass the field-name type explicitly (<TextField<FieldName> ...>) so a
+// typo in `name` fails typecheck.
+type TextFieldProps<N extends string = string> = {
+  name: N;
   label: string;
   icon: FieldIconName;
   value: string;
@@ -15,7 +17,7 @@ type TextFieldProps = {
   minLength?: number;
 };
 
-export function TextField({
+export function TextField<N extends string>({
   name,
   label,
   icon,
@@ -26,7 +28,7 @@ export function TextField({
   autoComplete,
   placeholder,
   minLength,
-}: TextFieldProps) {
+}: TextFieldProps<N>) {
   const inputId = useId();
   const errorId = `${inputId}-error`;
   return (

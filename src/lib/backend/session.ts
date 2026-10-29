@@ -3,26 +3,7 @@ import "server-only";
 import { backendFetch, BackendConfigurationError } from "./transport";
 import { getSessionToken, isGuestToken, readTokenClaims } from "./token";
 import { cache } from "react";
-
-export type UserSession = {
-  kind: "user";
-  email: string;
-  expiresAt: string;
-};
-
-export type GuestSession = {
-  kind: "guest";
-  nickname: string;
-  expiresAt: string;
-};
-
-export type AuthSession = UserSession | GuestSession;
-
-export type AuthSessionState =
-  | { status: "anonymous"; session: null }
-  | { status: "authenticated"; session: UserSession }
-  | { status: "guest"; session: GuestSession }
-  | { status: "unavailable"; session: null };
+import type { AuthSession, AuthSessionState } from "./session-types";
 
 // Claim decoding does not verify the signature; getSessionState asks Java.
 export function readTokenSession(

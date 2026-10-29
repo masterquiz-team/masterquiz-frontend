@@ -25,7 +25,7 @@ export function AuthFormFields({
   const isRegister = mode === "register";
   return (
     <fieldset disabled={pending} className={styles.fields}>
-      <TextField
+      <TextField<AuthFieldName>
         name="email"
         label="Email address"
         icon="email"
@@ -37,7 +37,7 @@ export function AuthFormFields({
         onValueChange={(value) => onFieldChange("email", value)}
       />
       {isRegister && (
-        <TextField
+        <TextField<AuthFieldName>
           name="nickname"
           label="Username"
           icon="user"
@@ -48,7 +48,7 @@ export function AuthFormFields({
           onValueChange={(value) => onFieldChange("nickname", value)}
         />
       )}
-      <TextField
+      <TextField<AuthFieldName>
         name="password"
         label="Password"
         icon="lock"
@@ -61,7 +61,7 @@ export function AuthFormFields({
         onValueChange={(value) => onFieldChange("password", value)}
       />
       {isRegister && (
-        <TextField
+        <TextField<AuthFieldName>
           name="repeatPassword"
           label="Repeat password"
           icon="lock"

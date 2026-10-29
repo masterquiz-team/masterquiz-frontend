@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { NextResponse } from "next/server";
-import type { AuthSession } from "@/lib/backend/session";
+import type { AuthSession } from "@/lib/backend/session-types";
 import {
   guestTokenMarker,
   GUEST_COOKIE,
