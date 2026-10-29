@@ -3,6 +3,7 @@
 
 .preview {
   width: 100%;
+  padding-top: 21px;
   scroll-margin-top: 24px;
 }
 .heading {
@@ -10,13 +11,15 @@
   z-index: tokens.$layer-annotation;
   display: flex;
   align-items: start;
-  min-height: 62px;
-  margin-top: -48px;
+  height: 0;
+  min-height: 0;
+  top: -48px;
   margin-left: -90px;
 }
 .title {
   font-size: tokens.$font-size-xl;
-  line-height: 24px;
+  line-height: normal;
+  color: tokens.$text-heading;
   transform: rotate(-9.54deg);
 }
 .arrow {
@@ -48,7 +51,10 @@
 }
 .list {
   display: grid;
-  gap: 15px;
+  row-gap: 12px;
+  li:last-child {
+    margin-top: 3px;
+  }
 }
 @include breakpoints.down(lg) {
   .background {
@@ -63,21 +69,23 @@
     height: auto;
   }
   .heading {
-    margin-left: 0;
+    margin-left: -60px;
   }
   .arrow {
-    margin-left: -80px;
-    width: 40px;
+    margin-left: -150px;
+    width: 50px;
     height: auto;
   }
 }
 @include breakpoints.down(md) {
   .preview {
     max-width: 554px;
+    padding-top: 0;
     margin-inline: auto;
   }
   .heading {
-    margin-top: 0;
+    top: 0;
+    height: 62px;
   }
   .arrow {
     margin: 0 0 0 20px;

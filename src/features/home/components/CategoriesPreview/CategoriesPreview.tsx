@@ -1,3 +1,4 @@
+import { categoryAnnotation } from "../../fonts";
 import styles from "./CategoriesPreview.module.scss";
 import Image from "next/image";
 import { CategoryPreviewCard } from "../CategoryPreviewCard";
@@ -5,25 +6,27 @@ import { CategoryPreviewCard } from "../CategoryPreviewCard";
 const categories = [
   {
     title: "Geography",
-    description: "Lorem ipsum dolor sit amet, consectetur.",
-    background: "#F0EFFD",
+    description: "Countries, capitals, landmarks and more.",
+    artwork: "geography",
   },
   {
     title: "History",
-    description: "Lorem ipsum dolor sit amet, consectetur.",
-    background: "#EFFAF6",
+    description: "Events, figures, civilizations and key moments.",
+    artwork: "history",
   },
   {
     title: "Science",
-    description: "Lorem ipsum dolor sit amet, consectetur.",
-    background: "#ECF5FD",
+    description: "The world around us, from nature to technology.",
+    artwork: "science",
   },
-];
+] as const;
 
 export const CategoriesPreview = () => (
   <div id="categories" className={styles.preview}>
     <div className={styles.heading}>
-      <h2 className={styles.title}>Choose a category</h2>
+      <h2 className={`${styles.title} ${categoryAnnotation.className}`}>
+        Choose a category
+      </h2>
       <Image
         src="/Arrow%202.svg"
         alt=""

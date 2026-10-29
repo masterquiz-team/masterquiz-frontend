@@ -32,9 +32,9 @@ export const JoinCommunity = () => (
         />
       </div>
       <div>
-        <h2 className={styles.title}>Lorem ipsum dolor sit amet.</h2>
+        <h2 className={styles.title}>Join a growing community</h2>
         <p className={styles.description}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          Thousands of players are already testing their knowledge. Are you in?
         </p>
         <Link href="/register" className={styles.signUp}>
           Sign up
@@ -52,7 +52,6 @@ export const JoinCommunity = () => (
       />
       <div className={styles.card}>
         <h3 className={styles.cardTitle}>Top players</h3>
-        <p className={styles.sampleRanking}>Sample ranking</p>
         <ol>
           {players.map((player, index) => (
             <li
@@ -60,7 +59,17 @@ export const JoinCommunity = () => (
               className={index === 3 ? styles.currentPlayer : styles.player}
             >
               <span>{index + 1}</span>
-              <span className={styles.avatar} />
+              <Image
+                src={
+                  index === 3
+                    ? "/images/home/ranking-avatar-current.svg"
+                    : "/images/home/ranking-avatar.svg"
+                }
+                alt=""
+                width={40}
+                height={40}
+                className={styles.avatar}
+              />
               <span>{player.name}</span>
               <span className={styles.score}>{player.score}</span>
             </li>

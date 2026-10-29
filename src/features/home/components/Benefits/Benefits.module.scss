@@ -1,6 +1,5 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/breakpoints";
-@use "../../../../styles/patterns";
 
 .section {
   scroll-margin-top: 24px;
@@ -21,32 +20,44 @@
   text-transform: uppercase;
 }
 .title {
-  margin-top: 18px;
-  font-size: tokens.$font-size-4xl;
-  line-height: 40px;
+  margin-top: 8px;
+  font-size: tokens.$font-size-6xl;
+  font-weight: 700;
+  line-height: 60px;
+  color: tokens.$text-heading;
 }
 .list {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 46px;
-  margin-top: 39px;
+  margin-top: 29px;
 }
-.imagePlaceholder {
+.icon {
   width: 100px;
   height: 100px;
-  margin-bottom: 34px;
-  @include patterns.image-placeholder;
+  display: grid;
+  place-items: center;
+  margin-bottom: 36px;
+  border-radius: tokens.$radius-circle;
+  background: tokens.$primary-overlay;
+  img {
+    width: 54px;
+    height: 54px;
+    object-fit: contain;
+  }
 }
 .itemTitle {
   font-size: tokens.$font-size-xl;
-  line-height: 25px;
+  line-height: normal;
+  font-weight: 600;
+  color: tokens.$text-heading;
 }
 .description {
   max-width: 230px;
-  margin-top: 16px;
-  color: var(--muted);
-  font-size: tokens.$font-size-md;
-  line-height: 26px;
+  margin-top: 17px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-label;
+  line-height: 24px;
 }
 @include breakpoints.down(lg) {
   .container {
