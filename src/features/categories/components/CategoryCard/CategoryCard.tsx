@@ -28,10 +28,9 @@ export function CategoryCard({
         )}
       </div>
       <h2 className={styles.title}>{name}</h2>
-      <div className={styles.descriptionPlaceholder} aria-hidden="true">
-        <span />
-        <span />
-      </div>
+      {artwork?.description && (
+        <p className={styles.description}>{artwork.description}</p>
+      )}
       {href && (
         <span className={styles.action} aria-hidden="true">
           <span className={styles.actionCircle}>
