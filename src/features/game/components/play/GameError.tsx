@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { GameFailure } from "../../types";
 import styles from "./Gameplay.module.scss";
-import { GUEST_PLAY_UNAVAILABLE } from "@/features/auth/guest-access";
+import { GUEST_PLAY_UNAVAILABLE } from "@/lib/api/guest-access";
 import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
 import { ATTEMPT_ACCESS_DENIED } from "@/lib/api/errors";
 export function GameError({

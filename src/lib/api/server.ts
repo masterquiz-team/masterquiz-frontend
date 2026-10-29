@@ -8,7 +8,7 @@ import { ApiError, GuestAccessError } from "./errors";
 import { isRecord } from "../validation";
 import { checkMutationRequest } from "./request";
 import { jsonResponse } from "./response";
-import { getSessionState } from "@/features/auth/server/session";
+import { getSessionState } from "../backend/session";
 
 export { ApiError, invalidContract } from "./errors";
 export {

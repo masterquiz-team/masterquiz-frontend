@@ -1,12 +1,14 @@
+import "server-only";
+
 import type {
   AnswerReveal,
   PlayerAttempt,
   PlayerQuiz,
   RecordedAnswer,
   SubmittedAnswer,
-} from "./types";
-import type { ContextOption, RevealedOption } from "./server/game-view";
-import { getDifficultyByApiName } from "./difficulty";
+} from "../types";
+import type { ContextOption, RevealedOption } from "./game-view";
+import { getDifficultyByApiName } from "../difficulty";
 
 import { invalidContract } from "@/lib/api/errors";
 import {
@@ -15,8 +17,6 @@ import {
   isText as text,
 } from "@/lib/validation";
 
-// Compatibility export: all contract failures now use the shared error type.
-export { ContractError as QuizContractError } from "@/lib/api/errors";
 const invalid = invalidContract;
 
 function parseReveal(

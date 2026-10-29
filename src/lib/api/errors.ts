@@ -1,7 +1,4 @@
-import {
-  GUEST_PLAY_UNAVAILABLE,
-  accountRequiredMessage,
-} from "@/features/auth/guest-access";
+import { GUEST_PLAY_UNAVAILABLE, accountRequiredMessage } from "./guest-access";
 
 export const ATTEMPT_ACCESS_DENIED = "ATTEMPT_ACCESS_DENIED";
 

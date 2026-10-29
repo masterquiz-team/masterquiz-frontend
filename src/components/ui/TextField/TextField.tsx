@@ -1,12 +1,13 @@
 import { useId } from "react";
-import type { AuthFieldName } from "../types";
-import { AuthFieldIcon, type AuthFieldIconName } from "./AuthFieldIcon";
-import styles from "./AuthField.module.scss";
+import { FieldIcon, type FieldIconName } from "./FieldIcon";
+import styles from "./TextField.module.scss";
 
-type AuthFieldProps = {
-  name: AuthFieldName;
+// Pass the field-name type explicitly (<TextField<FieldName> ...>) so a
+// typo in `name` fails typecheck.
+type TextFieldProps<N extends string = string> = {
+  name: N;
   label: string;
-  icon: AuthFieldIconName;
+  icon: FieldIconName;
   value: string;
   onValueChange: (value: string) => void;
   error?: string;
@@ -16,7 +17,7 @@ type AuthFieldProps = {
   minLength?: number;
 };
 
-export function AuthField({
+export function TextField<N extends string>({
   name,
   label,
   icon,
@@ -27,14 +28,14 @@ export function AuthField({
   autoComplete,
   placeholder,
   minLength,
-}: AuthFieldProps) {
+}: TextFieldProps<N>) {
   const inputId = useId();
   const errorId = `${inputId}-error`;
   return (
     <div className={styles.label}>
       <label htmlFor={inputId}>{label}</label>
       <span className={`${styles.inputWrapper} ${error ? styles.invalid : ""}`}>
-        <AuthFieldIcon name={icon} />
+        <FieldIcon name={icon} />
         <input
           className={styles.input}
           id={inputId}

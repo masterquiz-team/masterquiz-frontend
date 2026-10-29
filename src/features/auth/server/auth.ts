@@ -5,12 +5,8 @@ import { isRegisteredUser, parseAuthError } from "../validators/responses";
 import { backendFetch } from "@/lib/backend/transport";
 import { isRecord } from "@/lib/validation";
 import { authJson } from "./request";
-import {
-  clearSessionCookie,
-  getSessionState,
-  readTokenSession,
-  setSessionCookie,
-} from "./session";
+import { getSessionState, readTokenSession } from "@/lib/backend/session";
+import { clearSessionCookie, setSessionCookie } from "./session";
 
 // Route Handlers validate HTTP input; this function owns the Java auth exchange.
 export async function authenticate(mode: AuthFormMode, payload: AuthValues) {

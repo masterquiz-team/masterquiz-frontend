@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
-import { checkAuthRequest } from "./request";
-import { readMutation } from "@/lib/api/server";
+import { checkAuthRequest, authJson } from "./request";
+import { readMutation, apiResponse } from "@/lib/api/server";
 
 const request = (
   headers: Record<string, string | undefined> = {},
@@ -65,4 +65,16 @@ it("only reads JSON objects", async () => {
     await expect(readMutation(request({}, body))).rejects.toMatchObject({
       status: 400,
     });
+});
+
+it("shares no-store JSON responses with auth and preserves cookie support", async () => {
+  const response = await apiResponse(async () => ({ ok: true }), 201);
+  expect(response.status).toBe(201);
+  expect(response.headers.get("cache-control")).toBe("no-store");
+  const auth = authJson({ ok: true }, 201);
+  expect(auth.headers.get("cache-control")).toBe(
+    response.headers.get("cache-control"),
+  );
+  auth.cookies.set("test", "value");
+  expect(auth.headers.get("set-cookie")).toContain("test=value");
 });

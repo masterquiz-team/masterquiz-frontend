@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { Stagger } from "@/components/ui/Entrance";
-import { badges } from "@/features/profile/badges";
-import { ProfileAsset } from "@/features/profile/components/ProfileAsset";
+import { PublicAsset } from "@/components/ui/PublicAsset";
+import { badges } from "../badges";
 import styles from "./Achievements.module.scss";
 
 const filters = [
@@ -19,14 +19,14 @@ export function AchievementsScreen() {
   return (
     <div className={styles.achievements}>
       <Link href="/profile" className={styles.back}>
-        <ProfileAsset src="/images/achievements/arrow-back.svg" />
+        <PublicAsset src="/images/achievements/arrow-back.svg" />
         Back
       </Link>
       <div className={styles.heading}>
         <div>
           <h1>
             Achievements
-            <ProfileAsset
+            <PublicAsset
               src="/images/achievements/achievements-heading-decoration.svg"
               size={58}
             />
@@ -37,7 +37,7 @@ export function AchievementsScreen() {
           className={styles.summary}
           aria-labelledby="achievement-summary"
         >
-          <ProfileAsset
+          <PublicAsset
             src="/images/achievements/achievements-summary-level.svg"
             size={90}
           />
@@ -88,7 +88,7 @@ export function AchievementsScreen() {
         <Stagger as="ul" key={filter} className={styles.grid}>
           {visible.map((badge) => (
             <li key={badge.id} className={styles.card}>
-              <ProfileAsset
+              <PublicAsset
                 src={
                   "lockedIcon" in badge
                     ? badge.lockedIcon
@@ -105,7 +105,7 @@ export function AchievementsScreen() {
               <h2>{badge.title}</h2>
               <p>{badge.description}</p>
               <div className={styles.locked}>
-                <ProfileAsset
+                <PublicAsset
                   src="/images/achievements/status-locked.svg"
                   size={18}
                 />

@@ -13,25 +13,12 @@ export type AuthFieldName = keyof AuthValues;
 
 export type AuthFieldErrors = Partial<Record<AuthFieldName, string>>;
 
-export type UserSession = {
-  kind: "user";
-  email: string;
-  expiresAt: string;
-};
-
-export type GuestSession = {
-  kind: "guest";
-  nickname: string;
-  expiresAt: string;
-};
-
-export type AuthSession = UserSession | GuestSession;
-
-export type AuthSessionState =
-  | { status: "anonymous"; session: null }
-  | { status: "authenticated"; session: UserSession }
-  | { status: "guest"; session: GuestSession }
-  | { status: "unavailable"; session: null };
+export type {
+  UserSession,
+  GuestSession,
+  AuthSession,
+  AuthSessionState,
+} from "@/lib/backend/session-types";
 
 export type UserProfile = {
   nickname: string | null;

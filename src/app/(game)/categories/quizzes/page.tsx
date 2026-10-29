@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCategory } from "@/features/categories/server/api";
 import { loadProtectedPage } from "@/features/auth/server/protected-page";
-import { toCategoryPageState } from "@/features/categories/server/category-page-state";
+import { toCategoryPageState } from "@/features/game/server/category-page-state";
 import { ApiError, parseId, parsePage } from "@/lib/api/server";
 import { getDifficulty, type Difficulty } from "@/features/game/difficulty";
 import { listCategoryQuizzes } from "@/features/game/server/quizzes";

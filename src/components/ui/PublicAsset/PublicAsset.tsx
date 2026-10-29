@@ -1,8 +1,8 @@
 import Image from "next/image";
 import type { CSSProperties } from "react";
-import styles from "./ProfileAsset.module.scss";
+import styles from "./PublicAsset.module.scss";
 
-export function ProfileAsset({
+export function PublicAsset({
   src,
   size = 22,
   className,

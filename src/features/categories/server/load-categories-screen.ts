@@ -4,13 +4,13 @@ import { getPageSession } from "@/features/auth/server/page-session";
 import { ApiError, parseId, parsePage } from "@/lib/api/server";
 import { getHttpStatusMessage } from "@/lib/http-status-messages";
 import { GuestAccessError } from "@/lib/api/errors";
-import { getCategories, getCategory } from "../../server/api";
+import { getCategories, getCategory } from "./api";
 import {
   getCategoriesHref,
   getCategoriesReturnHref,
   type CategoriesQuery,
   type CategoriesScreenState,
-} from "./categories-screen-model";
+} from "../screen-model";
 
 function single(query: CategoriesQuery, key: string): string | undefined {
   const value = query[key];

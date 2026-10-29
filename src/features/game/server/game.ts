@@ -14,7 +14,7 @@ import {
   parsePlayerQuiz,
   parseRecordedAnswer,
   parseSubmittedAnswer,
-} from "../contracts";
+} from "./contracts";
 import type { GameView, RecordedAnswer, SubmittedAnswer } from "../types";
 import { getDifficulty, type Difficulty } from "../difficulty";
 import {

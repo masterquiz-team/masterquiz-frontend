@@ -1,11 +1,4 @@
+import type { SpringPage } from "@/lib/validation";
+
 export type Category = { id: number; name: string };
-export type CategoryPage = {
-  content: Category[];
-  number: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-  first: boolean;
-  last: boolean;
-  empty: boolean;
-};
+export type CategoryPage = SpringPage<Category>;

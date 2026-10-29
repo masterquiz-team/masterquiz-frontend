@@ -4,7 +4,7 @@ import type {
   AuthFormMode,
   AuthFormValues,
 } from "../types";
-import { AuthField } from "./AuthField";
+import { TextField } from "@/components/ui/TextField";
 import styles from "./AuthFormFields.module.scss";
 
 type AuthFormFieldsProps = {
@@ -25,7 +25,7 @@ export function AuthFormFields({
   const isRegister = mode === "register";
   return (
     <fieldset disabled={pending} className={styles.fields}>
-      <AuthField
+      <TextField<AuthFieldName>
         name="email"
         label="Email address"
         icon="email"
@@ -37,7 +37,7 @@ export function AuthFormFields({
         onValueChange={(value) => onFieldChange("email", value)}
       />
       {isRegister && (
-        <AuthField
+        <TextField<AuthFieldName>
           name="nickname"
           label="Username"
           icon="user"
@@ -48,7 +48,7 @@ export function AuthFormFields({
           onValueChange={(value) => onFieldChange("nickname", value)}
         />
       )}
-      <AuthField
+      <TextField<AuthFieldName>
         name="password"
         label="Password"
         icon="lock"
@@ -61,7 +61,7 @@ export function AuthFormFields({
         onValueChange={(value) => onFieldChange("password", value)}
       />
       {isRegister && (
-        <AuthField
+        <TextField<AuthFieldName>
           name="repeatPassword"
           label="Repeat password"
           icon="lock"

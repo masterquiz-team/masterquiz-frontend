@@ -10,7 +10,7 @@ import {
   GameRequestError,
   type GameStart,
 } from "../services/game";
-import { GUEST_PLAY_UNAVAILABLE } from "@/features/auth/guest-access";
+import { GUEST_PLAY_UNAVAILABLE } from "@/lib/api/guest-access";
 
 export function useStartGame({
   page,

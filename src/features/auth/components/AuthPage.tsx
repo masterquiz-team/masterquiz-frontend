@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import type { AuthFormMode } from "../types";
-import { getSessionState } from "../server/session";
+import { getSessionState } from "@/lib/backend/session";
 import { getSafeRedirect } from "../utils/redirect";
 import { AuthForm } from "./AuthForm";
 import styles from "./AuthPage.module.scss";

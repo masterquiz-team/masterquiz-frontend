@@ -7,10 +7,7 @@ import {
   jsonBody,
 } from "@/lib/api/server";
 import { getSessionToken, isGuestToken } from "@/lib/backend/token";
-import {
-  isSessionStillValid,
-  readTokenSession,
-} from "@/features/auth/server/session";
+import { isSessionStillValid, readTokenSession } from "@/lib/backend/session";
 import type { Account } from "../types";
 import { levelFromScore } from "../levels";
 
@@ -49,7 +46,8 @@ function parseAccount(value: unknown): Account {
     typeof value.avatarId === "string"
       ? /^(?:AVATAR_|avatar-)([1-9]|1[0-9]|20)$/.exec(value.avatarId)
       : null;
-  // The backend user ID is not exposed to the browser.
+  // The profile view leaves out the backend user ID; the browser does not
+  // need it here. (The register response still includes it.)
   return {
     email: value.email,
     nickname: value.nickname,

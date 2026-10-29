@@ -27,7 +27,6 @@ export const difficulties = [
   },
 ] as const;
 export type Difficulty = (typeof difficulties)[number]["id"];
-export type DifficultyConfig = (typeof difficulties)[number];
 export function getDifficulty(value: unknown) {
   return difficulties.find((difficulty) => difficulty.id === value);
 }

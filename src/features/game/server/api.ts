@@ -5,8 +5,12 @@ import {
   jsonBody,
   requireId,
 } from "@/lib/api/server";
-import { parsePlayerAttempt, QuizContractError } from "../contracts";
-import { ATTEMPT_ACCESS_DENIED, GuestAccessError } from "@/lib/api/errors";
+import { parsePlayerAttempt } from "./contracts";
+import {
+  ATTEMPT_ACCESS_DENIED,
+  ContractError,
+  GuestAccessError,
+} from "@/lib/api/errors";
 
 // Only calls concerning an existing attempt opt into ownership denial copy.
 // backendRequest still owns guest verification, including masked-401 handling.
@@ -38,7 +42,7 @@ async function request<T>(
     return await backendRequest(path, parse, init);
   } catch (error) {
     if (error instanceof GuestAccessError) throw error;
-    if (error instanceof QuizContractError)
+    if (error instanceof ContractError)
       throw new ApiError(
         502,
         "The quiz service returned an unexpected response.",
@@ -61,7 +65,7 @@ async function request<T>(
 }
 function parseStartedAttempt(value: unknown) {
   const attempt = parsePlayerAttempt(value);
-  if (attempt.status !== "IN_PROGRESS") throw new QuizContractError();
+  if (attempt.status !== "IN_PROGRESS") throw new ContractError();
   return attempt;
 }
 export function startQuizAttempt(quizId: number) {
@@ -69,7 +73,7 @@ export function startQuizAttempt(quizId: number) {
     `/quiz-attempts/${requireId(quizId, "quizId")}`,
     (value) => {
       const attempt = parseStartedAttempt(value);
-      if (attempt.quizId !== quizId) throw new QuizContractError();
+      if (attempt.quizId !== quizId) throw new ContractError();
       return attempt;
     },
     { method: "POST" },
@@ -90,7 +94,7 @@ export function startRandomQuizAttempt(body: {
 export function getQuizAttempt(id: number) {
   return attemptRequest(`/quiz-attempts/${requireId(id)}`, (value) => {
     const attempt = parsePlayerAttempt(value);
-    if (attempt.id !== id) throw new QuizContractError();
+    if (attempt.id !== id) throw new ContractError();
     return attempt;
   });
 }
