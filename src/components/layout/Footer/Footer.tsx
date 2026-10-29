@@ -1,4 +1,5 @@
 import { Navigation } from "@/components/layout/Navigation";
+import { Brand } from "@/components/layout/Brand";
 import Image from "next/image";
 import styles from "./Footer.module.scss";
 
@@ -6,7 +7,7 @@ export const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.content}>
-        <h2 className={styles.brand}>MasterQuiz</h2>
+        <Brand />
 
         <Navigation />
 
