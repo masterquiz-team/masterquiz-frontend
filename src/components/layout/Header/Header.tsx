@@ -1,6 +1,6 @@
 import styles from "./Header.module.scss";
 import { Suspense } from "react";
-import Link from "next/link";
+import { Brand } from "@/components/layout/Brand";
 import { Navigation } from "@/components/layout/Navigation";
 import { AuthControls } from "@/features/auth/components/AuthControls";
 import { getSessionState } from "@/lib/backend/session";
@@ -14,9 +14,7 @@ async function SessionControls() {
 export const Header = () => {
   return (
     <header className={styles.header}>
-      <Link href="/" className={styles.brand}>
-        MasterQuiz
-      </Link>
+      <Brand href="/" />
 
       <Navigation />
 
