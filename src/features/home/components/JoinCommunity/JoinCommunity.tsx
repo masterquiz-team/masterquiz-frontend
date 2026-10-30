@@ -14,23 +14,13 @@ const players = [
 export const JoinCommunity = () => (
   <section className={styles.section}>
     <div className={styles.intro}>
-      <div className={styles.illustration}>
-        <Image
-          src="/images/community-accent-top.svg"
-          alt=""
-          width={36}
-          height={31}
-          className={styles.topAccent}
-        />
-        <Image src="/ci_users-group.svg" alt="" width={132} height={132} />
-        <Image
-          src="/images/community-accent-bottom.svg"
-          alt=""
-          width={27}
-          height={28}
-          className={styles.bottomAccent}
-        />
-      </div>
+      <Image
+        src="/images/home/community.svg"
+        alt=""
+        width={177}
+        height={182}
+        className={styles.illustration}
+      />
       <div>
         <h2 className={styles.title}>Join a growing community</h2>
         <p className={styles.description}>
@@ -44,6 +34,13 @@ export const JoinCommunity = () => (
     </div>
     <div className={styles.preview}>
       <Image
+        src="/images/home/ranking-blob.svg"
+        alt=""
+        width={561}
+        height={464}
+        className={styles.blob}
+      />
+      <Image
         src="/images/leaderboard-accent-left.svg"
         alt=""
         width={50}
@@ -51,7 +48,15 @@ export const JoinCommunity = () => (
         className={styles.leftAccent}
       />
       <div className={styles.card}>
-        <h3 className={styles.cardTitle}>Top players</h3>
+        <h3 className={styles.cardTitle}>
+          <Image
+            src="/images/home/ranking-crown.svg"
+            alt=""
+            width={27}
+            height={19}
+          />
+          Top players
+        </h3>
         <ol>
           {players.map((player, index) => (
             <li
@@ -66,8 +71,8 @@ export const JoinCommunity = () => (
                     : "/images/home/ranking-avatar.svg"
                 }
                 alt=""
-                width={40}
-                height={40}
+                width={42}
+                height={42}
                 className={styles.avatar}
               />
               <span>{player.name}</span>

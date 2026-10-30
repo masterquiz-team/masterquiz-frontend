@@ -10,6 +10,8 @@
   width: 100%;
   max-width: 1440px;
   min-height: 610px;
+  // The ranking blob is wider than the panel on narrow screens.
+  overflow-x: clip;
   margin-inline: auto;
   padding: 118px 80px 175px;
 }
@@ -22,32 +24,12 @@
   padding-top: 44px;
 }
 
+// Figma places the group 8px into the column and 18px below the heading row.
 .illustration {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 188px;
-  background: url("/Vector3.svg") center / contain no-repeat;
-}
-
-.topAccent,
-.bottomAccent {
-  position: absolute;
-  pointer-events: none;
-}
-
-.topAccent {
-  top: 0;
-  right: 0;
-  width: 36px;
-  height: 31px;
-}
-
-.bottomAccent {
-  bottom: 0;
-  left: 20px;
-  width: 27px;
-  height: 28px;
+  width: 177px;
+  max-width: none;
+  height: auto;
+  margin: 18px 0 0 8px;
 }
 
 .title {
@@ -57,6 +39,7 @@
   color: tokens.$text-heading;
 }
 .description {
+  max-width: 417px;
   margin-top: 16px;
   color: tokens.$text-body;
   font-size: tokens.$font-size-label;
@@ -69,13 +52,12 @@
   gap: 28px;
   min-width: 195px;
   min-height: 68px;
-  margin-top: 32px;
+  margin-top: 58px;
   padding: 18px 28px 18px 36px;
   border: 2px solid var(--primary);
   border-radius: 34px;
   color: var(--primary);
   font-size: tokens.$font-size-xl;
-  font-weight: 600;
   @include patterns.interactive-lift(
     (background-color 150ms, transform 180ms ease)
   );
@@ -97,7 +79,18 @@
   grid-template-columns: 37px minmax(0, 1fr) 23px;
   align-items: center;
   min-height: 317px;
-  background: url("/Vector2.svg") center / contain no-repeat;
+  isolation: isolate;
+}
+// Offsets from the ranking panel in Figma frame 11:2.
+.blob {
+  position: absolute;
+  z-index: tokens.$layer-decoration;
+  top: -73px;
+  left: -8px;
+  width: 561px;
+  max-width: none;
+  height: auto;
+  pointer-events: none;
 }
 .card {
   grid-column: 2;
@@ -108,7 +101,10 @@
   min-height: 317px;
 }
 .cardTitle {
-  margin: 0 0 14px 36px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 14px -1px;
   font-size: tokens.$font-size-xl;
   line-height: 24px;
   color: tokens.$text-heading;
@@ -172,8 +168,13 @@
     grid-template-columns: 132px minmax(0, 1fr);
     gap: 24px;
   }
+  .illustration {
+    width: 132px;
+    margin: 18px 0 0;
+  }
   .title {
     font-size: tokens.$font-size-3xl;
+    line-height: 1.25;
   }
   .card {
     padding: 20px 12px;
@@ -225,6 +226,9 @@
   }
   .cardTitle {
     margin-left: 12px;
+  }
+  .blob {
+    display: none;
   }
   .player,
   .currentPlayer {

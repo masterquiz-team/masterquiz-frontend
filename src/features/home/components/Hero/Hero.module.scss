@@ -16,10 +16,10 @@
 .modes {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 18px;
   width: min(100%, 321px);
   min-height: 34px;
-  padding-inline: 25px;
+  padding-inline: 35px;
   border-radius: tokens.$radius-card;
   background: tokens.$primary-tint;
   color: var(--primary);
@@ -29,11 +29,14 @@
   li {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 18px;
   }
 }
 .dot {
-  font-size: 20px;
+  width: 4px;
+  height: 4px;
+  border-radius: tokens.$radius-circle;
+  background: currentColor;
 }
 .title {
   margin-top: 31px;

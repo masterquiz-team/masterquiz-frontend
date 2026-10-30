@@ -1,7 +1,7 @@
-import { categoryAnnotation } from "../../fonts";
-import styles from "./CategoriesPreview.module.scss";
 import Image from "next/image";
+import { categoryAnnotation } from "../../fonts";
 import { CategoryPreviewCard } from "../CategoryPreviewCard";
+import styles from "./CategoriesPreview.module.scss";
 
 const categories = [
   {
@@ -23,24 +23,22 @@ const categories = [
 
 export const CategoriesPreview = () => (
   <div id="categories" className={styles.preview}>
-    <div className={styles.heading}>
-      <h2 className={`${styles.title} ${categoryAnnotation.className}`}>
-        Choose a category
-      </h2>
-      <Image
-        src="/Arrow%202.svg"
-        alt=""
-        width={71}
-        height={82}
-        className={styles.arrow}
-      />
-    </div>
+    <h2 className={`${styles.title} ${categoryAnnotation.className}`}>
+      Choose a category
+    </h2>
     <div className={styles.cards}>
       <Image
-        src="/Vector.svg"
+        src="/images/home/choose-arrow.svg"
         alt=""
-        width={586}
-        height={556}
+        width={71}
+        height={129}
+        className={styles.arrow}
+      />
+      <Image
+        src="/images/home/categories-blob.svg"
+        alt=""
+        width={612}
+        height={587}
         className={styles.background}
       />
       <Image
@@ -49,6 +47,20 @@ export const CategoriesPreview = () => (
         width={52}
         height={91}
         className={styles.accent}
+      />
+      <Image
+        src="/images/home/hero-star.svg"
+        alt=""
+        width={31}
+        height={40}
+        className={`${styles.star} ${styles.starTop}`}
+      />
+      <Image
+        src="/images/home/hero-star.svg"
+        alt=""
+        width={31}
+        height={40}
+        className={`${styles.star} ${styles.starBottom}`}
       />
       <ul className={styles.list}>
         {categories.map((category) => (

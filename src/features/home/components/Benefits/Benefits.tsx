@@ -4,22 +4,26 @@ const benefits = [
   {
     title: "Learn",
     description: "Discover new facts and expand your knowledge.",
-    icon: "/images/brand/brain.svg",
+    icon: { src: "/images/home/benefit-learn.svg", width: 60, height: 60 },
+    descriptionWidth: 181,
   },
   {
     title: "Earn points",
     description: "Track your progress and improve your score.",
-    icon: "/images/profile/stat-star.svg",
+    icon: { src: "/images/home/benefit-points.svg", width: 64, height: 63 },
+    descriptionWidth: 177,
   },
   {
     title: "Compete",
     description: "Challenge other players and climb the leaderboard.",
-    icon: "/images/profile/stat-trophy.svg",
+    icon: { src: "/images/home/benefit-compete.svg", width: 51, height: 53 },
+    descriptionWidth: 204,
   },
   {
     title: "Your profile",
     description: "See your stats, achievements and favorite categories.",
-    icon: "/images/profile/avatar-header.svg",
+    icon: { src: "/images/home/benefit-profile.svg", width: 62, height: 62 },
+    descriptionWidth: 219,
   },
 ];
 
@@ -34,10 +38,15 @@ export const Benefits = () => (
         {benefits.map((benefit) => (
           <li key={benefit.title}>
             <div aria-hidden="true" className={styles.icon}>
-              <Image src={benefit.icon} alt="" width={54} height={54} />
+              <Image {...benefit.icon} alt="" />
             </div>
             <h3 className={styles.itemTitle}>{benefit.title}</h3>
-            <p className={styles.description}>{benefit.description}</p>
+            <p
+              className={styles.description}
+              style={{ maxWidth: benefit.descriptionWidth }}
+            >
+              {benefit.description}
+            </p>
           </li>
         ))}
       </ul>

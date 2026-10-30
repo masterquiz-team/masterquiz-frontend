@@ -9,15 +9,11 @@ export const Hero = () => (
       <ul className={styles.modes}>
         <li>Play</li>
         <li>
-          <span aria-hidden="true" className={styles.dot}>
-            •
-          </span>
+          <span aria-hidden="true" className={styles.dot} />
           Learn
         </li>
         <li>
-          <span aria-hidden="true" className={styles.dot}>
-            •
-          </span>
+          <span aria-hidden="true" className={styles.dot} />
           Compete
         </li>
       </ul>
