@@ -7,17 +7,17 @@ const categories = [
   {
     title: "Geography",
     description: "Countries, capitals, landmarks and more.",
-    artwork: "geography",
+    tone: "geography",
   },
   {
     title: "History",
     description: "Events, figures, civilizations and key moments.",
-    artwork: "history",
+    tone: "history",
   },
   {
     title: "Science",
     description: "The world around us, from nature to technology.",
-    artwork: "science",
+    tone: "science",
   },
 ] as const;
 

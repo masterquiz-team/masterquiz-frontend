@@ -36,13 +36,13 @@
   }
 }
 .geography {
-  background: tokens.$difficulty-medium-surface;
+  background: tokens.$category-geography-surface;
 }
 .history {
-  background: tokens.$difficulty-easy-surface;
+  background: tokens.$category-history-surface;
 }
 .science {
-  background: #ecf5fd;
+  background: tokens.$category-science-surface;
 }
 .artwork {
   flex-shrink: 0;
