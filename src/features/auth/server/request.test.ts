@@ -1,4 +1,4 @@
-import { expect, it } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { checkAuthRequest, authJson } from "./request";
 import { readMutation, apiResponse } from "@/lib/api/server";
 
@@ -39,6 +39,24 @@ it.each([
     message: expect.stringMatching(/same origin/),
   });
 });
+afterEach(() => vi.unstubAllEnvs());
+
+it("checks the Origin against APP_ORIGIN behind a proxy", () => {
+  vi.stubEnv("APP_ORIGIN", "https://masterquiz.onrender.com/");
+  const internal = (origin: string) =>
+    new Request("http://localhost:10000/api/auth/guest", {
+      method: "POST",
+      headers: { "content-type": "application/json", origin },
+    });
+  expect(
+    checkAuthRequest(internal("https://masterquiz.onrender.com")),
+  ).toBeNull();
+  expect(checkAuthRequest(internal("http://localhost:10000"))?.status).toBe(
+    403,
+  );
+  expect(checkAuthRequest(internal("https://evil.test"))?.status).toBe(403);
+});
+
 it("rejects non-JSON and gives origin rejection precedence", () => {
   expect(
     checkAuthRequest(request({ "content-type": "text/plain" }))?.status,
