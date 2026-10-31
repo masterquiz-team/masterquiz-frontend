@@ -10,15 +10,30 @@
   line-height: 19px;
 }
 .link {
+  position: relative;
+  display: inline-block;
   color: tokens.$text-heading;
   transition: color 150ms;
 }
 
+// Figma: 1px line, 11px wider than the label on each side, 7px below it.
+.underline {
+  display: none;
+  position: absolute;
+  top: calc(100% + 7px);
+  right: -11px;
+  left: -11px;
+  height: 1px;
+  background: var(--primary);
+  pointer-events: none;
+}
+
 :global(header) .link[aria-current="page"] {
   color: var(--primary);
-  text-decoration: underline;
-  text-underline-offset: 10px;
-  text-decoration-thickness: 2px;
+}
+
+:global(header) .underline {
+  display: block;
 }
 
 .link:hover {
