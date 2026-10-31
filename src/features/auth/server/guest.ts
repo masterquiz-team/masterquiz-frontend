@@ -55,7 +55,7 @@ export async function ensureGuestSession() {
         502,
       );
     const reply = authJson({ status: "guest", session }, 201);
-    setSessionCookie(reply, token, session);
+    setSessionCookie(reply, token, session, guest.id as number);
     return reply;
   } catch {
     return authJson(

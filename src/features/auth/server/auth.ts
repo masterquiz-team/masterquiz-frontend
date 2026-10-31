@@ -6,6 +6,7 @@ import { backendFetch } from "@/lib/backend/transport";
 import { isRecord } from "@/lib/validation";
 import { authJson } from "./request";
 import { getSessionState, readTokenSession } from "@/lib/backend/session";
+import { getGuestUserId, getSessionToken } from "@/lib/backend/token";
 import { clearSessionCookie, setSessionCookie } from "./session";
 
 // Route Handlers validate HTTP input; this function owns the Java auth exchange.
@@ -19,13 +20,21 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
   try {
     const state = await getSessionState();
     invalidSession = state.status === "anonymous";
-    // Future guest-progress transfer must pass the guest explicitly in a
-    // dedicated field or separate request agreed with the backend, not via
-    // Authorization: a 401 could mean bad credentials or an invalid guest token.
+    // Registration keeps a guest's progress through the backend's
+    // guestUserId field, not Authorization: a 401 could then mean bad
+    // credentials or an invalid guest token.
+    const guestToken =
+      state.status === "guest" ? await getSessionToken() : null;
+    const guestUserId =
+      mode === "register" && guestToken
+        ? await getGuestUserId(guestToken)
+        : null;
     const response = await backendFetch(`/${mode}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(
+        guestUserId === null ? payload : { ...payload, guestUserId },
+      ),
     });
     const result: unknown = await response.json().catch(() => null);
     if (!response.ok) {
