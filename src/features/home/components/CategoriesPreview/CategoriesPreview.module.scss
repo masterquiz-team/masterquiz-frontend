@@ -1,60 +1,90 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/breakpoints";
 
+// Desktop offsets are measured from the first card in Figma frame 11:2.
 .preview {
+  position: relative;
   width: 100%;
+  padding-top: 21px;
   scroll-margin-top: 24px;
 }
-.heading {
-  position: relative;
-  z-index: tokens.$layer-annotation;
-  display: flex;
-  align-items: start;
-  min-height: 62px;
-  margin-top: -48px;
-  margin-left: -90px;
-}
 .title {
+  position: absolute;
+  z-index: tokens.$layer-annotation;
+  top: calc(21px - 31px);
+  left: -113px;
+  color: tokens.$primary;
   font-size: tokens.$font-size-xl;
-  line-height: 24px;
+  font-weight: 400;
+  line-height: normal;
+  white-space: nowrap;
   transform: rotate(-9.54deg);
-}
-.arrow {
-  width: 71px;
-  height: 82px;
-  margin: 40px 0 -60px -180px;
 }
 .cards {
   position: relative;
   isolation: isolate;
 }
+.arrow {
+  position: absolute;
+  z-index: tokens.$layer-annotation;
+  top: 7px;
+  left: -86px;
+  width: 68px;
+  height: 129px;
+  pointer-events: none;
+}
 .background {
   position: absolute;
-  top: -45px;
-  left: -45px;
+  top: -46px;
+  left: -44px;
   z-index: tokens.$layer-decoration;
-  width: min(586px, calc(100% + 90px));
+  // 586px at the 519px desktop card width.
+  width: calc(100% + 67px);
   height: auto;
   max-width: none;
   pointer-events: none;
 }
 .accent {
   position: absolute;
-  top: 177px;
+  top: 170px;
   left: -74px;
   width: 52px;
   height: 91px;
   pointer-events: none;
 }
+.star {
+  position: absolute;
+  width: 25px;
+  height: 34px;
+  pointer-events: none;
+}
+.starTop {
+  top: -23px;
+  right: -26px;
+}
+.starBottom {
+  top: 450px;
+  left: -51px;
+}
 .list {
   display: grid;
-  gap: 15px;
+  row-gap: 12px;
 }
 @include breakpoints.down(lg) {
+  .preview {
+    padding-top: 0;
+  }
+  .title {
+    position: static;
+    margin: 0 0 18px;
+    transform-origin: left center;
+  }
+  .arrow {
+    display: none;
+  }
   .background {
     left: -48px;
     width: calc(100% + 64px);
-    height: auto;
     top: -24px;
   }
   .accent {
@@ -62,13 +92,11 @@
     width: 36px;
     height: auto;
   }
-  .heading {
-    margin-left: 0;
+  .starTop {
+    right: -16px;
   }
-  .arrow {
-    margin-left: -80px;
-    width: 40px;
-    height: auto;
+  .starBottom {
+    left: -40px;
   }
 }
 @include breakpoints.down(md) {
@@ -76,24 +104,15 @@
     max-width: 554px;
     margin-inline: auto;
   }
-  .heading {
-    margin-top: 0;
-  }
-  .arrow {
-    margin: 0 0 0 20px;
-    width: 40px;
-    height: 46px;
-  }
 }
-
 @include breakpoints.down(sm) {
   .background {
     top: 0;
     left: -12px;
     width: calc(100% + 24px);
-    height: auto;
   }
-  .accent {
+  .accent,
+  .star {
     display: none;
   }
 }

@@ -14,27 +14,17 @@ const players = [
 export const JoinCommunity = () => (
   <section className={styles.section}>
     <div className={styles.intro}>
-      <div className={styles.illustration}>
-        <Image
-          src="/images/community-accent-top.svg"
-          alt=""
-          width={36}
-          height={31}
-          className={styles.topAccent}
-        />
-        <Image src="/ci_users-group.svg" alt="" width={132} height={132} />
-        <Image
-          src="/images/community-accent-bottom.svg"
-          alt=""
-          width={27}
-          height={28}
-          className={styles.bottomAccent}
-        />
-      </div>
+      <Image
+        src="/images/home/community.svg"
+        alt=""
+        width={168}
+        height={181}
+        className={styles.illustration}
+      />
       <div>
-        <h2 className={styles.title}>Lorem ipsum dolor sit amet.</h2>
+        <h2 className={styles.title}>Join a growing community</h2>
         <p className={styles.description}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+          Thousands of players are already testing their knowledge. Are you in?
         </p>
         <Link href="/register" className={styles.signUp}>
           Sign up
@@ -44,15 +34,29 @@ export const JoinCommunity = () => (
     </div>
     <div className={styles.preview}>
       <Image
-        src="/images/leaderboard-accent-left.svg"
+        src="/images/home/ranking-blob.svg"
         alt=""
-        width={50}
-        height={66}
+        width={554}
+        height={452}
+        className={styles.blob}
+      />
+      <Image
+        src="/images/home/ranking-accent-left.svg"
+        alt=""
+        width={41}
+        height={73}
         className={styles.leftAccent}
       />
       <div className={styles.card}>
-        <h3 className={styles.cardTitle}>Top players</h3>
-        <p className={styles.sampleRanking}>Sample ranking</p>
+        <h3 className={styles.cardTitle}>
+          <Image
+            src="/images/home/ranking-crown.svg"
+            alt=""
+            width={26}
+            height={18}
+          />
+          Top players
+        </h3>
         <ol>
           {players.map((player, index) => (
             <li
@@ -60,7 +64,17 @@ export const JoinCommunity = () => (
               className={index === 3 ? styles.currentPlayer : styles.player}
             >
               <span>{index + 1}</span>
-              <span className={styles.avatar} />
+              <Image
+                src={
+                  index === 3
+                    ? "/images/home/ranking-avatar-current.svg"
+                    : "/images/home/ranking-avatar.svg"
+                }
+                alt=""
+                width={41}
+                height={41}
+                className={styles.avatar}
+              />
               <span>{player.name}</span>
               <span className={styles.score}>{player.score}</span>
             </li>
@@ -68,10 +82,10 @@ export const JoinCommunity = () => (
         </ol>
       </div>
       <Image
-        src="/images/leaderboard-accent-right.svg"
+        src="/images/home/ranking-accent-right.svg"
         alt=""
-        width={40}
-        height={70}
+        width={41}
+        height={71}
         className={styles.rightAccent}
       />
     </div>

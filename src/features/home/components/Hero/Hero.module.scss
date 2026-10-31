@@ -16,7 +16,7 @@
 .modes {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 18px;
   width: min(100%, 321px);
   min-height: 34px;
   padding-inline: 35px;
@@ -26,19 +26,34 @@
   font-size: tokens.$font-size-md;
   line-height: 19px;
   text-transform: uppercase;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+}
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: tokens.$radius-circle;
+  background: currentColor;
 }
 .title {
-  margin-top: 36px;
-  font-size: clamp(36px, 3.6vw, 52px);
-  line-height: 1.27;
-  letter-spacing: -0.025em;
+  margin-top: 31px;
+  color: tokens.$text-heading;
+  font-size: tokens.$font-size-7xl;
+  font-weight: 700;
+  line-height: 60px;
+  span {
+    color: tokens.$primary;
+  }
 }
 .description {
-  max-width: 469px;
-  margin-top: 25px;
-  color: var(--muted);
+  max-width: 589px;
+  margin-top: 28px;
+  color: tokens.$text-body;
   font-size: tokens.$font-size-xl;
-  line-height: 34px;
+  line-height: 35px;
 }
 .startButton {
   display: inline-flex;
@@ -46,12 +61,13 @@
   justify-content: space-between;
   width: 255px;
   min-height: 69px;
-  margin-top: 22px;
+  margin-top: 37px;
   padding: 20px 24px 20px 39px;
   border-radius: 35px;
   background: var(--primary);
   color: tokens.$surface;
   font-size: tokens.$font-size-xl;
+  font-weight: 600;
   line-height: 24px;
   @include patterns.interactive-lift(
     (background-color 150ms, transform 180ms ease)
@@ -70,7 +86,12 @@
 @include breakpoints.down(lg) {
   .hero {
     padding-inline: 40px;
-    gap: 48px;
+    gap: 40px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .title {
+    font-size: tokens.$font-size-6xl;
+    line-height: 50px;
   }
 }
 @include breakpoints.down(md) {
@@ -85,7 +106,8 @@
     padding-inline: 24px;
   }
   .title {
-    font-size: tokens.$font-size-5xl;
+    font-size: tokens.$font-size-4xl;
+    line-height: 42px;
   }
   .description {
     font-size: tokens.$font-size-lg;
