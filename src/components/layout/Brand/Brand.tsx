@@ -15,8 +15,8 @@ export function Brand({
       <Image
         className={styles.mark}
         src="/images/brand/brain.svg"
-        width={50}
-        height={50}
+        width={54}
+        height={54}
         alt=""
         unoptimized
       />
