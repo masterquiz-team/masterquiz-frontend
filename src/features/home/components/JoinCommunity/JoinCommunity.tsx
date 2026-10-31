@@ -17,8 +17,8 @@ export const JoinCommunity = () => (
       <Image
         src="/images/home/community.svg"
         alt=""
-        width={177}
-        height={182}
+        width={168}
+        height={181}
         className={styles.illustration}
       />
       <div>
@@ -36,15 +36,15 @@ export const JoinCommunity = () => (
       <Image
         src="/images/home/ranking-blob.svg"
         alt=""
-        width={561}
-        height={464}
+        width={554}
+        height={452}
         className={styles.blob}
       />
       <Image
-        src="/images/leaderboard-accent-left.svg"
+        src="/images/home/ranking-accent-left.svg"
         alt=""
-        width={50}
-        height={66}
+        width={41}
+        height={73}
         className={styles.leftAccent}
       />
       <div className={styles.card}>
@@ -52,8 +52,8 @@ export const JoinCommunity = () => (
           <Image
             src="/images/home/ranking-crown.svg"
             alt=""
-            width={27}
-            height={19}
+            width={26}
+            height={18}
           />
           Top players
         </h3>
@@ -71,8 +71,8 @@ export const JoinCommunity = () => (
                     : "/images/home/ranking-avatar.svg"
                 }
                 alt=""
-                width={42}
-                height={42}
+                width={41}
+                height={41}
                 className={styles.avatar}
               />
               <span>{player.name}</span>
@@ -82,10 +82,10 @@ export const JoinCommunity = () => (
         </ol>
       </div>
       <Image
-        src="/images/leaderboard-accent-right.svg"
+        src="/images/home/ranking-accent-right.svg"
         alt=""
-        width={40}
-        height={70}
+        width={41}
+        height={71}
         className={styles.rightAccent}
       />
     </div>

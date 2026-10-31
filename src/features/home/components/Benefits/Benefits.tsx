@@ -10,7 +10,7 @@ const benefits = [
   {
     title: "Earn points",
     description: "Track your progress and improve your score.",
-    icon: { src: "/images/home/benefit-points.svg", width: 64, height: 63 },
+    icon: { src: "/images/home/benefit-points.svg", width: 55, height: 55 },
     descriptionWidth: 177,
   },
   {

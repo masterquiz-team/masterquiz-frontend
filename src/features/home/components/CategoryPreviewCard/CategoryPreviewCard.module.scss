@@ -48,7 +48,8 @@
   flex-shrink: 0;
   width: 126px;
   height: 106px;
-  object-fit: contain;
+  // Natural Figma size on desktop; scales down in the smaller slots.
+  object-fit: scale-down;
   object-position: left center;
 }
 .content {

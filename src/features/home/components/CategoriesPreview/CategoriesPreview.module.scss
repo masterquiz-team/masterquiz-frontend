@@ -28,18 +28,18 @@
   position: absolute;
   z-index: tokens.$layer-annotation;
   top: 7px;
-  left: -89px;
-  width: 71px;
+  left: -86px;
+  width: 68px;
   height: 129px;
   pointer-events: none;
 }
 .background {
   position: absolute;
-  top: -63px;
-  left: -57px;
+  top: -46px;
+  left: -44px;
   z-index: tokens.$layer-decoration;
-  // 612px at the 519px desktop card width.
-  width: calc(100% + 93px);
+  // 586px at the 519px desktop card width.
+  width: calc(100% + 67px);
   height: auto;
   max-width: none;
   pointer-events: none;
@@ -54,17 +54,17 @@
 }
 .star {
   position: absolute;
-  width: 31px;
-  height: 40px;
+  width: 25px;
+  height: 34px;
   pointer-events: none;
 }
 .starTop {
-  top: -26px;
-  right: -29px;
+  top: -23px;
+  right: -26px;
 }
 .starBottom {
-  top: 447px;
-  left: -54px;
+  top: 450px;
+  left: -51px;
 }
 .list {
   display: grid;

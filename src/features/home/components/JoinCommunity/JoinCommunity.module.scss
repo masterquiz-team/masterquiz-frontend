@@ -26,7 +26,7 @@
 
 // Figma places the group 8px into the column and 18px below the heading row.
 .illustration {
-  width: 177px;
+  width: 168px;
   max-width: none;
   height: auto;
   margin: 18px 0 0 8px;
@@ -85,16 +85,17 @@
 .blob {
   position: absolute;
   z-index: tokens.$layer-decoration;
-  top: -73px;
-  left: -8px;
-  width: 561px;
+  top: -64px;
+  left: -7px;
+  width: 554px;
   max-width: none;
   height: auto;
   pointer-events: none;
 }
+// Row geometry follows the ranking panel in Figma frame 11:2.
 .card {
   grid-column: 2;
-  padding: 24px;
+  padding: 28px 25px 24px 30px;
   border-radius: tokens.$radius-card;
   background: tokens.$surface;
   box-shadow: tokens.$shadow-design-card;
@@ -104,7 +105,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 0 0 14px -1px;
+  margin: 0 0 12px -7px;
   font-size: tokens.$font-size-xl;
   line-height: 24px;
   color: tokens.$text-heading;
@@ -113,28 +114,36 @@
 .player,
 .currentPlayer {
   display: grid;
-  grid-template-columns: 12px 40px minmax(0, 1fr) auto;
+  grid-template-columns: 21px 61px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  min-height: 56px;
-  padding: 7px 12px;
+  min-height: 57px;
+  padding: 0 8px 0 19px;
   font-size: tokens.$font-size-md;
   line-height: 19px;
   font-weight: 500;
   color: tokens.$text-body;
 }
 .player + .player {
+  position: relative;
+}
+.player + .player::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 9px;
+  left: 13px;
   border-top: 1px solid tokens.$primary-tint;
 }
 .currentPlayer {
   border-radius: tokens.$radius-control;
+  min-height: 53px;
   background: tokens.$primary-tint;
   color: tokens.$primary;
   font-weight: 600;
 }
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 41px;
+  height: 41px;
   border-radius: tokens.$radius-circle;
 }
 .score {
@@ -147,16 +156,16 @@
   pointer-events: none;
 }
 .leftAccent {
-  top: 95px;
-  left: -20px;
-  width: 50px;
-  height: 66px;
+  top: 21px;
+  left: -29px;
+  width: 41px;
+  height: 73px;
 }
 .rightAccent {
-  top: calc(50% - 35px);
-  right: -10px;
-  width: 40px;
-  height: 70px;
+  top: 109px;
+  right: -38px;
+  width: 41px;
+  height: 71px;
 }
 
 @include breakpoints.down(lg) {

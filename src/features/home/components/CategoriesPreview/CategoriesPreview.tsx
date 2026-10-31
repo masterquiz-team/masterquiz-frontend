@@ -30,15 +30,15 @@ export const CategoriesPreview = () => (
       <Image
         src="/images/home/choose-arrow.svg"
         alt=""
-        width={71}
+        width={68}
         height={129}
         className={styles.arrow}
       />
       <Image
         src="/images/home/categories-blob.svg"
         alt=""
-        width={612}
-        height={587}
+        width={586}
+        height={556}
         className={styles.background}
       />
       <Image
@@ -51,15 +51,15 @@ export const CategoriesPreview = () => (
       <Image
         src="/images/home/hero-star.svg"
         alt=""
-        width={31}
-        height={40}
+        width={25}
+        height={34}
         className={`${styles.star} ${styles.starTop}`}
       />
       <Image
         src="/images/home/hero-star.svg"
         alt=""
-        width={31}
-        height={40}
+        width={25}
+        height={34}
         className={`${styles.star} ${styles.starBottom}`}
       />
       <ul className={styles.list}>

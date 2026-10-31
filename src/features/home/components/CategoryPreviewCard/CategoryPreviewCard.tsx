@@ -16,7 +16,7 @@ export const CategoryPreviewCard = ({ title, description, tone }: Props) => {
         <Image
           src={`/images/home/${tone}.svg`}
           alt=""
-          width={126}
+          width={124}
           height={106}
           className={styles.artwork}
         />
