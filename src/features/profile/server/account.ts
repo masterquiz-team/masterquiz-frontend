@@ -74,14 +74,6 @@ async function accountRequest<T>(
     if (!(error instanceof ApiError)) throw error;
     if (error.status === 401 && (await isSessionStillValid()))
       throw new ApiError(409, refusedMessage);
-    if (
-      error.status === 400 &&
-      /avatar/i.test([error.message, ...(error.errors ?? [])].join(" "))
-    )
-      throw new ApiError(
-        400,
-        "Profile changes are temporarily unavailable. Please try again later.",
-      );
     throw new ApiError(
       error.status,
       error.status === 401
@@ -102,6 +94,7 @@ export function getAccount() {
 }
 
 // The backend checks that the email in the body matches the token subject.
+// Fields left out (the avatar) keep their current value.
 export async function updateNickname(nickname: string) {
   const token = await getSessionToken();
   if (token && (await isGuestToken(token)))
@@ -109,20 +102,10 @@ export async function updateNickname(nickname: string) {
   const session = token ? readTokenSession(token) : null;
   if (!session || session.kind !== "user")
     throw new ApiError(401, "Please log in to continue.");
-  const current = await getAccount();
-  if (current.avatar === null)
-    throw new ApiError(
-      409,
-      "Profile changes are temporarily unavailable. Please try again later.",
-    );
   return accountRequest(
     "/user-profile",
     parseAccount,
-    jsonBody("PUT", {
-      email: current.email,
-      nickname,
-      avatarId: `avatar-${current.avatar}`,
-    }),
+    jsonBody("PUT", { email: session.email, nickname }),
   );
 }
 

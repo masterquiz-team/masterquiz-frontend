@@ -18,7 +18,7 @@ export async function getAvatarResponse(
     const token = await getSessionToken();
     if (!token) return missing();
     const response = await backendFetch(
-      `/avatars/avatar-${n}.jpg`,
+      `/avatars/avatar-${n}.png`,
       {},
       token,
       "image/*",
