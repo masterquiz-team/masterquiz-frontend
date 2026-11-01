@@ -3,8 +3,8 @@ import {
   startTransition,
   useCallback,
   useEffect,
+  useReducer,
   useRef,
-  useState,
 } from "react";
 import type { GameView } from "@/features/game/types";
 import {
@@ -19,19 +19,19 @@ import {
 import type { GameFailure } from "../types";
 import { ATTEMPT_ACCESS_DENIED } from "@/lib/api/errors";
 import { useCountdown } from "./useCountdown";
+import { gameReducer, initGameState } from "./gameReducer";
 
 export function useGame(
   attemptId: number,
   initialGame: GameView | null,
   initialError: GameFailure | null,
 ) {
-  const [game, setGame] = useState(initialGame);
-  const [error, setError] = useState(initialError);
-  const [selected, setSelected] = useState<number | null>(null);
-  const [pending, setPending] = useState(false);
-  const [transition, setTransition] = useState(0);
-  const [recoveryTarget, setRecoveryTarget] =
-    useState<ReturnType<typeof clearSavedAttempt>>(null);
+  const [state, dispatch] = useReducer(
+    gameReducer,
+    { game: initialGame, error: initialError },
+    initGameState,
+  );
+  const { game, error, selected, pending, transition, recoveryTarget } = state;
   const busy = useRef(false);
   const timeoutRequested = useRef(false);
   const remaining = useCountdown(
@@ -47,7 +47,8 @@ export function useGame(
     if (!lost) return;
     try {
       const target = clearSavedAttempt(attemptId);
-      if (target) startTransition(() => setRecoveryTarget(target));
+      if (target)
+        startTransition(() => dispatch({ type: "recovery-found", target }));
     } catch {
       // Recovery navigation remains available if browser storage is blocked.
     }
@@ -70,27 +71,31 @@ export function useGame(
   const run = useCallback(async (work: () => Promise<GameView>) => {
     if (busy.current) return;
     busy.current = true;
-    setPending(true);
-    setError(null);
+    dispatch({ type: "request-started" });
     try {
       const next = await work();
-      setGame(next);
-      setSelected(null);
+      dispatch({ type: "request-succeeded", game: next });
     } catch (cause) {
-      setError({
-        status: cause instanceof GameRequestError ? cause.status : 0,
-        code: cause instanceof GameRequestError ? cause.code : undefined,
-        message:
-          cause instanceof Error
-            ? cause.message
-            : "The game request could not be confirmed.",
+      dispatch({
+        type: "request-failed",
+        error: {
+          status: cause instanceof GameRequestError ? cause.status : 0,
+          code: cause instanceof GameRequestError ? cause.code : undefined,
+          message:
+            cause instanceof Error
+              ? cause.message
+              : "The game request could not be confirmed.",
+        },
       });
     } finally {
       busy.current = false;
-      setPending(false);
-      setTransition((value) => value + 1);
     }
   }, []);
+
+  const setSelected = useCallback(
+    (index: number) => dispatch({ type: "answer-selected", index }),
+    [],
+  );
 
   useEffect(() => {
     if (!expired || pending || error || timeoutRequested.current) return;
