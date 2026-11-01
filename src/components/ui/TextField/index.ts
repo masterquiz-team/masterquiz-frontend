@@ -1,1 +1,2 @@
-export { TextField } from "./TextField";
+export { TextField, type FieldStatus } from "./TextField";
+export { ErrorCircleIcon } from "./FieldIcon";

@@ -46,3 +46,36 @@ export function FieldIcon({ name }: { name: FieldIconName }) {
     </svg>
   );
 }
+
+export function FieldStatusIcon({ invalid }: { invalid: boolean }) {
+  return invalid ? (
+    <ErrorCircleIcon className={styles.status} />
+  ) : (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      className={styles.status}
+      aria-hidden="true"
+    >
+      <path d="m3 10 5 5 9-10" />
+    </svg>
+  );
+}
+
+// Filled circle with a white "!", as in the design's error states.
+export function ErrorCircleIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 20 20" className={className} aria-hidden="true">
+      <circle cx="10" cy="10" r="8.5" fill="currentColor" />
+      <path
+        d="M10 5.5v5.5"
+        stroke="#fff"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <circle cx="10" cy="14.25" r="1.25" fill="#fff" />
+    </svg>
+  );
+}
