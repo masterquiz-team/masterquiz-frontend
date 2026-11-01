@@ -84,9 +84,10 @@ a.card:focus-visible {
 
 .description {
   flex-shrink: 0;
-  width: calc(100% - 16px);
-  max-width: 243px;
-  margin-top: 6px;
+  width: min(var(--description-width, 243px), 100% - 16px);
+  margin-top: 16px;
+  // The hover action covers the last 24px of the text, as in Figma.
+  margin-bottom: -24px;
   color: tokens.$text-body;
   font-size: tokens.$font-size-md;
   font-weight: 400;
@@ -95,13 +96,12 @@ a.card:focus-visible {
 }
 
 .action {
+  position: relative;
   display: flex;
-  // Leave both description lines above the panel within the 270px card.
-  flex: 0 0 36px;
+  flex: 0 0 50px;
   align-self: stretch;
-  align-items: center;
   margin: auto 7px 0;
-  padding: 0 8px;
+  padding: 7px 8px 8px;
   border-radius: tokens.$radius-control;
   background: tokens.$primary-tint;
   visibility: hidden;
