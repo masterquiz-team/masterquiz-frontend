@@ -33,10 +33,10 @@ export async function AuthPage({
           {isRegister ? "Welcome!" : "Welcome back!"}
         </h1>
         {isRegister ? (
-          <div className={styles.descriptionPlaceholder} aria-hidden="true">
-            <span />
-            <span />
-          </div>
+          <p className={`${styles.description} ${styles.descriptionRegister}`}>
+            Sign up to compete with others, track your progress, unlock
+            achievements and more!
+          </p>
         ) : (
           <p className={styles.description}>
             Pick up where you left off and keep your streak going.

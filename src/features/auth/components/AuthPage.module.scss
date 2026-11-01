@@ -21,6 +21,7 @@
 }
 
 .pageRegister {
+  padding-top: 38px;
   padding-bottom: 100px;
 }
 
@@ -61,20 +62,9 @@
   line-height: 35px;
 }
 
-.descriptionPlaceholder {
-  display: grid;
-  gap: 17px;
-  margin-top: 18px;
-}
-
-.descriptionPlaceholder span {
-  width: min(100%, 365px);
-  height: 21px;
-  background: tokens.$placeholder;
-}
-
-.descriptionPlaceholder span:last-child {
-  width: min(100%, 217px);
+.descriptionRegister {
+  width: min(100%, 470px);
+  margin-top: 24px;
 }
 
 @include breakpoints.down(1199px) {

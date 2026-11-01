@@ -79,6 +79,18 @@ describe("getAuthFieldState", () => {
     expect(
       getAuthFieldState(
         "register",
+        { ...valid, password: "different", repeatPassword: "different" },
+        { repeatPassword: true },
+        false,
+        {},
+      ),
+    ).toMatchObject({
+      errors: {},
+      statuses: { repeatPassword: "valid", password: "idle" },
+    });
+    expect(
+      getAuthFieldState(
+        "register",
         emptyAuthValues,
         { repeatPassword: true },
         false,
