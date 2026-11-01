@@ -28,7 +28,6 @@ export async function loadCategoriesScreen(
   if (session.status === "anonymous")
     return {
       kind: "preview",
-      loginHref: session.loginHref,
       playHref: currentHref,
     };
   if (session.status === "unavailable")
