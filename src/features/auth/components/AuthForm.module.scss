@@ -10,6 +10,7 @@
   padding: 48px 40px 56px;
   border-radius: tokens.$radius-card;
   background: tokens.$surface;
+  box-shadow: tokens.$shadow-design-card;
 }
 
 .registerCard {
@@ -44,22 +45,35 @@
   pointer-events: none;
 }
 
+// Figma starts the login subtitle at the title's left edge, so the pair is
+// centred as one block.
+.heading {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
 .title {
   text-align: center;
+  color: tokens.$text-heading;
   font-size: tokens.$font-size-4xl;
   font-weight: 600;
   line-height: 39px;
 }
 
-.subtitlePlaceholder {
-  width: min(100%, 249px);
-  height: 17px;
-  margin: 14px auto 0;
-  background: tokens.$placeholder;
+.title span {
+  color: tokens.$primary;
+}
+
+.subtitle {
+  margin-top: 14px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-md;
+  line-height: 19px;
 }
 
 .form {
-  margin-top: 41px;
+  margin-top: 39px;
 }
 
 .forgotPassword {
@@ -74,6 +88,15 @@
 
 .submitButton {
   margin-top: 32px;
+}
+
+// The design puts form errors between the fields and the button.
+.feedback {
+  margin-top: 14px;
+}
+
+.feedback + .submitButton {
+  margin-top: 13px;
 }
 
 .notice {
@@ -93,22 +116,32 @@
 }
 
 .forgotPassword:focus-visible,
-.register a:focus-visible {
+.register a:focus-visible,
+.guest a:focus-visible {
   @include patterns.focus-ring;
 }
 
 .register {
-  margin-top: 56px;
+  margin-top: 24px;
+  color: tokens.$text-body;
   text-align: center;
   font-size: tokens.$font-size-md;
   line-height: 19px;
 }
 
+.guest {
+  margin-top: 16px;
+  text-align: center;
+  font-size: tokens.$font-size-sm;
+  line-height: 17px;
+}
+
+.guest a,
 .register a {
   color: var(--primary);
 }
 
-@include breakpoints.down(lg) {
+@include breakpoints.down(1199px) {
   .card {
     padding-inline: 24px;
   }

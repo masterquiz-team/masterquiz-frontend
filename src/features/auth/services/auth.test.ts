@@ -88,12 +88,12 @@ describe("submitAuth", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps the existing fallback for HTTP errors with no message", async () => {
+  it("uses the generic fallback for HTTP errors with no message", async () => {
     fetchMock.mockResolvedValue(Response.json({}, { status: 500 }));
     await expect(submitAuth("login", payload)).resolves.toMatchObject({
       ok: false,
       error: {
-        message: "The request could not be completed. Please try again.",
+        message: "Something went wrong. Please try again.",
       },
     });
     expect(clearSavedAttempts).not.toHaveBeenCalled();
@@ -111,7 +111,7 @@ describe("submitAuth", () => {
     async (response) => {
       fetchMock.mockResolvedValue(response());
       await expect(submitAuth("login", payload)).rejects.toThrow(
-        "Unexpected authentication response",
+        "Something went wrong. Please try again.",
       );
       expect(clearSavedAttempts).not.toHaveBeenCalled();
     },

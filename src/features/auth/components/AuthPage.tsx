@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import type { AuthFormMode } from "../types";
 import { getSessionState } from "@/lib/backend/session";
 import { getSafeRedirect } from "../utils/redirect";
+import { AuthIllustration } from "./AuthIllustration";
 import { AuthForm } from "./AuthForm";
 import styles from "./AuthPage.module.scss";
 
@@ -31,22 +32,17 @@ export async function AuthPage({
         <h1 className={styles.title}>
           {isRegister ? "Welcome!" : "Welcome back!"}
         </h1>
-        <div className={styles.descriptionPlaceholder} aria-hidden="true">
-          <span />
-          <span />
-        </div>
-        {/* TODO: Replace the design placeholder when the original illustration is supplied. */}
-        <svg
-          className={styles.illustrationPlaceholder}
-          viewBox="0 0 416 410"
-          fill="none"
-          stroke="black"
-          strokeWidth="1"
-          aria-hidden="true"
-        >
-          <rect x="0.5" y="0.5" width="415" height="409" />
-          <path d="M0.5 0.5L415.5 409.5M415.5 0.5L0.5 409.5" />
-        </svg>
+        {isRegister ? (
+          <div className={styles.descriptionPlaceholder} aria-hidden="true">
+            <span />
+            <span />
+          </div>
+        ) : (
+          <p className={styles.description}>
+            Pick up where you left off and keep your streak going.
+          </p>
+        )}
+        <AuthIllustration />
       </section>
       <AuthForm
         mode={mode}

@@ -4,6 +4,7 @@ import type { AuthFormMode, AuthValues } from "../types";
 import { isRegisteredUser, parseAuthError } from "../validators/responses";
 import { backendFetch } from "@/lib/backend/transport";
 import { isRecord } from "@/lib/validation";
+import { GENERIC_AUTH_ERROR, INCORRECT_CREDENTIALS } from "../utils/messages";
 import { authJson } from "./request";
 import { getSessionState, readTokenSession } from "@/lib/backend/session";
 import { getGuestUserId, getSessionToken } from "@/lib/backend/token";
@@ -38,27 +39,23 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
     });
     const result: unknown = await response.json().catch(() => null);
     if (!response.ok) {
+      // Credential rejection always uses product copy and never echoes
+      // Java's details, which could reveal whether an account exists.
+      if (mode === "login" && response.status === 401)
+        return replyJson({ message: INCORRECT_CREDENTIALS }, 401);
       const fallback =
-        mode === "login" && response.status === 401
-          ? "The email or password was not accepted."
-          : mode === "register" && response.status === 409
-            ? "An account with this email already exists."
-            : "The API rejected the request. Please check your details and try again.";
+        mode === "register" && response.status === 409
+          ? "An account with this email already exists."
+          : GENERIC_AUTH_ERROR;
       return replyJson(parseAuthError(result, fallback), response.status);
     }
     if (!isRecord(result)) {
-      return replyJson(
-        { message: "The API returned an unexpected response." },
-        502,
-      );
+      return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
     }
 
     if (mode === "register") {
       if (!isRegisteredUser(result)) {
-        return replyJson(
-          { message: "The API returned an unexpected response." },
-          502,
-        );
+        return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
       }
       const body = {
         user: {
@@ -107,10 +104,7 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
     const token = typeof result.token === "string" ? result.token : null;
     const session = token ? readTokenSession(token) : null;
     if (!token || !session) {
-      return replyJson(
-        { message: "The API returned an invalid login session." },
-        502,
-      );
+      return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
     }
     const reply = replyJson({ session });
     setSessionCookie(reply, token, session);
