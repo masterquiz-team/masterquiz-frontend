@@ -44,6 +44,11 @@ $difficulty-hard-border: #ebcbff;
 $difficulty-hard-details: #efd4ff;
 $difficulty-hard-text: #be6ad0;
 
+// Landing preview cards use their own tints, separate from difficulty colors.
+$category-geography-surface: #f0effd;
+$category-history-surface: #effaf6;
+$category-science-surface: #ecf5fd;
+
 $radius-focus: 3px;
 $radius-control: 10px;
 $radius-badge: 22px;

@@ -4,60 +4,46 @@
 
 .section {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-  align-items: center;
-  gap: 32px;
+  grid-template-columns: minmax(0, 714fr) minmax(0, 523fr);
+  align-items: start;
+  gap: 43px;
   width: 100%;
   max-width: 1440px;
   min-height: 610px;
+  // The ranking blob is wider than the panel on narrow screens.
+  overflow-x: clip;
   margin-inline: auto;
-  padding: 70px 80px 90px;
+  padding: 118px 80px 175px;
 }
 
 .intro {
   display: grid;
   grid-template-columns: 168px minmax(0, 1fr);
-  align-items: center;
+  align-items: start;
   gap: 52px;
+  padding-top: 44px;
 }
 
+// Figma places the group 8px into the column and 18px below the heading row.
 .illustration {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 188px;
-  background: url("/Vector3.svg") center / contain no-repeat;
-}
-
-.topAccent,
-.bottomAccent {
-  position: absolute;
-  pointer-events: none;
-}
-
-.topAccent {
-  top: 0;
-  right: 0;
-  width: 36px;
-  height: 31px;
-}
-
-.bottomAccent {
-  bottom: 0;
-  left: 20px;
-  width: 27px;
-  height: 28px;
+  width: 168px;
+  max-width: none;
+  height: auto;
+  margin: 18px 0 0 8px;
 }
 
 .title {
-  font-size: tokens.$font-size-4xl;
-  line-height: 1.2;
+  font-size: tokens.$font-size-5xl;
+  font-weight: 700;
+  line-height: 60px;
+  color: tokens.$text-heading;
 }
 .description {
-  margin-top: 26px;
-  color: var(--muted);
-  font-size: tokens.$font-size-xl;
-  line-height: 1.65;
+  max-width: 417px;
+  margin-top: 16px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-label;
+  line-height: 24px;
 }
 .signUp {
   display: inline-flex;
@@ -66,7 +52,7 @@
   gap: 28px;
   min-width: 195px;
   min-height: 68px;
-  margin-top: 60px;
+  margin-top: 58px;
   padding: 18px 28px 18px 36px;
   border: 2px solid var(--primary);
   border-radius: 34px;
@@ -90,50 +76,74 @@
 .preview {
   position: relative;
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) 30px;
+  grid-template-columns: 37px minmax(0, 1fr) 23px;
   align-items: center;
-  min-height: 452px;
-  background: url("/Vector2.svg") center / contain no-repeat;
+  min-height: 317px;
+  isolation: isolate;
 }
+// Offsets from the ranking panel in Figma frame 11:2.
+.blob {
+  position: absolute;
+  z-index: tokens.$layer-decoration;
+  top: -64px;
+  left: -7px;
+  width: 554px;
+  max-width: none;
+  height: auto;
+  pointer-events: none;
+}
+// Row geometry follows the ranking panel in Figma frame 11:2.
 .card {
   grid-column: 2;
-  padding: 24px;
+  padding: 28px 25px 24px 30px;
   border-radius: tokens.$radius-card;
   background: tokens.$surface;
+  box-shadow: tokens.$shadow-design-card;
+  min-height: 317px;
 }
 .cardTitle {
-  margin: 0 0 14px 36px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0 0 12px -7px;
   font-size: tokens.$font-size-xl;
   line-height: 24px;
-}
-.sampleRanking {
-  margin: -6px 0 14px 36px;
-  color: var(--muted);
-  font-size: tokens.$font-size-sm;
-  line-height: 20px;
+  color: tokens.$text-heading;
+  font-weight: 600;
 }
 .player,
 .currentPlayer {
   display: grid;
-  grid-template-columns: 12px 40px minmax(0, 1fr) auto;
+  grid-template-columns: 21px 61px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 12px;
-  min-height: 56px;
-  padding: 7px 12px;
+  min-height: 57px;
+  padding: 0 8px 0 19px;
   font-size: tokens.$font-size-md;
   line-height: 19px;
+  font-weight: 500;
+  color: tokens.$text-body;
 }
 .player + .player {
+  position: relative;
+}
+.player + .player::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 9px;
+  left: 13px;
   border-top: 1px solid tokens.$primary-tint;
 }
 .currentPlayer {
   border-radius: tokens.$radius-control;
+  min-height: 53px;
   background: tokens.$primary-tint;
+  color: tokens.$primary;
+  font-weight: 600;
 }
 .avatar {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--foreground);
+  width: 41px;
+  height: 41px;
   border-radius: tokens.$radius-circle;
 }
 .score {
@@ -146,16 +156,16 @@
   pointer-events: none;
 }
 .leftAccent {
-  top: 95px;
-  left: -20px;
-  width: 50px;
-  height: 66px;
+  top: 21px;
+  left: -29px;
+  width: 41px;
+  height: 73px;
 }
 .rightAccent {
-  top: calc(50% - 35px);
-  right: -10px;
-  width: 40px;
-  height: 70px;
+  top: 109px;
+  right: -38px;
+  width: 41px;
+  height: 71px;
 }
 
 @include breakpoints.down(lg) {
@@ -167,8 +177,13 @@
     grid-template-columns: 132px minmax(0, 1fr);
     gap: 24px;
   }
+  .illustration {
+    width: 132px;
+    margin: 18px 0 0;
+  }
   .title {
     font-size: tokens.$font-size-3xl;
+    line-height: 1.25;
   }
   .card {
     padding: 20px 12px;
@@ -218,9 +233,11 @@
   .card {
     padding: 20px 8px;
   }
-  .cardTitle,
-  .sampleRanking {
+  .cardTitle {
     margin-left: 12px;
+  }
+  .blob {
+    display: none;
   }
   .player,
   .currentPlayer {
