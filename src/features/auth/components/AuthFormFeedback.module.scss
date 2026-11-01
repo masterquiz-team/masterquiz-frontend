@@ -1,7 +1,40 @@
 @use "../../../styles/tokens";
 
+// Sizes from the design's "Log in error" frame: 37px tall, text 18px and
+// the 25px icon 11px from the edges (2px border included).
 .feedback {
-  margin-top: 16px;
-  font-size: tokens.$font-size-sm;
-  line-height: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 37px;
+  padding: 4px 9px 4px 16px;
+  border: 2px solid;
+  border-radius: tokens.$radius-control;
+  font-size: tokens.$font-size-xs;
+  font-weight: 500;
+  line-height: 15px;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding-block: 5px;
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+}
+
+.error {
+  border-color: tokens.$danger-border;
+  background: tokens.$danger-overlay;
+  color: tokens.$danger-border;
+}
+
+.success {
+  border-color: tokens.$success;
+  background: tokens.$success-surface;
+  color: tokens.$text-heading;
 }

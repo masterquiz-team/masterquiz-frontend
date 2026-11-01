@@ -29,6 +29,8 @@ export function AuthForm({
     pending,
     feedback,
     fieldErrors,
+    fieldStatuses,
+    blurField,
     updateField,
     handleSubmit,
   } = useAuthForm(mode, redirectTo);
@@ -51,12 +53,15 @@ export function AuthForm({
       >
         <path d="m35 4 13 21M2 35l29 9M11 64l15-2.4" />
       </svg>
-      <h2 className={styles.title}>
-        {isRegister ? "Sign up to MasterQuiz" : "Log in to MasterQuiz"}
-      </h2>
-      {!isRegister && (
-        <div className={styles.subtitlePlaceholder} aria-hidden="true" />
-      )}
+      <div className={styles.heading}>
+        <h2 className={styles.title}>
+          {isRegister ? "Sign up to Master" : "Log in to Master"}
+          <span>Quiz</span>
+        </h2>
+        {!isRegister && (
+          <p className={styles.subtitle}>Ready for another challenge?</p>
+        )}
+      </div>
       {sessionUnavailable && (
         <p className={styles.notice} role="status">
           We cannot verify your current session. Your session has been kept.{" "}
@@ -76,6 +81,8 @@ export function AuthForm({
           mode={mode}
           values={values}
           errors={fieldErrors}
+          statuses={fieldStatuses}
+          onFieldBlur={blurField}
           pending={pending}
           onFieldChange={updateField}
         />
@@ -95,15 +102,19 @@ export function AuthForm({
             Password recovery is not available yet.
           </p>
         )}
+        <AuthFormFeedback
+          feedback={feedback}
+          registered={registered}
+          className={styles.feedback}
+        />
         <AuthSubmitButton
           mode={mode}
           pending={pending}
           className={styles.submitButton}
         />
-        <AuthFormFeedback feedback={feedback} registered={registered} />
       </form>
       {!isRegister && (
-        <p className={styles.register}>
+        <p className={styles.guest}>
           <PlayLink href={redirectTo === "/" ? "/categories" : redirectTo}>
             Continue as guest
           </PlayLink>

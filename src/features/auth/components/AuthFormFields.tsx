@@ -4,7 +4,7 @@ import type {
   AuthFormMode,
   AuthFormValues,
 } from "../types";
-import { TextField } from "@/components/ui/TextField";
+import { TextField, type FieldStatus } from "@/components/ui/TextField";
 import styles from "./AuthFormFields.module.scss";
 
 type AuthFormFieldsProps = {
@@ -12,6 +12,8 @@ type AuthFormFieldsProps = {
   values: AuthFormValues;
   errors: AuthFieldErrors;
   pending: boolean;
+  statuses: Partial<Record<AuthFieldName, FieldStatus>>;
+  onFieldBlur: (field: AuthFieldName) => void;
   onFieldChange: (field: AuthFieldName, value: string) => void;
 };
 
@@ -20,6 +22,8 @@ export function AuthFormFields({
   values,
   errors,
   pending,
+  statuses,
+  onFieldBlur,
   onFieldChange,
 }: AuthFormFieldsProps) {
   const isRegister = mode === "register";
@@ -34,6 +38,8 @@ export function AuthFormFields({
         placeholder="e.g. name@example.com"
         value={values.email}
         error={errors.email}
+        status={statuses.email}
+        onBlur={() => onFieldBlur("email")}
         onValueChange={(value) => onFieldChange("email", value)}
       />
       {isRegister && (
@@ -45,6 +51,8 @@ export function AuthFormFields({
           placeholder="Enter username"
           value={values.nickname}
           error={errors.nickname}
+          status={statuses.nickname}
+          onBlur={() => onFieldBlur("nickname")}
           onValueChange={(value) => onFieldChange("nickname", value)}
         />
       )}
@@ -58,6 +66,8 @@ export function AuthFormFields({
         minLength={isRegister ? 8 : undefined}
         value={values.password}
         error={errors.password}
+        status={statuses.password}
+        onBlur={() => onFieldBlur("password")}
         onValueChange={(value) => onFieldChange("password", value)}
       />
       {isRegister && (
@@ -71,6 +81,8 @@ export function AuthFormFields({
           minLength={8}
           value={values.repeatPassword}
           error={errors.repeatPassword}
+          status={statuses.repeatPassword}
+          onBlur={() => onFieldBlur("repeatPassword")}
           onValueChange={(value) => onFieldChange("repeatPassword", value)}
         />
       )}

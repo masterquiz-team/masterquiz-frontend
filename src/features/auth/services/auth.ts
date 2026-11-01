@@ -2,6 +2,7 @@ import "client-only";
 
 import type { AuthFormMode, AuthSubmitResult, AuthValues } from "../types";
 import { isRecord } from "@/lib/validation";
+import { GENERIC_AUTH_ERROR } from "../utils/messages";
 import { clearSavedAttempts } from "@/lib/attempt-storage";
 import { apiRequest, ApiClientError } from "@/lib/api/client";
 import {
@@ -31,35 +32,23 @@ export async function submitAuth(
 ): Promise<AuthSubmitResult> {
   let result: unknown;
   try {
-    ({ result } = await postAuth(
-      mode,
-      payload,
-      "Unexpected authentication response",
-    ));
+    ({ result } = await postAuth(mode, payload, GENERIC_AUTH_ERROR));
   } catch (cause) {
     if (!(cause instanceof ApiClientError) || cause.status === 0) throw cause;
     if (isRecord(cause.body))
       return {
         ok: false,
-        error: parseAuthError(
-          cause.body,
-          "The request could not be completed. Please try again.",
-        ),
+        error: parseAuthError(cause.body, GENERIC_AUTH_ERROR),
       };
-    throw new ApiClientError(
-      cause.status,
-      "Unexpected authentication response",
-    );
+    throw new ApiClientError(cause.status, GENERIC_AUTH_ERROR);
   }
-  if (!isRecord(result))
-    throw new ApiClientError(502, "Unexpected authentication response");
+  if (!isRecord(result)) throw new ApiClientError(502, GENERIC_AUTH_ERROR);
 
   const valid =
     mode === "register"
       ? isRegisteredUser(result.user)
       : isAuthSession(result.session) && result.session.kind === "user";
-  if (!valid)
-    throw new ApiClientError(502, "Unexpected authentication response");
+  if (!valid) throw new ApiClientError(502, GENERIC_AUTH_ERROR);
   clearSavedAttempts();
   return {
     ok: true,

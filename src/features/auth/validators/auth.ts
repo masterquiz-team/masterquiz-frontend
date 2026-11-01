@@ -44,23 +44,23 @@ export function validateAuthValues(
   const errors: AuthFieldErrors = {};
 
   if (!values.email.trim()) {
-    errors.email = "Enter your email address.";
+    errors.email = "This field is required.";
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-    errors.email = "Enter a valid email address.";
+    errors.email = "Please enter a valid email address.";
   }
 
   if (!values.password.trim()) {
-    errors.password = "Enter your password.";
+    errors.password = "This field is required.";
   }
 
   if (mode === "register") {
     const nicknameError = validateNickname(values.nickname ?? "");
     if (nicknameError) errors.nickname = nicknameError;
-    if (values.password.length < 8) {
-      errors.password = "Use at least 8 characters.";
+    if (!errors.password && values.password.length < 8) {
+      errors.password = "Password must be at least 8 characters.";
     }
     if (!values.repeatPassword?.trim()) {
-      errors.repeatPassword = "Repeat your password.";
+      errors.repeatPassword = "This field is required.";
     } else if (values.password !== values.repeatPassword) {
       errors.repeatPassword = "Passwords must match.";
     }

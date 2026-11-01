@@ -25,6 +25,7 @@
 }
 
 .welcome {
+  position: relative;
   min-width: 0;
 }
 
@@ -32,7 +33,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(100%, 321px);
+  width: min(100%, 285px);
   min-height: 34px;
   border-radius: tokens.$radius-card;
   background: tokens.$primary-tint;
@@ -44,10 +45,20 @@
 }
 
 .title {
-  margin-top: 14px;
-  font-size: 64px;
+  margin-top: 25px;
+  color: tokens.$text-heading;
+  font-size: tokens.$font-size-7xl;
   font-weight: 700;
-  line-height: 77px;
+  line-height: 58px;
+}
+
+.description {
+  width: min(100%, 311px);
+  margin-top: 25px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-xl;
+  font-weight: 400;
+  line-height: 35px;
 }
 
 .descriptionPlaceholder {
@@ -66,14 +77,7 @@
   width: min(100%, 217px);
 }
 
-.illustrationPlaceholder {
-  width: min(100%, 416px);
-  height: auto;
-  margin-top: 31px;
-  margin-left: 74px;
-}
-
-@include breakpoints.down(lg) {
+@include breakpoints.down(1199px) {
   .page {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 48px;
@@ -83,10 +87,6 @@
   .title {
     font-size: tokens.$font-size-7xl;
     line-height: 1.2;
-  }
-
-  .illustrationPlaceholder {
-    margin-inline: auto;
   }
 }
 
