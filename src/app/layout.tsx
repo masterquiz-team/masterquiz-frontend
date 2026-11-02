@@ -20,8 +20,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    // Browser extensions (Grammarly, LanguageTool) add attributes to <html>
+    // and <body> before React loads. This only ignores those two tags'
+    // own attributes, not their children.
+    <html
+      lang="en"
+      className={`${inter.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }
