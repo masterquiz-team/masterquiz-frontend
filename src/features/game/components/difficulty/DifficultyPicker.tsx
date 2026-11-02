@@ -79,7 +79,6 @@ export function DifficultyPicker({
         className={styles.difficultyGrid}
         role="group"
         aria-label="Difficulty"
-        aria-describedby="difficulty-note"
       >
         {difficulties.map((choice) => (
           <Link
@@ -114,10 +113,6 @@ export function DifficultyPicker({
           </Link>
         ))}
       </Stagger>
-      <p id="difficulty-note" className={styles.note}>
-        Next, pick a ready-made quiz or start a random one. The time limit
-        depends on the difficulty.
-      </p>
     </Reveal>
   );
 }

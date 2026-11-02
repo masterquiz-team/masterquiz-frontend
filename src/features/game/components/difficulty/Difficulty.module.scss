@@ -275,13 +275,6 @@ $artwork-offset: -35px;
     text-align: center;
   }
 }
-.note {
-  max-width: 850px;
-  margin-top: 24px;
-  color: var(--muted);
-  text-align: center;
-  font-size: tokens.$font-size-sm;
-}
 .state {
   @include patterns.state-card($layout: grid) {
     gap: 24px;
