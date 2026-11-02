@@ -11,6 +11,7 @@ export function AuthIllustration() {
         className={styles.image}
         src={welcomeIllustration}
         alt=""
+        loading="eager"
         sizes="(max-width: 1199px) calc(100vw - 80px), 686px"
       />
     </div>

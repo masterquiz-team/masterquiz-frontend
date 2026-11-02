@@ -11,6 +11,8 @@ type Props = {
   href?: string;
   selected?: boolean;
   guestEntry?: boolean;
+  // Cards in the first row are on screen right away.
+  eager?: boolean;
 };
 
 export function CategoryCard({
@@ -18,6 +20,7 @@ export function CategoryCard({
   href,
   selected = false,
   guestEntry = false,
+  eager = false,
 }: Props) {
   const artwork = getCategoryArtwork(name);
   const CardLink = guestEntry ? PlayLink : Link;
@@ -25,7 +28,13 @@ export function CategoryCard({
     <>
       <div className={styles.illustration} aria-hidden="true">
         {artwork?.illustration && (
-          <Image src={artwork.illustration} alt="" width={240} height={210} />
+          <Image
+            src={artwork.illustration}
+            alt=""
+            width={240}
+            height={210}
+            loading={eager ? "eager" : undefined}
+          />
         )}
       </div>
       <h2 className={styles.title}>{name}</h2>

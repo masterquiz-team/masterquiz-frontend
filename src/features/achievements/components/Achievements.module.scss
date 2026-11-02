@@ -170,8 +170,11 @@
     gap: 24px;
     h1 {
       font-size: 40px;
+      // Square box in the old 58px slot, so Next sees an even resize.
       img {
         width: 42px;
+        height: 42px;
+        margin-block: 8px;
       }
     }
   }
@@ -198,6 +201,8 @@
     gap: 4px;
     img {
       width: 36px;
+      height: 36px;
+      margin-block: 11px;
     }
   }
   .grid {
@@ -207,6 +212,12 @@
     grid-template-columns: 64px minmax(0, 1fr);
     padding: 16px;
     gap: 8px;
+    // Matches the 64px column inside the old 90px slot.
+    > img {
+      width: 64px;
+      height: 64px;
+      margin-block: 13px;
+    }
     h2 {
       font-size: 18px;
     }

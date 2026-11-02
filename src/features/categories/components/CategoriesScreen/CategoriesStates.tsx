@@ -6,11 +6,20 @@ import { CategoryCard } from "../CategoryCard";
 import styles from "./CategoriesScreen.module.scss";
 import { GuestAccessLinks } from "@/features/auth/components/GuestAccessLinks";
 
+// The grid shows three cards per row on desktop.
+const FIRST_ROW = 3;
+
 export function CategoriesPreview({ playHref }: { playHref: string }) {
   return (
     <Stagger as="ul" className={styles.grid}>
-      {categoryArtwork.map(({ name }) => (
-        <CategoryCard key={name} name={name} href={playHref} guestEntry />
+      {categoryArtwork.map(({ name }, index) => (
+        <CategoryCard
+          key={name}
+          name={name}
+          href={playHref}
+          guestEntry
+          eager={index < FIRST_ROW}
+        />
       ))}
     </Stagger>
   );
@@ -67,10 +76,11 @@ export function CategoriesList({
 }) {
   return (
     <Stagger as="ul" className={styles.grid} key={page}>
-      {categories.map((category) => (
+      {categories.map((category, index) => (
         <CategoryCard
           key={category.id}
           name={category.name}
+          eager={index < FIRST_ROW}
           selected={selected?.id === category.id}
           href={`/categories/difficulty?${new URLSearchParams({ page: String(page), category: String(category.id) })}`}
         />
