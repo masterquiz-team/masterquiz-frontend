@@ -45,7 +45,7 @@ describe("validateAuthValues", () => {
         repeatPassword: "different",
       }),
     ).toMatchObject({
-      nickname: "Enter your username.",
+      nickname: "This field is required.",
       repeatPassword: "Passwords must match.",
     });
   });

@@ -17,7 +17,7 @@ export function PUT(request: Request) {
       const body = await readMutation(request);
       requireExactKeys(body, ["nickname"], "Only nickname is accepted.");
       if (typeof body.nickname !== "string")
-        throw new ApiError(400, "Enter your username.");
+        throw new ApiError(400, "This field is required.");
       const error = validateNickname(body.nickname);
       if (error) throw new ApiError(400, error);
       return updateNickname(body.nickname.trim());
