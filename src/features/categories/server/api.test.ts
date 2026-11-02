@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { getCategories } from "./api";
+import { findCategoryByName, getCategories } from "./api";
 
 const { cookieGet, cookieRead } = vi.hoisted(() => ({
   cookieGet: vi.fn(),
@@ -34,4 +34,30 @@ it("uses the shared page allowlist for categories", async () => {
   const result = await getCategories();
   expect(result.content).toEqual([{ id: 2, name: "Science" }]);
   expect(result).not.toHaveProperty("sort");
+});
+
+it("finds a home page category by name with its grid page", async () => {
+  const content = Array.from({ length: 14 }, (_, index) => ({
+    id: index + 1,
+    name: index === 12 ? "Geography" : `Category ${index + 1}`,
+  }));
+  fetchMock.mockImplementation(async () =>
+    Response.json({
+      content,
+      number: 0,
+      size: 100,
+      totalElements: content.length,
+      totalPages: 1,
+      first: true,
+      last: true,
+      empty: false,
+    }),
+  );
+  await expect(findCategoryByName(" geography ")).resolves.toEqual({
+    category: { id: 13, name: "Geography" },
+    page: 1,
+  });
+  await expect(findCategoryByName("Unknown")).rejects.toMatchObject({
+    status: 404,
+  });
 });

@@ -3,6 +3,7 @@ import "server-only";
 import { parseSpringPage, requirePagination } from "@/lib/validation";
 import type { Category, CategoryPage } from "../types";
 import {
+  ApiError,
   backendRequest,
   invalidContract,
   isId,
@@ -20,7 +21,13 @@ function parseCategoryPage(value: unknown): CategoryPage {
   return parseSpringPage(value, parseCategory);
 }
 
-export function getCategories(page = 0, size = 12): Promise<CategoryPage> {
+// Page size of the categories grid.
+export const CATEGORIES_PAGE_SIZE = 12;
+
+export function getCategories(
+  page = 0,
+  size = CATEGORIES_PAGE_SIZE,
+): Promise<CategoryPage> {
   requirePagination(page, size, "Invalid pagination. Size must be 1–100.");
   return backendRequest(
     `/categories?${new URLSearchParams({ page: String(page), size: String(size), sort: "id,asc" })}`,
@@ -44,4 +51,21 @@ export async function getAllCategories(): Promise<Category[]> {
     if (result.last) break;
   }
   return categories;
+}
+
+// Home page cards know categories by name only; ids come from the backend.
+// Also returns the grid page the category sits on, for the "Back" link.
+export async function findCategoryByName(
+  name: string,
+): Promise<{ category: Category; page: number }> {
+  const target = name.trim().toLowerCase();
+  const categories = await getAllCategories();
+  const index = categories.findIndex(
+    (category) => category.name.trim().toLowerCase() === target,
+  );
+  if (!target || index < 0) throw new ApiError(404, "Category not found.");
+  return {
+    category: categories[index],
+    page: Math.floor(index / CATEGORIES_PAGE_SIZE),
+  };
 }

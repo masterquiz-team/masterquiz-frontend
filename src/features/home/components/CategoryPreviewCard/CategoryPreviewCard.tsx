@@ -12,7 +12,10 @@ type Props = {
 export const CategoryPreviewCard = ({ title, description, tone }: Props) => {
   return (
     <li className={styles.item}>
-      <PlayLink href="/categories" className={`${styles.card} ${styles[tone]}`}>
+      <PlayLink
+        href={`/categories/difficulty?${new URLSearchParams({ name: title })}`}
+        className={`${styles.card} ${styles[tone]}`}
+      >
         <Image
           src={`/images/home/${tone}.svg`}
           alt=""
