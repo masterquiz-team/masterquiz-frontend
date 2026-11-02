@@ -53,6 +53,7 @@
   padding-top: 16px;
   flex: 1;
   h1 {
+    color: tokens.$text-heading;
     font-size: 40px;
     font-weight: 600;
     line-height: 1.2;
@@ -64,7 +65,7 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 19px;
-  color: tokens.$text;
+  color: tokens.$text-body;
 }
 .stats {
   display: flex;
@@ -89,7 +90,7 @@
       grid-column: 2;
       grid-row: 2;
       font-size: 13px;
-      color: tokens.$text-subtle;
+      color: tokens.$text-body;
       white-space: nowrap;
     }
   }
@@ -97,6 +98,7 @@
     grid-column: 2;
     grid-row: 1;
     font-weight: 600;
+    color: tokens.$text-heading;
   }
 }
 .heroActions {
@@ -131,13 +133,14 @@
   padding: 22px 24px;
   background: white;
   border-radius: 23px;
-  box-shadow: tokens.$shadow-timer;
+  box-shadow: tokens.$shadow-profile-card;
   h2 {
     display: flex;
     align-items: center;
     gap: 8px;
+    color: tokens.$text-heading;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 700;
   }
 }
 .cardHeading {
@@ -165,8 +168,12 @@
     line-height: 1.2;
   }
 }
-.points {
+// Only the level hint is drawn in Figma; other hints keep the muted colour.
+.level .hint {
   color: tokens.$text-subtle;
+}
+.points {
+  color: tokens.$text-body;
   font-size: 13px;
   text-align: right;
   margin-bottom: 5px;
@@ -203,7 +210,7 @@
     justify-items: center;
     gap: 8px;
     text-align: center;
-    color: tokens.$text-subtle;
+    color: tokens.$text-body;
     font-size: 13px;
     line-height: 1.2;
     > img {
@@ -225,9 +232,9 @@
   color: tokens.$text-muted;
 }
 .comingSoon {
+  margin-right: auto;
   color: tokens.$text-muted;
   font-size: 12px;
-  margin-top: 12px;
 }
 .bottom {
   display: grid;
@@ -241,6 +248,7 @@
   min-height: 160px;
   h2 {
     font-size: 18px;
+    font-weight: 500;
   }
 }
 .empty {
@@ -267,6 +275,7 @@
     padding: 8px 12px;
     border-radius: 10px;
     background: tokens.$primary-tint;
+    color: tokens.$text-heading;
     font-size: 14px;
     @include patterns.interactive-lift;
     span {
@@ -498,4 +507,138 @@
 .dangerButton:focus-visible,
 .textButton:focus-visible {
   @include patterns.focus-ring;
+}
+
+// The supplied desktop frame uses different insets for each panel.
+@media (min-width: 1200px) {
+  .top {
+    grid-template-columns: minmax(0, 697fr) minmax(0, 543fr);
+    padding-left: 33px;
+  }
+  .side {
+    padding-top: 3px;
+  }
+  .hero {
+    gap: 14px;
+  }
+  .identity {
+    padding-top: 21px;
+    h1 {
+      line-height: normal;
+    }
+  }
+  .tagline {
+    line-height: normal;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: minmax(0, 160fr) minmax(0, 165fr) minmax(0, 155fr);
+    gap: 18px 0;
+    padding-left: 3px;
+    font-size: 16px;
+    line-height: normal;
+    dt span {
+      margin-top: 2px;
+      white-space: normal;
+    }
+    dd {
+      overflow-wrap: anywhere;
+    }
+  }
+  .heroActions {
+    margin-left: 3px;
+    margin-top: 28px;
+  }
+  .editButton {
+    min-height: 45px;
+    line-height: normal;
+    &:first-child {
+      min-width: 157px;
+    }
+  }
+  .card {
+    line-height: normal;
+  }
+  .levelCard {
+    min-height: 176px;
+    padding: 24px 33px 24px 37px;
+  }
+  .level {
+    margin-left: -16px;
+    margin-top: 18px;
+    h3 {
+      margin-bottom: -5px;
+      line-height: normal;
+    }
+  }
+  .badgesCard {
+    min-height: 182px;
+    padding: 16px 22px 16px 37px;
+  }
+  .badges li {
+    gap: 4px;
+    line-height: normal;
+  }
+  .bottom {
+    grid-template-columns: minmax(0, 823fr) minmax(0, 458fr);
+    align-items: start;
+  }
+  .activity {
+    min-height: 389px;
+    padding: 21px 34px;
+    h2 {
+      gap: 15px;
+      align-items: flex-start;
+      > img {
+        margin-top: 1px;
+      }
+    }
+  }
+  .favouritesCard {
+    min-height: 284px;
+    padding: 17px 19px 16px 18px;
+    .cardHeading {
+      margin-bottom: 17px;
+      h2 {
+        gap: 9px;
+        align-items: flex-start;
+        > span {
+          padding-top: 2px;
+        }
+      }
+      h2 > img {
+        height: 20px;
+      }
+    }
+  }
+  .categories {
+    gap: 13px 20px;
+    margin-left: 5px;
+    a {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      justify-content: start;
+      gap: 19px;
+      height: 62px;
+      padding: 7px 12px;
+      border-radius: tokens.$radius-control;
+      img {
+        // Category SVGs include transparent space around their original artwork.
+        width: 78px;
+        height: 72px;
+        max-width: none;
+        margin: -12px -13px;
+      }
+      span {
+        // Keep long category names inside a fluid tile at 1200px.
+        grid-column: 2;
+        min-width: 0;
+      }
+    }
+    .allCategories {
+      display: flex;
+      justify-content: center;
+      font-weight: 500;
+    }
+  }
 }

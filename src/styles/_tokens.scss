@@ -61,6 +61,7 @@ $shadow-category: 0 4px 4px 5px rgba(92, 77, 228, 0.3);
 $shadow-design-card: 0 4px 5px 5px rgba(92, 77, 228, 0.2);
 $shadow-question: 0 4px 10px 10px rgb(92 77 228 / 25%);
 $shadow-timer: 0 4px 5px 5px rgb(92 77 228 / 25%);
+$shadow-profile-card: $shadow-timer;
 
 // These layers are local to the isolated category preview.
 $layer-decoration: -1;
