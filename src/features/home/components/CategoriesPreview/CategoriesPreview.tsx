@@ -37,6 +37,8 @@ export const CategoriesPreview = () => (
       <Image
         src="/images/home/categories-blob.svg"
         alt=""
+        // The largest image in the first screen on phones.
+        loading="eager"
         width={586}
         height={556}
         className={styles.background}
