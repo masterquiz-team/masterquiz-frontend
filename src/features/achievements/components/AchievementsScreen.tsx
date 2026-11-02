@@ -26,9 +26,14 @@ export function AchievementsScreen() {
         <div>
           <h1>
             Achievements
-            <PublicAsset
+            {/* Local image preserves the decoration's non-square viewBox. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src="/images/achievements/achievements-heading-decoration.svg"
-              size={58}
+              width={72}
+              height={68}
+              alt=""
+              className={styles.headingDecoration}
             />
           </h1>
           <p>Celebrate your progress and discover your next challenge.</p>
