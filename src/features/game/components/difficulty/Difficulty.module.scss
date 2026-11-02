@@ -1,9 +1,9 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/patterns";
 
-// Top illustration slot from the Figma frame (globe group 288×252.838 at x581).
+// Top illustration slot from the Figma frame (globe group 288×253 at x581).
 $artwork-width: 288px;
-$artwork-height: 252.838px;
+$artwork-height: 253px;
 $artwork-offset: -35px;
 
 .difficulty {
@@ -18,7 +18,7 @@ $artwork-offset: -35px;
     line-height: normal;
     text-align: center;
     // The globe group overlaps the heading in the reference composition.
-    margin-top: -9.838px;
+    margin-top: -10px;
   }
 }
 .geographyArtwork {
