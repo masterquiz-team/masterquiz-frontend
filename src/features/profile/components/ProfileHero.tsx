@@ -8,10 +8,8 @@ import { ProfileAvatar } from "./ProfileAvatar";
 import { PublicAsset } from "@/components/ui/PublicAsset";
 import { NicknameForm } from "./NicknameForm";
 import { DeleteAccount } from "./DeleteAccount";
+import { formatProfileNumber } from "../format";
 import styles from "./Profile.module.scss";
-
-const formatCount = (value: number) =>
-  Math.round(value).toLocaleString("en-US");
 
 export function ProfileHero({ account }: { account: Account }) {
   const { handleLogout, pending, error } = useLogout();
@@ -74,7 +72,7 @@ export function ProfileHero({ account }: { account: Account }) {
                 <CountUp
                   value={stat.value}
                   from={0}
-                  format={formatCount}
+                  format={formatProfileNumber}
                   duration={0.4}
                 />
               </dd>

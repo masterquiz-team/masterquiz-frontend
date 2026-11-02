@@ -9,3 +9,11 @@
     padding-block: 24px 48px;
   }
 }
+
+@media (min-width: 1200px) {
+  .main {
+    width: min(1346px, calc(100% - 64px));
+    padding-top: 21px;
+    padding-right: 33px;
+  }
+}

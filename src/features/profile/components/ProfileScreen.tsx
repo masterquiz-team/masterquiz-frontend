@@ -9,9 +9,8 @@ import { profileBadges } from "@/features/achievements/badges";
 import { ProfileHero } from "./ProfileHero";
 import { PublicAsset } from "@/components/ui/PublicAsset";
 import { LevelProgress } from "./LevelProgress";
+import { formatProfileNumber } from "../format";
 import styles from "./Profile.module.scss";
-
-const format = (value: number) => value.toLocaleString("en-US");
 
 export function ProfileScreen({
   account,
@@ -26,7 +25,10 @@ export function ProfileScreen({
       <div className={styles.top}>
         <ProfileHero account={account} />
         <div className={styles.side}>
-          <section className={styles.card} aria-labelledby="your-level">
+          <section
+            className={`${styles.card} ${styles.levelCard}`}
+            aria-labelledby="your-level"
+          >
             <h2 id="your-level">Your level</h2>
             <div className={styles.level}>
               <PublicAsset src={progress.current.icon} size={90} />
@@ -34,8 +36,8 @@ export function ProfileScreen({
                 <h3>{progress.current.title}</h3>
                 <p className={styles.points}>
                   {progress.next
-                    ? `${format(account.score)} / ${format(progress.next.minPoints)} pts`
-                    : `${format(account.score)} pts`}
+                    ? `${formatProfileNumber(account.score)} / ${formatProfileNumber(progress.next.minPoints)} pts`
+                    : `${formatProfileNumber(account.score)} pts`}
                 </p>
                 <LevelProgress
                   ratio={progress.ratio}
@@ -43,18 +45,19 @@ export function ProfileScreen({
                 />
                 <p className={styles.hint}>
                   {progress.next
-                    ? `${format(progress.remaining)} points to level ${progress.next.number}`
+                    ? `${formatProfileNumber(progress.remaining)} points to level ${progress.next.number}`
                     : "Max level reached"}
                 </p>
               </div>
             </div>
           </section>
-          <section className={styles.card} aria-labelledby="your-badges">
+          <section
+            className={`${styles.card} ${styles.badgesCard}`}
+            aria-labelledby="your-badges"
+          >
             <div className={styles.cardHeading}>
-              <h2 id="your-badges">
-                <PublicAsset src="/images/profile/badges-medal.svg" />
-                Your badges
-              </h2>
+              <h2 id="your-badges">Your badges</h2>
+              <span className={styles.comingSoon}>Coming soon</span>
               <Link href="/achievements">
                 View all<span className={styles.srOnly}> badges</span>
               </Link>
@@ -80,7 +83,6 @@ export function ProfileScreen({
                 </li>
               ))}
             </Stagger>
-            <p className={styles.comingSoon}>Coming soon</p>
           </section>
         </div>
       </div>
@@ -98,11 +100,14 @@ export function ProfileScreen({
             <span>Your recent games will appear here soon.</span>
           </p>
         </section>
-        <section className={styles.card} aria-labelledby="favourite-categories">
+        <section
+          className={`${styles.card} ${styles.favouritesCard}`}
+          aria-labelledby="favourite-categories"
+        >
           <div className={styles.cardHeading}>
             <h2 id="favourite-categories">
               <PublicAsset src="/images/profile/favourite-star.svg" />
-              Favourite categories
+              <span>Favourite categories</span>
             </h2>
             <Link href="/categories">
               View all<span className={styles.srOnly}> categories</span>
