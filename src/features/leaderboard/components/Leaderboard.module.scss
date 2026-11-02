@@ -2,8 +2,6 @@
 @use "../../../styles/patterns";
 @use "../../../styles/breakpoints";
 
-$card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
-
 .leaderboard {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 413px);
@@ -27,38 +25,25 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
     line-height: 0.95;
   }
 }
-.textPlaceholder {
-  display: grid;
-  gap: 8px;
+.description {
+  max-width: 353px;
   margin-top: 28px;
-  span {
-    height: 16px;
-    background: tokens.$placeholder;
-  }
-  span:nth-child(1) {
-    width: 298px;
-  }
-  span:nth-child(2) {
-    width: 337px;
-  }
-  span:nth-child(3) {
-    width: 214px;
-  }
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-md;
+  line-height: 26px;
 }
-.imagePlaceholder {
+.illustration {
   flex-shrink: 0;
   width: 185px;
-  height: 184px;
+  height: auto;
   margin-right: 112px;
-  @include patterns.image-placeholder;
-  border-width: 1px;
 }
 
 .card {
   padding: 24px 26px;
   border-radius: 8px;
   background: tokens.$surface;
-  box-shadow: $card-shadow;
+  box-shadow: tokens.$shadow-question;
   h2 {
     display: flex;
     align-items: center;
@@ -91,7 +76,7 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   border-radius: tokens.$radius-circle;
   background: var(--primary);
   color: tokens.$surface;
-  box-shadow: $card-shadow;
+  box-shadow: 0 4px 10px 5px rgb(92 77 228 / 25%);
 }
 .rankText {
   display: grid;
@@ -217,7 +202,7 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   color: #d8955e;
 }
 .player {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 16px;
 }
@@ -325,12 +310,12 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
       "side"
       "note";
   }
-  .imagePlaceholder {
+  .illustration {
     margin-right: 0;
   }
 }
 @include breakpoints.down(md) {
-  .imagePlaceholder {
+  .illustration {
     display: none;
   }
   .intro h1 {
@@ -341,6 +326,203 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
     td:first-child {
       width: 80px;
       padding-left: 16px;
+    }
+  }
+}
+
+// D8 desktop measurements; existing narrow-screen layout stays in place.
+@media (min-width: 1200px) {
+  .leaderboard {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 413px);
+    grid-template-areas:
+      "intro rank"
+      "table side"
+      "note note";
+  }
+  .intro {
+    position: relative;
+    display: block;
+    min-height: 206px;
+    padding: 0 0 0 12px;
+    h1 {
+      color: tokens.$text-heading;
+      font-size: tokens.$font-size-7xl;
+      font-weight: 600;
+      line-height: 59px;
+      white-space: nowrap;
+      span {
+        color: tokens.$primary;
+      }
+    }
+  }
+  .description {
+    margin-top: 6px;
+  }
+  .illustration {
+    position: absolute;
+    right: 18px;
+    bottom: -32px;
+    width: clamp(130px, calc(100vw - 1086px), 354px);
+    height: auto;
+    margin: 0;
+    pointer-events: none;
+  }
+  .card {
+    border-radius: tokens.$radius-control;
+    h2 {
+      color: tokens.$text-heading;
+      font-weight: 700;
+      svg {
+        color: tokens.$primary;
+        flex-shrink: 0;
+      }
+    }
+  }
+  .rankRow {
+    height: 66px;
+    margin-top: 16px;
+    border-radius: tokens.$radius-control;
+    box-shadow: tokens.$shadow-design-card;
+    color: tokens.$text-heading;
+    font-size: tokens.$font-size-md;
+  }
+  .avatar {
+    margin-left: 5px;
+    border-width: 10px;
+  }
+  .rankText {
+    strong {
+      font-weight: 500;
+    }
+    span {
+      font-size: tokens.$font-size-label;
+    }
+  }
+  .points {
+    font-weight: 500;
+  }
+  .scope button {
+    color: tokens.$text-body;
+    font-weight: 400;
+    &[aria-pressed="true"] {
+      color: tokens.$surface;
+      font-weight: 500;
+    }
+  }
+  .table {
+    th {
+      padding-block: 8px;
+    }
+    td {
+      position: relative;
+      z-index: 1;
+      border: 0;
+      color: tokens.$text-heading;
+    }
+    th:first-child,
+    td:first-child {
+      width: 157px;
+    }
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 146px;
+    }
+    // The current row (below) overrides these by source order.
+    td:nth-child(3),
+    td:nth-child(4) {
+      color: tokens.$text-body;
+      font-weight: 500;
+    }
+    // Decorations live on cells: a pseudo-element on <tr> becomes an extra
+    // table cell in Chrome and shifts the columns.
+    tbody tr:not(:last-child, .currentRow):not(:has(+ .currentRow)) td {
+      &::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0;
+        height: 1px;
+        background: tokens.$border;
+        pointer-events: none;
+      }
+      &:first-child::after {
+        left: 32px;
+      }
+      &:last-child::after {
+        right: 34px;
+      }
+    }
+    .currentRow {
+      td {
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        color: tokens.$primary;
+        font-weight: 800;
+        &::before {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          // 43px tall over the 42px row, the same in every cell.
+          inset: 0 0 -1px;
+          box-sizing: border-box;
+          border-block: 2px solid tokens.$primary;
+          background: tokens.$primary-tint;
+          pointer-events: none;
+        }
+        &:first-child::before {
+          left: 25px;
+          border-left: 2px solid tokens.$primary;
+          border-radius: tokens.$radius-control 0 0 tokens.$radius-control;
+        }
+        &:last-child::before {
+          right: 21px;
+          border-right: 2px solid tokens.$primary;
+          border-radius: 0 tokens.$radius-control tokens.$radius-control 0;
+        }
+      }
+    }
+  }
+  .player {
+    gap: 19px;
+    font-weight: 500;
+  }
+  .currentRow .player {
+    font-weight: 800;
+  }
+  .gold {
+    color: #ffd978;
+  }
+  .silver {
+    color: #b3bcd4;
+  }
+  .bronze {
+    color: #d5a37d;
+  }
+  .viewAll {
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .tiles {
+    gap: 11px 15px;
+    margin-top: 20px;
+  }
+  .tile {
+    min-height: 60px;
+    // Artwork sits at the left edge and the label follows it, as in the
+    // design; a tile without artwork (All categories) stays centred.
+    justify-content: flex-start;
+    padding: 0 6px;
+    gap: 7px;
+    border-radius: tokens.$radius-control;
+    color: tokens.$text-heading;
+    font-weight: 400;
+    overflow-wrap: anywhere;
+    &:not(:has(img)) {
+      justify-content: center;
+    }
+    &[aria-pressed="true"] {
+      color: tokens.$surface;
+      font-weight: 500;
     }
   }
 }
