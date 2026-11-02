@@ -49,8 +49,8 @@ in an HttpOnly cookie; browser JavaScript receives only the session email and
 expiry. The session is verified through the backend after navigation or reload,
 and logout clears the cookie. The categories page uses the same server-side auth support.
 
-The decorative shape uses the supplied Figma export in `public/Vector.svg`.
-Category and benefit illustrations currently have empty reserved spaces.
+Landing page artwork (category illustrations, benefit icons, ranking and
+decorations) is exported from Figma frame `11:2` into `public/images/home/`.
 
 ## Categories workflow
 

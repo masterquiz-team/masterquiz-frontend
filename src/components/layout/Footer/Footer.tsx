@@ -7,7 +7,7 @@ export const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.content}>
-        <Brand />
+        <Brand as="h2" />
 
         <Navigation />
 

@@ -6,8 +6,6 @@ import {
   CategoriesList,
   CategoriesPreview,
 } from "./CategoriesStates";
-// Async server component: it loads its data on the server.
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { loadCategoriesScreen } from "../../server/load-categories-screen";
 import type { CategoriesQuery } from "../../screen-model";
 import styles from "./CategoriesScreen.module.scss";

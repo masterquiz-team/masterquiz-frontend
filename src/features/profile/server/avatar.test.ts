@@ -92,7 +92,7 @@ describe("avatar response", () => {
     );
     const response = await getAvatarResponse(new URLSearchParams("n=20"));
     expect(backendFetch).toHaveBeenCalledWith(
-      "/avatars/avatar-20.jpg",
+      "/avatars/avatar-20.png",
       {},
       "test-token",
       "image/*",

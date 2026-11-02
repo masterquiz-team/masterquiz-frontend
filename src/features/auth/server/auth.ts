@@ -4,8 +4,10 @@ import type { AuthFormMode, AuthValues } from "../types";
 import { isRegisteredUser, parseAuthError } from "../validators/responses";
 import { backendFetch } from "@/lib/backend/transport";
 import { isRecord } from "@/lib/validation";
+import { GENERIC_AUTH_ERROR, INCORRECT_CREDENTIALS } from "../utils/messages";
 import { authJson } from "./request";
 import { getSessionState, readTokenSession } from "@/lib/backend/session";
+import { getGuestUserId, getSessionToken } from "@/lib/backend/token";
 import { clearSessionCookie, setSessionCookie } from "./session";
 
 // Route Handlers validate HTTP input; this function owns the Java auth exchange.
@@ -19,37 +21,41 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
   try {
     const state = await getSessionState();
     invalidSession = state.status === "anonymous";
-    // Future guest-progress transfer must pass the guest explicitly in a
-    // dedicated field or separate request agreed with the backend, not via
-    // Authorization: a 401 could mean bad credentials or an invalid guest token.
+    // Registration keeps a guest's progress through the backend's
+    // guestUserId field, not Authorization: a 401 could then mean bad
+    // credentials or an invalid guest token.
+    const guestToken =
+      state.status === "guest" ? await getSessionToken() : null;
+    const guestUserId =
+      mode === "register" && guestToken
+        ? await getGuestUserId(guestToken)
+        : null;
     const response = await backendFetch(`/${mode}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(
+        guestUserId === null ? payload : { ...payload, guestUserId },
+      ),
     });
     const result: unknown = await response.json().catch(() => null);
     if (!response.ok) {
+      // Credential rejection always uses product copy and never echoes
+      // Java's details, which could reveal whether an account exists.
+      if (mode === "login" && response.status === 401)
+        return replyJson({ message: INCORRECT_CREDENTIALS }, 401);
       const fallback =
-        mode === "login" && response.status === 401
-          ? "The email or password was not accepted."
-          : mode === "register" && response.status === 409
-            ? "An account with this email already exists."
-            : "The API rejected the request. Please check your details and try again.";
+        mode === "register" && response.status === 409
+          ? "An account with this email already exists."
+          : GENERIC_AUTH_ERROR;
       return replyJson(parseAuthError(result, fallback), response.status);
     }
     if (!isRecord(result)) {
-      return replyJson(
-        { message: "The API returned an unexpected response." },
-        502,
-      );
+      return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
     }
 
     if (mode === "register") {
       if (!isRegisteredUser(result)) {
-        return replyJson(
-          { message: "The API returned an unexpected response." },
-          502,
-        );
+        return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
       }
       const body = {
         user: {
@@ -98,10 +104,7 @@ export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
     const token = typeof result.token === "string" ? result.token : null;
     const session = token ? readTokenSession(token) : null;
     if (!token || !session) {
-      return replyJson(
-        { message: "The API returned an invalid login session." },
-        502,
-      );
+      return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
     }
     const reply = replyJson({ session });
     setSessionCookie(reply, token, session);

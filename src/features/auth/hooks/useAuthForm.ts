@@ -1,9 +1,14 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { ApiClientError } from "@/lib/api/client";
+import {
+  getAuthFieldState,
+  type AuthTouchedFields,
+} from "../utils/field-state";
 import { submitAuth } from "../services/auth";
 import { createAuthPayload, emptyAuthValues } from "../utils/form";
+import { GENERIC_AUTH_ERROR } from "../utils/messages";
 import { getAuthSuccessRedirect } from "../utils/redirect";
-import { validateAuthValues } from "../validators/auth";
 import type {
   AuthFeedback,
   AuthFieldErrors,
@@ -16,7 +21,18 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
   const [values, setValues] = useState(emptyAuthValues);
   const [pending, setPending] = useState(false);
   const [feedback, setFeedback] = useState<AuthFeedback | null>(null);
-  const [fieldErrors, setFieldErrors] = useState<AuthFieldErrors>({});
+  const [serverErrors, setServerErrors] = useState<AuthFieldErrors>({});
+  const [touched, setTouched] = useState<AuthTouchedFields>({});
+  const [submitted, setSubmitted] = useState(false);
+  // Memoized so the focus effect below only reruns when field errors change.
+  const {
+    validation,
+    errors: fieldErrors,
+    statuses: fieldStatuses,
+  } = useMemo(
+    () => getAuthFieldState(mode, values, touched, submitted, serverErrors),
+    [mode, values, touched, submitted, serverErrors],
+  );
   // This closes the gap before React renders disabled={pending}.
   const submitting = useRef(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -41,10 +57,11 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
     const payload = createAuthPayload(mode, values);
 
     setFeedback(null);
-    const validationErrors = validateAuthValues(mode, payload);
-    focusErrors.current = Object.keys(validationErrors).length > 0;
-    setFieldErrors(validationErrors);
-    if (Object.keys(validationErrors).length) return;
+    const hasErrors = Object.keys(validation).length > 0;
+    focusErrors.current = hasErrors;
+    setSubmitted(true);
+    setServerErrors({});
+    if (hasErrors) return;
 
     submitting.current = true;
     setPending(true);
@@ -52,7 +69,7 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
       const result = await submitAuth(mode, payload);
       if (!result.ok) {
         focusErrors.current = Boolean(result.error.fieldErrors);
-        setFieldErrors(result.error.fieldErrors ?? {});
+        setServerErrors(result.error.fieldErrors ?? {});
         setFeedback({
           kind: "error",
           message: result.error.message,
@@ -61,16 +78,20 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
         return;
       }
 
+      // Reset validation with the values so cleared fields don't flash red.
       setValues(emptyAuthValues);
+      setTouched({});
+      setSubmitted(false);
       router.replace(
         getAuthSuccessRedirect(result.signedIn ? "login" : mode, redirectTo),
       );
       // Refresh Server Components so the header reads the new cookie.
       router.refresh();
-    } catch {
+    } catch (cause) {
       setFeedback({
         kind: "error",
-        message: "Unable to reach the service. Please try again.",
+        message:
+          cause instanceof ApiClientError ? cause.message : GENERIC_AUTH_ERROR,
       });
     } finally {
       submitting.current = false;
@@ -80,7 +101,7 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
 
   function updateField(field: AuthFieldName, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
-    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+    setServerErrors((current) => ({ ...current, [field]: undefined }));
     setFeedback(null);
   }
 
@@ -90,6 +111,9 @@ export function useAuthForm(mode: AuthFormMode, redirectTo = "/") {
     pending,
     feedback,
     fieldErrors,
+    fieldStatuses,
+    blurField: (field: AuthFieldName) =>
+      setTouched((current) => ({ ...current, [field]: true })),
     updateField,
     handleSubmit,
   };

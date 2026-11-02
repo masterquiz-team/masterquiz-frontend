@@ -12,6 +12,10 @@
   white-space: nowrap;
 }
 
+.link {
+  color: tokens.$text-heading;
+}
+
 .link:hover {
   color: var(--primary);
 }

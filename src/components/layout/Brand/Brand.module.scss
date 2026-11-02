@@ -8,7 +8,6 @@
   gap: 16px;
   width: max-content;
   color: tokens.$text-heading;
-  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
   font-size: tokens.$font-size-3xl;
   font-weight: 600;
   line-height: 34px;
@@ -20,9 +19,14 @@
 }
 
 .mark {
+  // Layout box from Figma. The SVG is 54×54 because its stroke spills 2px
+  // past that box, so it is drawn larger with a negative margin.
+  --mark-size: 50px;
+
   flex: none;
-  width: 50px;
-  height: 50px;
+  width: calc(var(--mark-size) * 54 / 50);
+  height: calc(var(--mark-size) * 54 / 50);
+  margin: calc(var(--mark-size) * -2 / 50);
 }
 
 .quiz {
@@ -37,7 +41,6 @@
   }
 
   .mark {
-    width: 36px;
-    height: 36px;
+    --mark-size: 36px;
   }
 }

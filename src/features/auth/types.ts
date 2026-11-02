@@ -18,7 +18,7 @@ export type {
   GuestSession,
   AuthSession,
   AuthSessionState,
-} from "@/lib/backend/session";
+} from "@/lib/backend/session-types";
 
 export type UserProfile = {
   nickname: string | null;

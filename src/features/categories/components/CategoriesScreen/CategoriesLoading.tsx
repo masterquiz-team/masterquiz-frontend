@@ -3,7 +3,7 @@ import styles from "./CategoriesScreen.module.scss";
 export function CategoriesLoading() {
   return (
     <div className={styles.screen}>
-      <p className={styles.notice} role="status">
+      <p className={styles.loadingStatus} role="status">
         Loading categories…
       </p>
       <ul className={styles.grid} aria-hidden="true">

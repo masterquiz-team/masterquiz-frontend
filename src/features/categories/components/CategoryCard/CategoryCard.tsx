@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PlayLink } from "@/features/auth/components/PlayLink";
@@ -28,10 +29,18 @@ export function CategoryCard({
         )}
       </div>
       <h2 className={styles.title}>{name}</h2>
-      <div className={styles.descriptionPlaceholder} aria-hidden="true">
-        <span />
-        <span />
-      </div>
+      {artwork?.description && (
+        <p
+          className={styles.description}
+          style={
+            {
+              "--description-width": `${artwork.descriptionWidth}px`,
+            } as CSSProperties
+          }
+        >
+          {artwork.description}
+        </p>
+      )}
       {href && (
         <span className={styles.action} aria-hidden="true">
           <span className={styles.actionCircle}>

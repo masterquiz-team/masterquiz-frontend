@@ -1,9 +1,11 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
 
 .heading {
   max-width: 609px;
   margin-inline: auto;
+  color: tokens.$text-heading;
   font-size: tokens.$font-size-7xl;
   font-weight: 700;
   line-height: 58px;
@@ -15,16 +17,21 @@
   }
 }
 
+.screen {
+  // Gap between the heading and the grid, as in Figma.
+  margin-top: 62px;
+}
+
 .notice {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 62px;
-  padding-block: 10px;
+  margin-bottom: 16px;
   color: var(--muted);
   font-size: tokens.$font-size-sm;
   line-height: 20px;
   text-align: center;
+}
+
+.loadingStatus {
+  @include patterns.visually-hidden;
 }
 
 .screen a:not([class]) {
@@ -107,10 +114,6 @@
   .heading {
     font-size: tokens.$font-size-4xl;
     line-height: 40px;
-  }
-
-  .notice {
-    min-height: 80px;
   }
 
   .grid {

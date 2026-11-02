@@ -5,6 +5,7 @@ import { authJson } from "./request";
 import {
   guestTokenMarker,
   GUEST_COOKIE,
+  GUEST_ID_COOKIE,
   SESSION_COOKIE,
 } from "@/lib/backend/token";
 
@@ -60,4 +61,27 @@ it("sets a JWT-bound guest marker and clears it on user upgrade or logout", () =
       maxAge: 0,
       httpOnly: true,
     });
+});
+
+it("keeps the backend guest ID only for a guest session", () => {
+  const response = authJson({});
+  const token = jwt(claims);
+  setSessionCookie(response, token, readTokenSession(token, "guest")!, 42);
+  expect(response.cookies.get(GUEST_ID_COOKIE)).toMatchObject({
+    value: "42",
+    httpOnly: true,
+    sameSite: "lax",
+    path: "/",
+  });
+  setSessionCookie(response, token, readTokenSession(token)!, 42);
+  expect(response.cookies.get(GUEST_ID_COOKIE)).toMatchObject({
+    value: "",
+    maxAge: 0,
+  });
+  setSessionCookie(response, token, readTokenSession(token, "guest")!, 42);
+  clearSessionCookie(response);
+  expect(response.cookies.get(GUEST_ID_COOKIE)).toMatchObject({
+    value: "",
+    maxAge: 0,
+  });
 });
