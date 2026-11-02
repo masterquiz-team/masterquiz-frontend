@@ -9,7 +9,7 @@ import { profileBadges } from "@/features/achievements/badges";
 import { ProfileHero } from "./ProfileHero";
 import { PublicAsset } from "@/components/ui/PublicAsset";
 import { LevelProgress } from "./LevelProgress";
-import { formatProfileNumber } from "../format";
+import { formatNumber } from "@/lib/format";
 import styles from "./Profile.module.scss";
 
 export function ProfileScreen({
@@ -36,8 +36,8 @@ export function ProfileScreen({
                 <h3>{progress.current.title}</h3>
                 <p className={styles.points}>
                   {progress.next
-                    ? `${formatProfileNumber(account.score)} / ${formatProfileNumber(progress.next.minPoints)} pts`
-                    : `${formatProfileNumber(account.score)} pts`}
+                    ? `${formatNumber(account.score)} / ${formatNumber(progress.next.minPoints)} pts`
+                    : `${formatNumber(account.score)} pts`}
                 </p>
                 <LevelProgress
                   ratio={progress.ratio}
@@ -45,7 +45,7 @@ export function ProfileScreen({
                 />
                 <p className={styles.hint}>
                   {progress.next
-                    ? `${formatProfileNumber(progress.remaining)} points to level ${progress.next.number}`
+                    ? `${formatNumber(progress.remaining)} points to level ${progress.next.number}`
                     : "Max level reached"}
                 </p>
               </div>

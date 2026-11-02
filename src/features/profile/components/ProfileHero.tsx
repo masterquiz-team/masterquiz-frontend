@@ -8,7 +8,7 @@ import { ProfileAvatar } from "./ProfileAvatar";
 import { PublicAsset } from "@/components/ui/PublicAsset";
 import { NicknameForm } from "./NicknameForm";
 import { DeleteAccount } from "./DeleteAccount";
-import { formatProfileNumber } from "../format";
+import { formatNumber } from "@/lib/format";
 import styles from "./Profile.module.scss";
 
 export function ProfileHero({ account }: { account: Account }) {
@@ -72,7 +72,7 @@ export function ProfileHero({ account }: { account: Account }) {
                 <CountUp
                   value={stat.value}
                   from={0}
-                  format={formatProfileNumber}
+                  format={formatNumber}
                   duration={0.4}
                 />
               </dd>
