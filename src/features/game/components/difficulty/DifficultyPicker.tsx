@@ -10,6 +10,12 @@ import type { Category } from "@/features/categories/types";
 import { assets } from "../../assets/difficulty";
 import styles from "./Difficulty.module.scss";
 
+const descriptions: Record<Difficulty, string> = {
+  easy: "Perfect for beginners. Learn and get familiar with the topic.",
+  medium: "A good balance of challenge and fun. Test your knowledge.",
+  hard: "For true quiz masters. Expect tricky questions and deeper details.",
+};
+
 function ChoiceArtwork({ kind }: { kind: Difficulty }) {
   return (
     <span
@@ -65,12 +71,14 @@ export function DifficultyPicker({
         </div>
       )}
       <h1 id="difficulty-heading">Choose your difficulty</h1>
-      <div className={styles.headingBar} aria-hidden="true" />
+      <p className={styles.subtitle}>
+        Select the level that fits your knowledge and challenge yourself with
+        the best experience!
+      </p>
       <Stagger
         className={styles.difficultyGrid}
         role="group"
         aria-label="Difficulty"
-        aria-describedby="difficulty-note"
       >
         {difficulties.map((choice) => (
           <Link
@@ -79,13 +87,15 @@ export function DifficultyPicker({
             prefetch={false}
             className={`${styles.difficultyChoice} ${styles[choice.id]}`}
             aria-label={`${choice.label}: ${choice.questionCount} questions, about ${choice.durationMinutes} minutes`}
+            aria-describedby={`difficulty-${choice.id}-description`}
           >
             <ChoiceArtwork kind={choice.id} />
             <span className={styles.choiceTitle}>{choice.label}</span>
-            <span className={styles.choiceBars} aria-hidden="true">
-              <span />
-              <span />
-              <span />
+            <span
+              id={`difficulty-${choice.id}-description`}
+              className={styles.choiceDescription}
+            >
+              {descriptions[choice.id]}
             </span>
             <span className={styles.difficultyDetails} aria-hidden="true">
               <span>
@@ -103,10 +113,6 @@ export function DifficultyPicker({
           </Link>
         ))}
       </Stagger>
-      <p id="difficulty-note" className={styles.note}>
-        Next, pick a ready-made quiz or start a random one. The time limit
-        depends on the difficulty.
-      </p>
     </Reveal>
   );
 }

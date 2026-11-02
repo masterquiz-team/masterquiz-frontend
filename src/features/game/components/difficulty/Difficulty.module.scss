@@ -1,48 +1,60 @@
 @use "../../../../styles/tokens";
 @use "../../../../styles/patterns";
 
+// Top illustration slot from the Figma frame (globe group 288×253 at x581).
+$artwork-width: 288px;
+$artwork-height: 253px;
+$artwork-offset: -35px;
+
 .difficulty {
   display: flex;
   flex-direction: column;
   align-items: center;
 
   > h1 {
-    font-size: tokens.$font-size-6xl;
+    font-size: tokens.$font-size-5xl;
+    color: tokens.$text-heading;
     font-weight: 700;
     line-height: normal;
     text-align: center;
-    margin-top: -13px;
+    // The globe group overlaps the heading in the reference composition.
+    margin-top: -10px;
   }
 }
 .geographyArtwork {
   position: relative;
-  width: 264px;
-  height: 241px;
-  margin-top: -30px;
+  width: $artwork-width;
+  height: $artwork-height;
+  margin-top: $artwork-offset;
+  // The globe sits 5px right of the page centre in the frame.
+  transform: translateX(5px);
   .globeCrop {
     width: 198px;
     height: 204px;
-    left: 30px;
-    top: 23px;
+    left: 42px;
+    top: 29px;
   }
 }
 .geographyBackground {
   position: absolute;
-  left: 14px;
-  top: 16px;
+  left: 26px;
+  top: 22px;
   transform: rotate(8.44deg);
 }
-.headingBar {
-  width: min(577px, 100%);
-  height: 23px;
-  background: tokens.$placeholder;
-  margin-top: 16px;
+.subtitle {
+  max-width: 632px;
+  margin-top: 9px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-xl;
+  font-weight: 400;
+  line-height: normal;
+  text-align: center;
 }
 .difficultyGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 350px));
   gap: 32px;
-  margin-top: 67px;
+  margin-top: 44px;
   width: min(1114px, 100%);
   margin-left: 4px;
 }
@@ -59,8 +71,10 @@
   color: inherit;
   text-decoration: none;
   cursor: pointer;
+  box-shadow: tokens.$shadow-design-card;
   .choiceTitle {
     font-size: tokens.$font-size-4xl;
+    color: tokens.$text-heading;
     line-height: normal;
     font-weight: 600;
   }
@@ -151,18 +165,18 @@
     top: -53.17%;
   }
 }
-.choiceBars {
-  display: grid;
-  justify-items: center;
-  gap: 13px;
-  margin: 13px 0 21px;
-  span {
-    background: tokens.$placeholder;
-    width: 172px;
-    height: 17px;
-  }
-  span:last-child {
-    width: 109px;
+.choiceDescription {
+  width: 170px;
+  max-width: 100%;
+  margin: 10px 0 29px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-md;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: center;
+
+  .hard & {
+    width: 194px;
   }
 }
 .difficultyDetails {
@@ -172,6 +186,7 @@
   gap: 10px;
   width: 100%;
   min-height: 43px;
+  margin-top: auto;
   border-radius: tokens.$radius-control;
   font-size: tokens.$font-size-label;
   > span {
@@ -251,21 +266,14 @@
 .categoryArtwork {
   display: grid;
   place-items: center;
-  width: 264px;
-  height: 241px;
-  margin-top: -30px;
+  width: $artwork-width;
+  height: $artwork-height;
+  margin-top: $artwork-offset;
   p {
     color: var(--muted);
     font-size: tokens.$font-size-label;
     text-align: center;
   }
-}
-.note {
-  max-width: 850px;
-  margin-top: 24px;
-  color: var(--muted);
-  text-align: center;
-  font-size: tokens.$font-size-sm;
 }
 .state {
   @include patterns.state-card($layout: grid) {
@@ -283,5 +291,60 @@
   @include patterns.focus-ring($width: 3px);
 }
 .difficultyChoice:hover {
-  box-shadow: 0 0 0 3px var(--primary);
+  box-shadow:
+    tokens.$shadow-design-card,
+    0 0 0 3px var(--primary);
+}
+
+@media (max-width: 1279px) {
+  .screen {
+    padding-inline: 32px;
+  }
+}
+
+@media (max-width: 1199px) {
+  .difficultyGrid {
+    gap: 24px;
+    margin-left: 0;
+  }
+
+  .difficultyChoice {
+    padding-inline: 16px;
+  }
+
+  .difficultyDetails {
+    gap: 6px;
+    > span {
+      gap: 4px;
+    }
+  }
+}
+
+@media (max-width: 899px) {
+  .difficultyGrid {
+    grid-template-columns: repeat(2, minmax(0, 350px));
+    justify-content: center;
+  }
+
+  .difficultyChoice:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 100%;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 599px) {
+  .screen {
+    padding-inline: 20px;
+  }
+
+  .difficultyGrid {
+    grid-template-columns: minmax(0, 350px);
+  }
+
+  .category {
+    min-width: 0;
+    padding-inline: 16px;
+  }
 }
