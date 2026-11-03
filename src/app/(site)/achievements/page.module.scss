@@ -9,3 +9,12 @@
     padding-block: 24px 48px;
   }
 }
+
+@media (min-width: 1200px) {
+  .main {
+    width: min(1320px, calc(100% - 64px));
+    // The design puts Back 3px into the 130px header area.
+    margin-top: -3px;
+    padding-top: 0;
+  }
+}
