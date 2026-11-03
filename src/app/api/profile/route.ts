@@ -11,6 +11,7 @@ import {
   updateAvatar,
 } from "@/features/profile/server/account";
 import { validateNickname } from "@/lib/nickname";
+import { AVATAR_COUNT, isAvatar } from "@/features/profile/avatars";
 
 export function PUT(request: Request) {
   return apiResponse(
@@ -18,13 +19,11 @@ export function PUT(request: Request) {
       const body = await readMutation(request);
       if ("avatar" in body) {
         requireExactKeys(body, ["avatar"], "Only avatar is accepted.");
-        if (
-          typeof body.avatar !== "number" ||
-          !Number.isInteger(body.avatar) ||
-          body.avatar < 1 ||
-          body.avatar > 8
-        )
-          throw new ApiError(400, "Choose an avatar from 1 to 8.");
+        if (!isAvatar(body.avatar))
+          throw new ApiError(
+            400,
+            `Choose an avatar from 1 to ${AVATAR_COUNT}.`,
+          );
         return updateAvatar(body.avatar);
       }
       requireExactKeys(body, ["nickname"], "Only nickname is accepted.");

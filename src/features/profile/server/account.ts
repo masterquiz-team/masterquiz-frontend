@@ -10,6 +10,7 @@ import { getSessionToken, isGuestToken } from "@/lib/backend/token";
 import { isSessionStillValid, readTokenSession } from "@/lib/backend/session";
 import type { Account } from "../types";
 import { levelFromScore } from "../levels";
+import { AVATAR_SAVE_FAILED } from "../avatars";
 
 const countOrZero = (value: unknown): number =>
   Number.isSafeInteger(value) && (value as number) >= 0 ? (value as number) : 0;
@@ -127,24 +128,23 @@ export async function updateAvatar(avatar: number) {
   const session = token ? readTokenSession(token) : null;
   if (!session || session.kind !== "user")
     throw new ApiError(401, "Please log in to continue.");
-  const message = "Couldn't save your avatar. Please try again later.";
   try {
     const account = await backendRequest(
       "/user-profile",
       parseAccount,
       jsonBody("PUT", { email: session.email, avatarId: `avatar-${avatar}` }),
     );
-    if (account.avatar !== avatar) throw new ApiError(502, message);
+    if (account.avatar !== avatar) throw new ApiError(502, AVATAR_SAVE_FAILED);
     return account;
   } catch (error) {
     if (!(error instanceof ApiError)) throw error;
     // Java's error dispatch can return 401 even for an authenticated request.
     if (error.status === 401)
       throw (await isSessionStillValid())
-        ? new ApiError(409, message)
+        ? new ApiError(409, AVATAR_SAVE_FAILED)
         : new ApiError(401, "Please log in to continue.");
     if (error.status === 404)
       throw new ApiError(404, "This account no longer exists.");
-    throw new ApiError(error.status, message);
+    throw new ApiError(error.status, AVATAR_SAVE_FAILED);
   }
 }

@@ -1,5 +1,6 @@
 import { apiRequest } from "@/lib/api/client";
 import { parseAccount } from "../validators";
+import { AVATAR_SAVE_FAILED } from "../avatars";
 
 const messages = {
   fallbackMessage: "The account could not be updated. Please try again.",
@@ -27,8 +28,8 @@ export const removeAccount = () =>
 
 export const saveAvatar = (avatar: number) =>
   apiRequest("/api/profile", {
-    fallbackMessage: "Couldn't save your avatar. Please try again later.",
-    networkMessage: "Couldn't save your avatar. Please try again later.",
+    fallbackMessage: AVATAR_SAVE_FAILED,
+    networkMessage: AVATAR_SAVE_FAILED,
     method: "PUT",
     body: { avatar },
     parse: parseAccount,

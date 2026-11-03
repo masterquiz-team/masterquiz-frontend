@@ -15,6 +15,13 @@ import styles from "./Profile.module.scss";
 export function ProfileHero({ account }: { account: Account }) {
   const { handleLogout, pending, error } = useLogout();
   const [pickingAvatar, setPickingAvatar] = useState(false);
+  // The saved avatar shows until router.refresh() brings a newer account.
+  const [saved, setSaved] = useState<{
+    avatar: number;
+    over: number | null;
+  } | null>(null);
+  const avatar =
+    saved && saved.over === account.avatar ? saved.avatar : account.avatar;
   const [editing, setEditing] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const close = useRef<HTMLButtonElement>(null);
@@ -46,7 +53,7 @@ export function ProfileHero({ account }: { account: Account }) {
   return (
     <section className={styles.hero} aria-labelledby="profile-name">
       <div className={styles.avatarWrap}>
-        <ProfileAvatar avatar={account.avatar} />
+        <ProfileAvatar avatar={avatar} />
         <button
           type="button"
           className={styles.pencil}
@@ -108,7 +115,8 @@ export function ProfileHero({ account }: { account: Account }) {
       </div>
       {pickingAvatar && (
         <AvatarPicker
-          current={account.avatar}
+          current={avatar}
+          onSaved={(next) => setSaved({ avatar: next, over: account.avatar })}
           onClose={() => setPickingAvatar(false)}
         />
       )}

@@ -505,6 +505,9 @@
 .textButton {
   @include patterns.primary-link;
   cursor: pointer;
+  &:disabled {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.6);
+  }
 }
 .successText {
   color: tokens.$success;

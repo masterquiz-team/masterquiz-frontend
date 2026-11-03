@@ -4,9 +4,8 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveAvatar } from "../services/profile";
 import { ApiClientError } from "@/lib/api/client";
+import { AVATARS, AVATAR_SAVE_FAILED } from "../avatars";
 import styles from "./Profile.module.scss";
-
-const failureMessage = "Couldn't save your avatar. Please try again later.";
 
 function Thumbnail({ avatar }: { avatar: number }) {
   const [failed, setFailed] = useState(false);
@@ -29,9 +28,11 @@ function Thumbnail({ avatar }: { avatar: number }) {
 
 export function AvatarPicker({
   current,
+  onSaved,
   onClose,
 }: {
   current: number | null;
+  onSaved: (avatar: number) => void;
   onClose: () => void;
 }) {
   const router = useRouter();
@@ -80,17 +81,22 @@ export function AvatarPicker({
     setPending(true);
     setError(null);
     try {
+      // The BFF fails unless Java returns this avatar, so it is saved.
       await saveAvatar(selected);
+      // Show it now; the refresh updates the server-rendered parts.
+      onSaved(selected);
       router.refresh();
       if (alive.current) onClose();
     } catch (cause) {
+      // A timeout or an odd response can hide a save that went through.
+      router.refresh();
       // Session and missing-account messages tell the user what to do next.
       if (alive.current)
         setError(
           cause instanceof ApiClientError &&
             (cause.status === 401 || cause.status === 404)
             ? cause.message
-            : failureMessage,
+            : AVATAR_SAVE_FAILED,
         );
     } finally {
       submitting.current = false;
@@ -106,6 +112,11 @@ export function AvatarPicker({
       onCancel={(event) => {
         event.preventDefault();
         requestClose();
+      }}
+      // Chrome can close a modal without a cancel event after repeated
+      // Escape presses; keep the parent in sync when that happens.
+      onClose={() => {
+        if (alive.current) onClose();
       }}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
@@ -133,6 +144,7 @@ export function AvatarPicker({
           type="button"
           className={styles.textButton}
           onClick={requestClose}
+          disabled={pending}
         >
           Close
         </button>
@@ -146,7 +158,7 @@ export function AvatarPicker({
       >
         <fieldset className={styles.avatarOptions} disabled={pending}>
           <legend className={styles.srOnly}>Choose your avatar</legend>
-          {Array.from({ length: 8 }, (_, index) => index + 1).map((avatar) => (
+          {AVATARS.map((avatar) => (
             <label key={avatar} className={styles.avatarOption}>
               <input
                 type="radio"
@@ -175,6 +187,7 @@ export function AvatarPicker({
             type="button"
             className={styles.textButton}
             onClick={requestClose}
+            disabled={pending}
           >
             Cancel
           </button>
