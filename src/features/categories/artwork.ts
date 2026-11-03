@@ -7,6 +7,8 @@ export const categoryArtwork: {
   // Text box width from Figma; it sets where the description wraps.
   descriptionWidth: number;
   illustration: string | null;
+  // Compact artwork for the leaderboard category tiles, at its design size.
+  tile?: { src: string; width: number; height: number };
 }[] = [
   {
     name: "Geography",
@@ -14,6 +16,11 @@ export const categoryArtwork: {
     descriptionWidth: 243,
     filename: "geography.svg",
     illustration: "/images/categories/geography.svg",
+    tile: {
+      src: "/images/leaderboard/categories/geography.svg",
+      width: 58,
+      height: 54,
+    },
   },
   {
     name: "History",
@@ -21,6 +28,11 @@ export const categoryArtwork: {
     descriptionWidth: 243,
     filename: "history.svg",
     illustration: "/images/categories/history.svg",
+    tile: {
+      src: "/images/leaderboard/categories/history.svg",
+      width: 61,
+      height: 49,
+    },
   },
   {
     name: "Science",
@@ -28,6 +40,11 @@ export const categoryArtwork: {
     descriptionWidth: 211,
     filename: "science.svg",
     illustration: "/images/categories/science.svg",
+    tile: {
+      src: "/images/leaderboard/categories/science.svg",
+      width: 60,
+      height: 52,
+    },
   },
   {
     name: "Sports",
@@ -35,6 +52,11 @@ export const categoryArtwork: {
     descriptionWidth: 207,
     filename: "sports.svg",
     illustration: "/images/categories/sports.svg",
+    tile: {
+      src: "/images/leaderboard/categories/sports.svg",
+      width: 56,
+      height: 48,
+    },
   },
   {
     name: "Entertainment",
@@ -42,6 +64,11 @@ export const categoryArtwork: {
     descriptionWidth: 156,
     filename: "entertainment.svg",
     illustration: "/images/categories/entertainment.svg",
+    tile: {
+      src: "/images/leaderboard/categories/entertainment.svg",
+      width: 57,
+      height: 58,
+    },
   },
   {
     name: "Technology",

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import { formatNumber } from "@/lib/format";
 import type { Category } from "@/features/categories/types";
 import { Stagger } from "@/components/ui/Entrance";
@@ -8,6 +8,19 @@ import { CrownIcon, MedalIcon, UserIcon } from "./LeaderboardIcons";
 import styles from "./Leaderboard.module.scss";
 
 const medal = ["gold", "silver", "bronze"] as const;
+
+const blankGif =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+// Desktop draws it at up to 354px wide, narrower screens at 185px.
+const { props: hero } = getImageProps({
+  src: "/images/leaderboard/hero-illustration.png",
+  alt: "",
+  width: 354,
+  height: 319,
+  loading: "eager",
+  sizes: "(min-width: 1201px) 354px, 185px",
+});
 
 function TableBody({
   board,
@@ -110,15 +123,11 @@ export function LeaderboardScreen({
             knowledge!
           </p>
         </div>
-        <Image
-          className={styles.illustration}
-          src="/images/leaderboard/hero-illustration.png"
-          alt=""
-          width={354}
-          height={319}
-          loading="eager"
-          sizes="(min-width: 1440px) 354px, (min-width: 1200px) calc(100vw - 1086px), 185px"
-        />
+        <picture>
+          {/* Hidden at md and below, so phones get a blank 1px GIF instead. */}
+          <source media="(max-width: 900px)" srcSet={blankGif} />
+          <img {...hero} alt="" className={styles.illustration} />
+        </picture>
       </header>
 
       <section

@@ -23,3 +23,16 @@ $widths: (
     @content;
   }
 }
+
+// Starts one pixel above down($breakpoint), so the two never both apply.
+@mixin up($breakpoint) {
+  $width: map.get($widths, $breakpoint);
+
+  @if $width == null {
+    @error "Unknown breakpoint: #{$breakpoint}";
+  }
+
+  @media (min-width: $width + 1px) {
+    @content;
+  }
+}

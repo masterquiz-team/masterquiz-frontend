@@ -10,16 +10,6 @@ import styles from "./Leaderboard.module.scss";
 
 const PREVIEW = 5;
 
-// Compact tile artwork from the leaderboard design, with its size there.
-// Other categories fall back to the shared category artwork.
-const tileArt: Partial<Record<string, readonly [number, number]>> = {
-  "geography.svg": [58, 54],
-  "science.svg": [60, 52],
-  "sports.svg": [56, 48],
-  "history.svg": [61, 49],
-  "entertainment.svg": [57, 58],
-};
-
 const hrefFor = (categoryId: number | null, demo: boolean) => {
   const query = new URLSearchParams();
   if (categoryId) query.set("category", String(categoryId));
@@ -80,6 +70,12 @@ export function CategoryTiles({
   const visible = expanded ? categories : categories.slice(0, PREVIEW);
   const tile = (id: number | null, name: string) => {
     const artwork = id ? getCategoryArtwork(name) : null;
+    // Categories without compact artwork use the shared illustration.
+    const art =
+      artwork?.tile ??
+      (artwork?.illustration
+        ? { src: artwork.illustration, width: 40, height: 35 }
+        : null);
     return (
       <li key={id ?? "all"}>
         <button
@@ -88,17 +84,8 @@ export function CategoryTiles({
           aria-pressed={selected === id}
           onClick={() => router.push(hrefFor(id, demo))}
         >
-          {artwork?.illustration && (
-            <Image
-              src={
-                tileArt[artwork.filename]
-                  ? `/images/leaderboard/categories/${artwork.filename}`
-                  : artwork.illustration
-              }
-              alt=""
-              width={tileArt[artwork.filename]?.[0] ?? 40}
-              height={tileArt[artwork.filename]?.[1] ?? 35}
-            />
+          {art && (
+            <Image src={art.src} alt="" width={art.width} height={art.height} />
           )}
           {name}
         </button>

@@ -2,6 +2,9 @@
 @use "../../../styles/patterns";
 @use "../../../styles/breakpoints";
 
+// Colours, type and shapes follow the design at every width. Only the
+// two-column desktop layout and its measurements sit under up(lg) below.
+
 .leaderboard {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 413px);
@@ -20,9 +23,13 @@
   gap: 32px;
   padding: 28px 0 0 12px;
   h1 {
+    color: tokens.$text-heading;
     font-size: tokens.$font-size-7xl;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 0.95;
+    span {
+      color: tokens.$primary;
+    }
   }
 }
 .description {
@@ -41,15 +48,20 @@
 
 .card {
   padding: 24px 26px;
-  border-radius: 8px;
+  border-radius: tokens.$radius-control;
   background: tokens.$surface;
   box-shadow: tokens.$shadow-question;
   h2 {
     display: flex;
     align-items: center;
     gap: 12px;
+    color: tokens.$text-heading;
     font-size: tokens.$font-size-md;
-    font-weight: 500;
+    font-weight: 700;
+    svg {
+      color: tokens.$primary;
+      flex-shrink: 0;
+    }
   }
 }
 .rankCard {
@@ -62,17 +74,22 @@
   gap: 8px;
   margin-top: 16px;
   padding-right: 16px;
-  border-radius: 8px;
+  border-radius: tokens.$radius-control;
   background: tokens.$primary-tint;
+  box-shadow: tokens.$shadow-design-card;
+  color: tokens.$text-heading;
+  font-size: tokens.$font-size-md;
 }
+// 80px circle over a 66px row: it overhangs by 7px at the top and bottom,
+// as in the design.
 .avatar {
   display: grid;
   place-items: center;
   flex-shrink: 0;
   width: 80px;
   height: 80px;
-  margin: -6px 0;
-  border: 7px solid tokens.$surface;
+  margin: -6px 0 -6px 5px;
+  border: 10px solid tokens.$surface;
   border-radius: tokens.$radius-circle;
   background: var(--primary);
   color: tokens.$surface;
@@ -84,14 +101,15 @@
   flex: 1;
   min-width: 0;
   strong {
-    font-weight: 400;
+    font-weight: 500;
     overflow-wrap: anywhere;
   }
   span {
-    font-size: tokens.$font-size-sm;
+    font-size: tokens.$font-size-label;
   }
 }
 .points {
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -116,10 +134,13 @@
     min-height: 35px;
     padding: 0 24px;
     border-radius: tokens.$radius-pill;
+    color: tokens.$text-body;
     font-size: tokens.$font-size-sm;
     cursor: pointer;
     &[aria-pressed="true"] {
       @include patterns.primary-button;
+      color: tokens.$surface;
+      font-weight: 500;
     }
     &:disabled {
       @include patterns.disabled-control($cursor: not-allowed);
@@ -166,14 +187,12 @@
   }
   td {
     height: 42px;
-    border-bottom: 1px solid tokens.$text-muted;
+    border-bottom: 1px solid tokens.$border;
+    color: tokens.$text-heading;
   }
   th:first-child,
   td:first-child {
     width: 125px;
-    padding-left: 48px;
-  }
-  td:first-child {
     padding-left: 48px;
   }
   th:nth-child(3),
@@ -182,6 +201,12 @@
   td:nth-child(4) {
     width: 140px;
     text-align: center;
+  }
+  // The current row (below) overrides these by source order.
+  td:nth-child(3),
+  td:nth-child(4) {
+    color: tokens.$text-body;
+    font-weight: 500;
   }
   tbody tr:last-child td {
     border-bottom: 0;
@@ -193,32 +218,37 @@
   gap: 18px;
 }
 .gold {
-  color: #e6c84f;
+  color: #ffd978;
 }
 .silver {
-  color: tokens.$accent-purple-soft;
+  color: #b3bcd4;
 }
 .bronze {
-  color: #d8955e;
+  color: #d5a37d;
 }
 .player {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 19px;
+  font-weight: 500;
 }
-.currentRow td {
+.table .currentRow td {
   border-top: 2px solid var(--primary);
   border-bottom: 2px solid var(--primary);
   background: tokens.$primary-tint;
   color: var(--primary);
+  font-weight: 800;
   &:first-child {
     border-left: 2px solid var(--primary);
-    border-radius: 8px 0 0 8px;
+    border-radius: tokens.$radius-control 0 0 tokens.$radius-control;
   }
   &:last-child {
     border-right: 2px solid var(--primary);
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 tokens.$radius-control tokens.$radius-control 0;
   }
+}
+.currentRow .player {
+  font-weight: 800;
 }
 .empty {
   padding: 64px 24px;
@@ -239,7 +269,8 @@
 }
 .viewAll {
   color: var(--primary);
-  font-size: tokens.$font-size-sm;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
 .tiles {
@@ -249,26 +280,35 @@
   margin-top: 20px;
   list-style: none;
 }
+// Artwork sits at the left edge and the label follows it, as in the design;
+// a tile without artwork (All categories) stays centred.
 .tile {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 7px;
   width: 100%;
-  min-height: 59px;
-  padding: 6px 10px;
-  border-radius: 8px;
+  min-height: 60px;
+  padding: 0 6px;
+  border-radius: tokens.$radius-control;
   background: tokens.$primary-tint;
+  color: tokens.$text-heading;
   font-size: tokens.$font-size-sm;
+  overflow-wrap: anywhere;
   cursor: pointer;
   img {
     flex-shrink: 0;
+  }
+  &:not(:has(img)) {
+    justify-content: center;
   }
   &:hover {
     box-shadow: inset 0 0 0 1px var(--primary);
   }
   &[aria-pressed="true"] {
     @include patterns.primary-button;
+    color: tokens.$surface;
+    font-weight: 500;
   }
 }
 .badges {
@@ -314,6 +354,7 @@
     margin-right: 0;
   }
 }
+// The hero <picture> in LeaderboardScreen skips the download at this width.
 @include breakpoints.down(md) {
   .illustration {
     display: none;
@@ -330,84 +371,40 @@
   }
 }
 
-// D8 desktop measurements; existing narrow-screen layout stays in place.
-@media (min-width: 1200px) {
-  .leaderboard {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 413px);
-    grid-template-areas:
-      "intro rank"
-      "table side"
-      "note note";
-  }
+// D8 desktop layout and measurements.
+@include breakpoints.up(lg) {
   .intro {
     position: relative;
     display: block;
     min-height: 206px;
     padding: 0 0 0 12px;
+    // The illustration is sized from this column, not from the viewport.
+    container-type: inline-size;
     h1 {
-      color: tokens.$text-heading;
-      font-size: tokens.$font-size-7xl;
-      font-weight: 600;
       line-height: 59px;
       white-space: nowrap;
-      span {
-        color: tokens.$primary;
-      }
     }
   }
   .description {
     margin-top: 6px;
   }
+  // In the design the illustration starts 23px after the 504px-wide heading
+  // and ends 18px before the column edge. Its left edge stays at that spot,
+  // so it shrinks with the column and never reaches the heading.
   .illustration {
     position: absolute;
     right: 18px;
     bottom: -32px;
-    width: clamp(130px, calc(100vw - 1086px), 354px);
+    width: clamp(0px, calc(100cqi - 545px), 354px);
     height: auto;
     margin: 0;
     pointer-events: none;
   }
-  .card {
-    border-radius: tokens.$radius-control;
-    h2 {
-      color: tokens.$text-heading;
-      font-weight: 700;
-      svg {
-        color: tokens.$primary;
-        flex-shrink: 0;
-      }
-    }
-  }
   .rankRow {
     height: 66px;
-    margin-top: 16px;
-    border-radius: tokens.$radius-control;
-    box-shadow: tokens.$shadow-design-card;
-    color: tokens.$text-heading;
-    font-size: tokens.$font-size-md;
-  }
-  .avatar {
-    margin-left: 5px;
-    border-width: 10px;
-  }
-  .rankText {
-    strong {
-      font-weight: 500;
-    }
-    span {
-      font-size: tokens.$font-size-label;
-    }
-  }
-  .points {
-    font-weight: 500;
   }
   .scope button {
-    color: tokens.$text-body;
     font-weight: 400;
-    &[aria-pressed="true"] {
-      color: tokens.$surface;
-      font-weight: 500;
-    }
   }
   .table {
     th {
@@ -417,7 +414,6 @@
       position: relative;
       z-index: 1;
       border: 0;
-      color: tokens.$text-heading;
     }
     th:first-child,
     td:first-child {
@@ -426,12 +422,6 @@
     th:nth-child(4),
     td:nth-child(4) {
       width: 146px;
-    }
-    // The current row (below) overrides these by source order.
-    td:nth-child(3),
-    td:nth-child(4) {
-      color: tokens.$text-body;
-      font-weight: 500;
     }
     // Decorations live on cells: a pseudo-element on <tr> becomes an extra
     // table cell in Chrome and shifts the columns.
@@ -453,11 +443,15 @@
     }
     .currentRow {
       td {
-        border: 0;
-        border-radius: 0;
         background: transparent;
-        color: tokens.$primary;
-        font-weight: 800;
+        // Beats the narrow-screen cell borders, :first-child and :last-child
+        // included; the outline below replaces them.
+        &,
+        &:first-child,
+        &:last-child {
+          border: 0;
+          border-radius: 0;
+        }
         &::before {
           content: "";
           position: absolute;
@@ -482,47 +476,7 @@
       }
     }
   }
-  .player {
-    gap: 19px;
-    font-weight: 500;
-  }
-  .currentRow .player {
-    font-weight: 800;
-  }
-  .gold {
-    color: #ffd978;
-  }
-  .silver {
-    color: #b3bcd4;
-  }
-  .bronze {
-    color: #d5a37d;
-  }
-  .viewAll {
-    font-size: 13px;
-    font-weight: 500;
-  }
   .tiles {
     gap: 11px 15px;
-    margin-top: 20px;
-  }
-  .tile {
-    min-height: 60px;
-    // Artwork sits at the left edge and the label follows it, as in the
-    // design; a tile without artwork (All categories) stays centred.
-    justify-content: flex-start;
-    padding: 0 6px;
-    gap: 7px;
-    border-radius: tokens.$radius-control;
-    color: tokens.$text-heading;
-    font-weight: 400;
-    overflow-wrap: anywhere;
-    &:not(:has(img)) {
-      justify-content: center;
-    }
-    &[aria-pressed="true"] {
-      color: tokens.$surface;
-      font-weight: 500;
-    }
   }
 }

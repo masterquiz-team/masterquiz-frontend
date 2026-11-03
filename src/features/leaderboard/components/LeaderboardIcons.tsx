@@ -22,6 +22,9 @@ export function CrownIcon({ size = 26 }: { size?: number }) {
 }
 
 // strokeWidth is in rendered pixels, independent of the landing's 41px viewBox.
+// The stroke is centred on the outline and may spill past the box: in the
+// design the current-row icon is a 25px circle with a 3px stroke, 28px wide
+// in total, so overflow stays visible on purpose.
 export function UserIcon({
   size = 28,
   strokeWidth = 1,
