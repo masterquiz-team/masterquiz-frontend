@@ -118,3 +118,33 @@ export function deleteAccount() {
     "Accounts with quiz history cannot be deleted yet. Your session has been kept.",
   );
 }
+
+// Avatar updates omit nickname: Java's mapper preserves omitted fields.
+export async function updateAvatar(avatar: number) {
+  const token = await getSessionToken();
+  if (token && (await isGuestToken(token)))
+    throw new ApiError(403, "Register to manage your profile.");
+  const session = token ? readTokenSession(token) : null;
+  if (!session || session.kind !== "user")
+    throw new ApiError(401, "Please log in to continue.");
+  const message = "Couldn't save your avatar. Please try again later.";
+  try {
+    const account = await backendRequest(
+      "/user-profile",
+      parseAccount,
+      jsonBody("PUT", { email: session.email, avatarId: `avatar-${avatar}` }),
+    );
+    if (account.avatar !== avatar) throw new ApiError(502, message);
+    return account;
+  } catch (error) {
+    if (!(error instanceof ApiError)) throw error;
+    // Java's error dispatch can return 401 even for an authenticated request.
+    if (error.status === 401)
+      throw (await isSessionStillValid())
+        ? new ApiError(409, message)
+        : new ApiError(401, "Please log in to continue.");
+    if (error.status === 404)
+      throw new ApiError(404, "This account no longer exists.");
+    throw new ApiError(error.status, message);
+  }
+}

@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { CountUp } from "@/components/ui/CountUp";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import type { Account } from "../types";
+import { AvatarPicker } from "./AvatarPicker";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { PublicAsset } from "@/components/ui/PublicAsset";
 import { NicknameForm } from "./NicknameForm";
@@ -13,6 +14,7 @@ import styles from "./Profile.module.scss";
 
 export function ProfileHero({ account }: { account: Account }) {
   const { handleLogout, pending, error } = useLogout();
+  const [pickingAvatar, setPickingAvatar] = useState(false);
   const [editing, setEditing] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const close = useRef<HTMLButtonElement>(null);
@@ -48,8 +50,8 @@ export function ProfileHero({ account }: { account: Account }) {
         <button
           type="button"
           className={styles.pencil}
-          aria-label="Edit profile"
-          onClick={() => setEditing(true)}
+          aria-label="Change avatar"
+          onClick={() => setPickingAvatar(true)}
         >
           <PublicAsset src="/images/profile/avatar-edit-pencil.svg" size={20} />
         </button>
@@ -104,6 +106,12 @@ export function ProfileHero({ account }: { account: Account }) {
           </p>
         )}
       </div>
+      {pickingAvatar && (
+        <AvatarPicker
+          current={account.avatar}
+          onClose={() => setPickingAvatar(false)}
+        />
+      )}
       <dialog
         ref={dialog}
         className={styles.editDialog}

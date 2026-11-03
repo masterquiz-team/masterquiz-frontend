@@ -8,6 +8,7 @@ import { clearSessionCookie } from "@/features/auth/server/session";
 import {
   deleteAccount,
   updateNickname,
+  updateAvatar,
 } from "@/features/profile/server/account";
 import { validateNickname } from "@/lib/nickname";
 
@@ -15,6 +16,17 @@ export function PUT(request: Request) {
   return apiResponse(
     async () => {
       const body = await readMutation(request);
+      if ("avatar" in body) {
+        requireExactKeys(body, ["avatar"], "Only avatar is accepted.");
+        if (
+          typeof body.avatar !== "number" ||
+          !Number.isInteger(body.avatar) ||
+          body.avatar < 1 ||
+          body.avatar > 8
+        )
+          throw new ApiError(400, "Choose an avatar from 1 to 8.");
+        return updateAvatar(body.avatar);
+      }
       requireExactKeys(body, ["nickname"], "Only nickname is accepted.");
       if (typeof body.nickname !== "string")
         throw new ApiError(400, "This field is required.");

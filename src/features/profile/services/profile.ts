@@ -24,3 +24,12 @@ export const removeAccount = () =>
     body: {},
     parse: () => undefined,
   });
+
+export const saveAvatar = (avatar: number) =>
+  apiRequest("/api/profile", {
+    fallbackMessage: "Couldn't save your avatar. Please try again later.",
+    networkMessage: "Couldn't save your avatar. Please try again later.",
+    method: "PUT",
+    body: { avatar },
+    parse: parseAccount,
+  });
