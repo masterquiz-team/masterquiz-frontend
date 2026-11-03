@@ -70,6 +70,8 @@ function isResult(value: unknown): value is GameResultAnswer {
     isId(value.questionId) &&
     isText(value.questionText) &&
     isNullableText(value.answerText) &&
+    Array.isArray(value.correctAnswers) &&
+    value.correctAnswers.every((text: unknown) => isText(text)) &&
     (value.outcome === "correct" ||
       value.outcome === "wrong" ||
       value.outcome === "skipped")
@@ -111,7 +113,7 @@ function isGameView(value: unknown): value is GameView {
     case "finished": {
       const summary = value.summary;
       return (
-        isNullableText(value.nickname) &&
+        value.attempt.status === "FINISHED" &&
         Array.isArray(value.results) &&
         value.results.every(isResult) &&
         isRecord(summary) &&
@@ -122,8 +124,7 @@ function isGameView(value: unknown): value is GameView {
         isNumber(summary.pointsEarned) &&
         isNumber(summary.maxPoints) &&
         isNumber(summary.elapsedSeconds) &&
-        isNumber(summary.durationSeconds) &&
-        (summary.totalScore === null || isNumber(summary.totalScore))
+        isNumber(summary.durationSeconds)
       );
     }
     default:

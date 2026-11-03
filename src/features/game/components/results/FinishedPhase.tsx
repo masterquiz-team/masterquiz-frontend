@@ -2,11 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Reveal } from "@/components/ui/Entrance";
 import { CountUp } from "@/components/ui/CountUp";
 import type { GamePhase } from "@/features/game/types";
-import { answerOutcomes, AnswerOutcomeIcon } from "./AnswerOutcome";
 import { ResultsAnswers } from "./ResultsAnswers";
 import { PlayAgain } from "./PlayAgain";
 import { gameStartOf } from "@/features/game/services/game";
@@ -43,33 +43,43 @@ export function FinishedPhase({
           <ResultsTrophy />
           <span className={styles.completed}>Quiz completed!</span>
           <h1 id="results-heading" tabIndex={-1} ref={heading}>
-            {game.nickname ? `Great job, ${game.nickname}!` : "Great job!"}
+            Great job!
           </h1>
           <p>
-            You&apos;ve finished the {game.category.name} quiz.
-            <br />
-            Here are your results:
+            You’ve finished the {game.category.name} quiz. Here are your
+            results:
           </p>
         </div>
         <dl className={styles.tiles}>
           <div className={styles.scoreTile}>
             <dt>
-              <span aria-hidden="true">☆</span> Score
+              <Image
+                src="/images/results/metric-score.svg"
+                width={23}
+                height={23}
+                alt=""
+                aria-hidden="true"
+              />{" "}
+              Score
             </dt>
             <dd>
               <strong>
-                <CountUp value={summary.pointsEarned} from={0} duration={1} /> /{" "}
+                <CountUp value={summary.pointsEarned} from={0} duration={1} />/
                 {summary.maxPoints}
               </strong>
-              <span>
-                {summary.correct} correct{" "}
-                {summary.correct === 1 ? "answer" : "answers"}
-              </span>
+              <span>{summary.correct} correct</span>
             </dd>
           </div>
           <div className={styles.timeTile}>
             <dt>
-              <span aria-hidden="true">◷</span> Time
+              <Image
+                src="/images/results/metric-time.svg"
+                width={23}
+                height={23}
+                alt=""
+                aria-hidden="true"
+              />{" "}
+              Time
             </dt>
             <dd>
               <strong>
@@ -85,72 +95,41 @@ export function FinishedPhase({
           </div>
           <div className={styles.accuracyTile}>
             <dt>
-              <span aria-hidden="true">◎</span> Accuracy
+              <Image
+                src="/images/results/metric-accuracy.svg"
+                width={23}
+                height={23}
+                alt=""
+                aria-hidden="true"
+              />{" "}
+              Accuracy
             </dt>
             <dd>
               <strong>
                 <CountUp value={accuracy} from={0} duration={1} />%
               </strong>
               <span>
-                {summary.correct} / {summary.total}
+                {summary.correct}/{summary.total}
               </span>
             </dd>
           </div>
         </dl>
-        <p className={styles.totalScore}>
-          Your total score:{" "}
-          <strong>{summary.totalScore ?? "Unavailable"}</strong>
-        </p>
-        <section
-          className={styles.breakdown}
-          aria-labelledby="breakdown-heading"
-        >
-          <div className={styles.sectionHeading}>
-            <h2 id="breakdown-heading">Question breakdown</h2>
-            <span>{summary.total} questions</span>
-          </div>
-          <ol className={styles.questionGrid} role="list">
-            {results.map((answer, index) => (
-              <li key={answer.questionId}>
-                <a
-                  className={`${styles.questionNumber} ${styles[answer.outcome]}`}
-                  href={`#result-answer-${answer.questionId}`}
-                  aria-label={`Question ${index + 1}: ${answerOutcomes[answer.outcome].label}`}
-                >
-                  <span>{index + 1}</span>
-                  <AnswerOutcomeIcon outcome={answer.outcome} />
-                </a>
-              </li>
-            ))}
-          </ol>
-          <ul
-            className={styles.legend}
-            role="list"
-            aria-label="Answer status legend"
+        <div className={styles.actions}>
+          <Link
+            className={styles.goBack}
+            href={quizListHref(game.category.id, game.difficulty, page)}
           >
-            {Object.entries(answerOutcomes).map(
-              ([outcome, { label, icon }]) => (
-                <li key={outcome}>
-                  <span aria-hidden="true">{icon}</span> {label}
-                </li>
-              ),
-            )}
-          </ul>
-        </section>
-        <PlayAgain
-          target={gameStartOf(game)}
-          difficulty={game.difficulty}
-          page={page}
-          previousAttemptId={game.attempt.id}
-        />
-        <Link
-          className={styles.secondaryLink}
-          href={quizListHref(game.category.id, game.difficulty, page)}
-        >
-          Choose another quiz
-        </Link>
+            Go back
+          </Link>
+          <PlayAgain
+            target={gameStartOf(game)}
+            difficulty={game.difficulty}
+            page={page}
+            previousAttemptId={game.attempt.id}
+          />
+        </div>
       </section>
-      <ResultsAnswers results={results} summary={summary} />
+      <ResultsAnswers results={results} />
     </Reveal>
   );
 }

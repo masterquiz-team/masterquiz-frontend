@@ -46,18 +46,25 @@ const finished: GameView = {
     finishedAt: "2026-10-27T10:03:00",
   },
   phase: "finished",
-  nickname: null,
   results: [
     {
       questionId: 4,
       questionText: "Which option?",
+      correctAnswers: ["A"],
       answerText: "A",
       outcome: "correct",
     },
-    { questionId: 7, questionText: "Next?", answerText: "B", outcome: "wrong" },
+    {
+      questionId: 7,
+      questionText: "Next?",
+      answerText: "B",
+      outcome: "wrong",
+      correctAnswers: ["A"],
+    },
     {
       questionId: 8,
       questionText: "Skipped?",
+      correctAnswers: [],
       answerText: null,
       outcome: "skipped",
     },
@@ -70,7 +77,6 @@ const finished: GameView = {
     maxPoints: 100,
     elapsedSeconds: 180,
     durationSeconds: 300,
-    totalScore: null,
   },
 };
 const views: GameView[] = [
@@ -121,13 +127,25 @@ describe("parseGameView", () => {
         review: { ...review, explanation: "Because…" },
       }),
     ).toMatchObject({ review: { explanation: "Because…" } });
-    expect(
+  });
+
+  it.each(
+    [undefined, null, "A", [1], [""], [" "], ["A", null]].map(
+      (correctAnswers) => ({ correctAnswers }),
+    ),
+  )("rejects malformed correct answer text lists: %j", ({ correctAnswers }) => {
+    expect(() =>
       parseGameView({
         ...finished,
-        nickname: "Ada",
-        summary: { ...finished.summary, totalScore: 123 },
+        results: [{ ...finished.results[0], correctAnswers }],
       }),
-    ).toMatchObject({ nickname: "Ada", summary: { totalScore: 123 } });
+    ).toThrow("Unexpected game response");
+  });
+
+  it("rejects a finished view with an active attempt", () => {
+    expect(() => parseGameView({ ...finished, attempt })).toThrow(
+      "Unexpected game response",
+    );
   });
 
   it.each([
@@ -183,8 +201,6 @@ describe("parseGameView", () => {
       ...finished,
       summary: { ...finished.summary, durationSeconds: undefined },
     },
-    { ...finished, summary: { ...finished.summary, totalScore: Infinity } },
-    { ...finished, nickname: undefined },
   ])("rejects malformed view %j", (value) => {
     expect(() => parseGameView(value)).toThrow("Unexpected game response");
   });

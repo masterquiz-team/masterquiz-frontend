@@ -6,7 +6,6 @@ import {
   jsonBody,
 } from "@/lib/api/server";
 import { getCategory } from "@/features/categories/server/api";
-import { getUserProfile } from "@/features/auth/server/profile";
 import {
   parsePlayerOptions,
   parseRevealedOptions,
@@ -164,7 +163,7 @@ export async function reviewGame(
 ): Promise<GameView> {
   const current = buildGameView(context, history);
   if (current.phase === "finished" || current.phase === "timed-out")
-    return withTotalScore(current);
+    return withCorrectAnswers(current, context);
   const index = context.quiz.listOfQuestions.findIndex(
     (q) => q.id === questionId,
   );
@@ -183,17 +182,68 @@ export async function reviewGame(
   );
 }
 
-export async function withTotalScore(game: GameView): Promise<GameView> {
-  if (game.phase !== "finished") return game;
-  const profile = await getUserProfile();
-  return profile
-    ? {
-        ...game,
-        nickname: profile.nickname,
-        summary: { ...game.summary, totalScore: profile.score },
+// IDs and option text come exclusively from the ownership-checked server context.
+// A failed reveal degrades only its row; summary and replay remain available.
+export async function withCorrectAnswers(
+  game: GameView,
+  context: GameContext,
+): Promise<GameView> {
+  if (
+    game.phase !== "finished" ||
+    game.attempt.status !== "FINISHED" ||
+    context.attempt.status !== "FINISHED"
+  )
+    return game;
+  const texts = await Promise.all(
+    context.quiz.listOfQuestions.map(async (question, index) => {
+      try {
+        const revealed = await getRevealedOptions(question.id);
+        const options = context.options[index];
+        const correct = revealed.filter((option) => option.correct);
+        if (
+          !revealed.length ||
+          revealed.length !== options.length ||
+          new Set(revealed.map((option) => option.id)).size !==
+            revealed.length ||
+          !correct.length ||
+          revealed.some(
+            (option) => !options.some((player) => player.id === option.id),
+          )
+        )
+          invalidContract();
+        return correct.map(
+          (option) => options.find((player) => player.id === option.id)!.text,
+        );
+      } catch (error) {
+        // A dead session must not render a results page with silent holes.
+        if (
+          error instanceof ApiError &&
+          (error.status === 401 || error.status === 403)
+        )
+          throw error;
+        console.error(
+          `Correct answers unavailable for question ${question.id}`,
+          error instanceof ApiError ? error.status : error,
+        );
+        return [];
       }
-    : game;
+    }),
+  );
+  const byQuestion = new Map(
+    context.quiz.listOfQuestions.map((question, index) => [
+      question.id,
+      texts[index],
+    ]),
+  );
+  return {
+    ...game,
+    results: game.results.map((answer) => ({
+      ...answer,
+      correctAnswers: byQuestion.get(answer.questionId) ?? [],
+    })),
+  };
 }
+
 export async function loadGame(
   attemptId: number,
   reviewQuestionId?: number,
@@ -203,7 +253,7 @@ export async function loadGame(
     getHistory(attemptId),
   ]);
   return reviewQuestionId === undefined
-    ? withTotalScore(buildGameView(context, history))
+    ? withCorrectAnswers(buildGameView(context, history), context)
     : reviewGame(context, history, reviewQuestionId);
 }
 

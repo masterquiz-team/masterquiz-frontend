@@ -117,18 +117,19 @@ describe("buildGameView", () => {
         maxPoints: 100,
         elapsedSeconds: 300,
         durationSeconds: 300,
-        totalScore: null,
       },
     });
     if (view.phase !== "finished") throw new Error("Expected results");
     expect(view.results[9]).toEqual({
       questionId: 109,
+      correctAnswers: [],
       questionText: "Question 10?",
       answerText: null,
       outcome: "skipped",
     });
     expect(view.results[0]).toEqual({
       questionId: 100,
+      correctAnswers: [],
       questionText: "Question 1?",
       answerText: "A",
       outcome: "correct",

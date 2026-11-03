@@ -45,6 +45,7 @@ export type GameReview = {
   explanation: string | null;
 };
 export type GameResultAnswer = {
+  correctAnswers: string[];
   questionId: number;
   questionText: string;
   answerText: string | null;
@@ -68,7 +69,6 @@ export type GameView = GameBase &
     | { phase: "timed-out" }
     | {
         phase: "finished";
-        nickname: string | null;
         results: GameResultAnswer[];
         summary: {
           correct: number;
@@ -78,7 +78,6 @@ export type GameView = GameBase &
           maxPoints: number;
           elapsedSeconds: number;
           durationSeconds: number;
-          totalScore: number | null;
         };
       }
   );
