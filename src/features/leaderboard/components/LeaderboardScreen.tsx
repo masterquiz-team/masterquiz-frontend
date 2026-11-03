@@ -1,3 +1,5 @@
+import { getImageProps } from "next/image";
+import { formatNumber } from "@/lib/format";
 import type { Category } from "@/features/categories/types";
 import { Stagger } from "@/components/ui/Entrance";
 import type { Leaderboard } from "../types";
@@ -5,8 +7,20 @@ import { CategorySelect, CategoryTiles } from "./CategoryFilter";
 import { CrownIcon, MedalIcon, UserIcon } from "./LeaderboardIcons";
 import styles from "./Leaderboard.module.scss";
 
-const formatPoints = (value: number) => value.toLocaleString("en-US");
 const medal = ["gold", "silver", "bronze"] as const;
+
+const blankGif =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+// Desktop draws it at up to 354px wide, narrower screens at 185px.
+const { props: hero } = getImageProps({
+  src: "/images/leaderboard/hero-illustration.png",
+  alt: "",
+  width: 354,
+  height: 319,
+  loading: "eager",
+  sizes: "(min-width: 1201px) 354px, 185px",
+});
 
 function TableBody({
   board,
@@ -47,19 +61,19 @@ function TableBody({
                 {entry.rank}
                 {entry.rank <= 3 && (
                   <span className={styles[medal[entry.rank - 1]]}>
-                    <CrownIcon size={24} />
+                    <CrownIcon />
                   </span>
                 )}
               </span>
             </td>
             <td>
               <span className={styles.player}>
-                <UserIcon />
+                <UserIcon size={25} strokeWidth={entry.currentUser ? 3 : 1} />
                 {entry.nickname}
               </span>
             </td>
-            <td>{formatPoints(entry.score)}</td>
-            <td>{entry.gamesPlayed}</td>
+            <td>{formatNumber(entry.score)}</td>
+            <td>{formatNumber(entry.gamesPlayed)}</td>
           </tr>
         ))}
       </Stagger>
@@ -100,15 +114,20 @@ export function LeaderboardScreen({
           <h1>
             Leaderboard
             <br />
-            Play. Learn. Compete.
+            Play. Learn. <span>Compete.</span>
           </h1>
-          <div className={styles.textPlaceholder} aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </div>
+          <p className={styles.description}>
+            See how you rank against other players
+            <br />
+            from around the world. Climb the leaderboard and prove your
+            knowledge!
+          </p>
         </div>
-        <div className={styles.imagePlaceholder} aria-hidden="true" />
+        <picture>
+          {/* Hidden at md and below, so phones get a blank 1px GIF instead. */}
+          <source media="(max-width: 900px)" srcSet={blankGif} />
+          <img {...hero} alt="" className={styles.illustration} />
+        </picture>
       </header>
 
       <section
@@ -121,14 +140,14 @@ export function LeaderboardScreen({
         </h2>
         <div className={styles.rankRow}>
           <span className={styles.avatar}>
-            <UserIcon size={40} />
+            <UserIcon size={45} />
           </span>
           <span className={styles.rankText}>
             <strong>{demo ? "You" : (player.nickname ?? "You")}</strong>
             <span>{rank === undefined ? "Rank unavailable" : `#${rank}`}</span>
           </span>
           <span className={styles.points}>
-            {score === null ? "—" : `${formatPoints(score)} pts`}
+            {score === null ? "—" : `${formatNumber(score)} pts`}
           </span>
         </div>
       </section>

@@ -2,7 +2,8 @@
 @use "../../../styles/patterns";
 @use "../../../styles/breakpoints";
 
-$card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
+// Colours, type and shapes follow the design at every width. Only the
+// two-column desktop layout and its measurements sit under up(lg) below.
 
 .leaderboard {
   display: grid;
@@ -22,49 +23,45 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   gap: 32px;
   padding: 28px 0 0 12px;
   h1 {
+    color: tokens.$text-heading;
     font-size: tokens.$font-size-7xl;
-    font-weight: 700;
+    font-weight: 600;
     line-height: 0.95;
+    span {
+      color: tokens.$primary;
+    }
   }
 }
-.textPlaceholder {
-  display: grid;
-  gap: 8px;
+.description {
+  max-width: 353px;
   margin-top: 28px;
-  span {
-    height: 16px;
-    background: tokens.$placeholder;
-  }
-  span:nth-child(1) {
-    width: 298px;
-  }
-  span:nth-child(2) {
-    width: 337px;
-  }
-  span:nth-child(3) {
-    width: 214px;
-  }
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-md;
+  line-height: 26px;
 }
-.imagePlaceholder {
+.illustration {
   flex-shrink: 0;
   width: 185px;
-  height: 184px;
+  height: auto;
   margin-right: 112px;
-  @include patterns.image-placeholder;
-  border-width: 1px;
 }
 
 .card {
   padding: 24px 26px;
-  border-radius: 8px;
+  border-radius: tokens.$radius-control;
   background: tokens.$surface;
-  box-shadow: $card-shadow;
+  box-shadow: tokens.$shadow-question;
   h2 {
     display: flex;
     align-items: center;
     gap: 12px;
+    color: tokens.$text-heading;
     font-size: tokens.$font-size-md;
-    font-weight: 500;
+    font-weight: 700;
+    svg {
+      color: tokens.$primary;
+      flex-shrink: 0;
+    }
   }
 }
 .rankCard {
@@ -77,21 +74,26 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   gap: 8px;
   margin-top: 16px;
   padding-right: 16px;
-  border-radius: 8px;
+  border-radius: tokens.$radius-control;
   background: tokens.$primary-tint;
+  box-shadow: tokens.$shadow-design-card;
+  color: tokens.$text-heading;
+  font-size: tokens.$font-size-md;
 }
+// 80px circle over a 66px row: it overhangs by 7px at the top and bottom,
+// as in the design.
 .avatar {
   display: grid;
   place-items: center;
   flex-shrink: 0;
   width: 80px;
   height: 80px;
-  margin: -6px 0;
-  border: 7px solid tokens.$surface;
+  margin: -6px 0 -6px 5px;
+  border: 10px solid tokens.$surface;
   border-radius: tokens.$radius-circle;
   background: var(--primary);
   color: tokens.$surface;
-  box-shadow: $card-shadow;
+  box-shadow: 0 4px 10px 5px rgb(92 77 228 / 25%);
 }
 .rankText {
   display: grid;
@@ -99,14 +101,15 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   flex: 1;
   min-width: 0;
   strong {
-    font-weight: 400;
+    font-weight: 500;
     overflow-wrap: anywhere;
   }
   span {
-    font-size: tokens.$font-size-sm;
+    font-size: tokens.$font-size-label;
   }
 }
 .points {
+  font-weight: 500;
   white-space: nowrap;
 }
 
@@ -131,10 +134,13 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
     min-height: 35px;
     padding: 0 24px;
     border-radius: tokens.$radius-pill;
+    color: tokens.$text-body;
     font-size: tokens.$font-size-sm;
     cursor: pointer;
     &[aria-pressed="true"] {
       @include patterns.primary-button;
+      color: tokens.$surface;
+      font-weight: 500;
     }
     &:disabled {
       @include patterns.disabled-control($cursor: not-allowed);
@@ -181,14 +187,12 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   }
   td {
     height: 42px;
-    border-bottom: 1px solid tokens.$text-muted;
+    border-bottom: 1px solid tokens.$border;
+    color: tokens.$text-heading;
   }
   th:first-child,
   td:first-child {
     width: 125px;
-    padding-left: 48px;
-  }
-  td:first-child {
     padding-left: 48px;
   }
   th:nth-child(3),
@@ -197,6 +201,12 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   td:nth-child(4) {
     width: 140px;
     text-align: center;
+  }
+  // The current row (below) overrides these by source order.
+  td:nth-child(3),
+  td:nth-child(4) {
+    color: tokens.$text-body;
+    font-weight: 500;
   }
   tbody tr:last-child td {
     border-bottom: 0;
@@ -208,32 +218,37 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   gap: 18px;
 }
 .gold {
-  color: #e6c84f;
+  color: #ffd978;
 }
 .silver {
-  color: tokens.$accent-purple-soft;
+  color: #b3bcd4;
 }
 .bronze {
-  color: #d8955e;
+  color: #d5a37d;
 }
 .player {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 19px;
+  font-weight: 500;
 }
-.currentRow td {
+.table .currentRow td {
   border-top: 2px solid var(--primary);
   border-bottom: 2px solid var(--primary);
   background: tokens.$primary-tint;
   color: var(--primary);
+  font-weight: 800;
   &:first-child {
     border-left: 2px solid var(--primary);
-    border-radius: 8px 0 0 8px;
+    border-radius: tokens.$radius-control 0 0 tokens.$radius-control;
   }
   &:last-child {
     border-right: 2px solid var(--primary);
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 tokens.$radius-control tokens.$radius-control 0;
   }
+}
+.currentRow .player {
+  font-weight: 800;
 }
 .empty {
   padding: 64px 24px;
@@ -254,7 +269,8 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
 }
 .viewAll {
   color: var(--primary);
-  font-size: tokens.$font-size-sm;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
 }
 .tiles {
@@ -264,26 +280,35 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
   margin-top: 20px;
   list-style: none;
 }
+// Artwork sits at the left edge and the label follows it, as in the design;
+// a tile without artwork (All categories) stays centred.
 .tile {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
+  justify-content: flex-start;
+  gap: 7px;
   width: 100%;
-  min-height: 59px;
-  padding: 6px 10px;
-  border-radius: 8px;
+  min-height: 60px;
+  padding: 0 6px;
+  border-radius: tokens.$radius-control;
   background: tokens.$primary-tint;
+  color: tokens.$text-heading;
   font-size: tokens.$font-size-sm;
+  overflow-wrap: anywhere;
   cursor: pointer;
   img {
     flex-shrink: 0;
+  }
+  &:not(:has(img)) {
+    justify-content: center;
   }
   &:hover {
     box-shadow: inset 0 0 0 1px var(--primary);
   }
   &[aria-pressed="true"] {
     @include patterns.primary-button;
+    color: tokens.$surface;
+    font-weight: 500;
   }
 }
 .badges {
@@ -325,12 +350,13 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
       "side"
       "note";
   }
-  .imagePlaceholder {
+  .illustration {
     margin-right: 0;
   }
 }
+// The hero <picture> in LeaderboardScreen skips the download at this width.
 @include breakpoints.down(md) {
-  .imagePlaceholder {
+  .illustration {
     display: none;
   }
   .intro h1 {
@@ -342,5 +368,115 @@ $card-shadow: 0 4px 10px 6px rgb(92 77 228 / 22%);
       width: 80px;
       padding-left: 16px;
     }
+  }
+}
+
+// D8 desktop layout and measurements.
+@include breakpoints.up(lg) {
+  .intro {
+    position: relative;
+    display: block;
+    min-height: 206px;
+    padding: 0 0 0 12px;
+    // The illustration is sized from this column, not from the viewport.
+    container-type: inline-size;
+    h1 {
+      line-height: 59px;
+      white-space: nowrap;
+    }
+  }
+  .description {
+    margin-top: 6px;
+  }
+  // In the design the illustration starts 23px after the 504px-wide heading
+  // and ends 18px before the column edge. Its left edge stays at that spot,
+  // so it shrinks with the column and never reaches the heading.
+  .illustration {
+    position: absolute;
+    right: 18px;
+    bottom: -32px;
+    width: clamp(0px, calc(100cqi - 545px), 354px);
+    height: auto;
+    margin: 0;
+    pointer-events: none;
+  }
+  .rankRow {
+    height: 66px;
+  }
+  .scope button {
+    font-weight: 400;
+  }
+  .table {
+    th {
+      padding-block: 8px;
+    }
+    td {
+      position: relative;
+      z-index: 1;
+      border: 0;
+    }
+    th:first-child,
+    td:first-child {
+      width: 157px;
+    }
+    th:nth-child(4),
+    td:nth-child(4) {
+      width: 146px;
+    }
+    // Decorations live on cells: a pseudo-element on <tr> becomes an extra
+    // table cell in Chrome and shifts the columns.
+    tbody tr:not(:last-child, .currentRow):not(:has(+ .currentRow)) td {
+      &::after {
+        content: "";
+        position: absolute;
+        inset: auto 0 0;
+        height: 1px;
+        background: tokens.$border;
+        pointer-events: none;
+      }
+      &:first-child::after {
+        left: 32px;
+      }
+      &:last-child::after {
+        right: 34px;
+      }
+    }
+    .currentRow {
+      td {
+        background: transparent;
+        // Beats the narrow-screen cell borders, :first-child and :last-child
+        // included; the outline below replaces them.
+        &,
+        &:first-child,
+        &:last-child {
+          border: 0;
+          border-radius: 0;
+        }
+        &::before {
+          content: "";
+          position: absolute;
+          z-index: -1;
+          // 43px tall over the 42px row, the same in every cell.
+          inset: 0 0 -1px;
+          box-sizing: border-box;
+          border-block: 2px solid tokens.$primary;
+          background: tokens.$primary-tint;
+          pointer-events: none;
+        }
+        &:first-child::before {
+          left: 25px;
+          border-left: 2px solid tokens.$primary;
+          border-radius: tokens.$radius-control 0 0 tokens.$radius-control;
+        }
+        &:last-child::before {
+          right: 21px;
+          border-right: 2px solid tokens.$primary;
+          border-radius: 0 tokens.$radius-control tokens.$radius-control 0;
+        }
+      }
+    }
+  }
+  .tiles {
+    gap: 11px 15px;
   }
 }

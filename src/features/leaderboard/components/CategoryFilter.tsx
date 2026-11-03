@@ -70,6 +70,12 @@ export function CategoryTiles({
   const visible = expanded ? categories : categories.slice(0, PREVIEW);
   const tile = (id: number | null, name: string) => {
     const artwork = id ? getCategoryArtwork(name) : null;
+    // Categories without compact artwork use the shared illustration.
+    const art =
+      artwork?.tile ??
+      (artwork?.illustration
+        ? { src: artwork.illustration, width: 40, height: 35 }
+        : null);
     return (
       <li key={id ?? "all"}>
         <button
@@ -78,8 +84,8 @@ export function CategoryTiles({
           aria-pressed={selected === id}
           onClick={() => router.push(hrefFor(id, demo))}
         >
-          {artwork?.illustration && (
-            <Image src={artwork.illustration} alt="" width={40} height={35} />
+          {art && (
+            <Image src={art.src} alt="" width={art.width} height={art.height} />
           )}
           {name}
         </button>
