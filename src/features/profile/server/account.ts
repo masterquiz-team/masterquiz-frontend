@@ -62,32 +62,63 @@ function parseAccount(value: unknown): Account {
   };
 }
 
+const SERVICE_FAILED =
+  "The account service could not complete this request. Please try again.";
+
+// Replaces the upstream message for a status. `refused` is used when Java
+// answers 401 although the session is still valid.
+type AccountMessages = {
+  400?: string;
+  401?: string;
+  403?: string;
+  404?: string;
+  refused?: string;
+  fallback?: string;
+};
+
+const DEFAULT_MESSAGES = {
+  400: "Check your username and try again.",
+  401: "Please log in to continue.",
+  403: "This account change was denied. Your session has been kept.",
+  404: "This account no longer exists.",
+  refused: SERVICE_FAILED,
+  fallback: SERVICE_FAILED,
+} satisfies Required<AccountMessages>;
+
 // Upstream messages can name internal entities; keep only the status.
 async function accountRequest<T>(
   path: string,
   parse: (value: unknown) => T,
   init?: RequestInit,
-  refusedMessage = "The account service could not complete this request. Please try again.",
+  overrides: AccountMessages = {},
 ) {
+  const messages = { ...DEFAULT_MESSAGES, ...overrides };
   try {
     return await backendRequest(path, parse, init);
   } catch (error) {
     if (!(error instanceof ApiError)) throw error;
+    // Java's error dispatch can return 401 even for an authenticated request.
     if (error.status === 401 && (await isSessionStillValid()))
-      throw new ApiError(409, refusedMessage);
+      throw new ApiError(409, messages.refused);
+    const status = error.status;
     throw new ApiError(
-      error.status,
-      error.status === 401
-        ? "Please log in to continue."
-        : error.status === 400
-          ? "Check your username and try again."
-          : error.status === 403
-            ? "This account change was denied. Your session has been kept."
-            : error.status === 404
-              ? "This account no longer exists."
-              : "The account service could not complete this request. Please try again.",
+      status,
+      status === 400 || status === 401 || status === 403 || status === 404
+        ? messages[status]
+        : messages.fallback,
     );
   }
+}
+
+// Profile changes need a registered user; the email comes from the token.
+async function requireUserSession() {
+  const token = await getSessionToken();
+  if (token && (await isGuestToken(token)))
+    throw new ApiError(403, "Register to manage your profile.");
+  const session = token ? readTokenSession(token) : null;
+  if (!session || session.kind !== "user")
+    throw new ApiError(401, "Please log in to continue.");
+  return session;
 }
 
 export function getAccount() {
@@ -97,12 +128,7 @@ export function getAccount() {
 // The backend checks that the email in the body matches the token subject.
 // Fields left out (the avatar) keep their current value.
 export async function updateNickname(nickname: string) {
-  const token = await getSessionToken();
-  if (token && (await isGuestToken(token)))
-    throw new ApiError(403, "Register to manage your profile.");
-  const session = token ? readTokenSession(token) : null;
-  if (!session || session.kind !== "user")
-    throw new ApiError(401, "Please log in to continue.");
+  const session = await requireUserSession();
   return accountRequest(
     "/user-profile",
     parseAccount,
@@ -116,35 +142,28 @@ export function deleteAccount() {
     () => null,
     { method: "DELETE" },
     // The backend cannot delete a user who has quiz attempts yet.
-    "Accounts with quiz history cannot be deleted yet. Your session has been kept.",
+    {
+      refused:
+        "Accounts with quiz history cannot be deleted yet. Your session has been kept.",
+    },
   );
 }
 
 // Avatar updates omit nickname: Java's mapper preserves omitted fields.
+// A dead session and a missing account keep their own messages.
 export async function updateAvatar(avatar: number) {
-  const token = await getSessionToken();
-  if (token && (await isGuestToken(token)))
-    throw new ApiError(403, "Register to manage your profile.");
-  const session = token ? readTokenSession(token) : null;
-  if (!session || session.kind !== "user")
-    throw new ApiError(401, "Please log in to continue.");
-  try {
-    const account = await backendRequest(
-      "/user-profile",
-      parseAccount,
-      jsonBody("PUT", { email: session.email, avatarId: `avatar-${avatar}` }),
-    );
-    if (account.avatar !== avatar) throw new ApiError(502, AVATAR_SAVE_FAILED);
-    return account;
-  } catch (error) {
-    if (!(error instanceof ApiError)) throw error;
-    // Java's error dispatch can return 401 even for an authenticated request.
-    if (error.status === 401)
-      throw (await isSessionStillValid())
-        ? new ApiError(409, AVATAR_SAVE_FAILED)
-        : new ApiError(401, "Please log in to continue.");
-    if (error.status === 404)
-      throw new ApiError(404, "This account no longer exists.");
-    throw new ApiError(error.status, AVATAR_SAVE_FAILED);
-  }
+  const session = await requireUserSession();
+  const account = await accountRequest(
+    "/user-profile",
+    parseAccount,
+    jsonBody("PUT", { email: session.email, avatarId: `avatar-${avatar}` }),
+    {
+      400: AVATAR_SAVE_FAILED,
+      403: AVATAR_SAVE_FAILED,
+      refused: AVATAR_SAVE_FAILED,
+      fallback: AVATAR_SAVE_FAILED,
+    },
+  );
+  if (account.avatar !== avatar) throw new ApiError(502, AVATAR_SAVE_FAILED);
+  return account;
 }

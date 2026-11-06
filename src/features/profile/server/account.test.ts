@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { updateNickname, updateAvatar } from "./account";
+import { deleteAccount, updateNickname, updateAvatar } from "./account";
 import {
   SESSION_COOKIE,
   GUEST_COOKIE,
@@ -153,3 +153,69 @@ it("rejects a successful response without an avatar", async () => {
   );
   await expect(updateAvatar(3)).rejects.toMatchObject({ status: 502 });
 });
+
+it.each([
+  [400, "Check your username and try again."],
+  [403, "This account change was denied. Your session has been kept."],
+  [404, "This account no longer exists."],
+  [
+    500,
+    "The account service could not complete this request. Please try again.",
+  ],
+])("keeps the nickname message for upstream %s", async (status, message) => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async () =>
+      Response.json({ message: "Internal details" }, { status }),
+    ),
+  );
+  await expect(updateNickname("New Name")).rejects.toMatchObject({
+    status,
+    message,
+  });
+});
+
+it("rejects guests before sending a nickname update", async () => {
+  const guest = `header.${Buffer.from(JSON.stringify({ sub: "guest:test", role: "GUEST", exp: Date.now() / 1000 + 3600 })).toString("base64url")}.signature`;
+  cookieGet.mockImplementation((name: string) =>
+    name === SESSION_COOKIE
+      ? { value: guest }
+      : name === GUEST_COOKIE
+        ? { value: guestTokenMarker(guest) }
+        : undefined,
+  );
+  const fetchMock = vi.fn();
+  vi.stubGlobal("fetch", fetchMock);
+  await expect(updateNickname("New Name")).rejects.toMatchObject({
+    status: 403,
+    message: "Register to manage your profile.",
+  });
+  expect(fetchMock).not.toHaveBeenCalled();
+});
+
+it.each([
+  [
+    "a nickname update",
+    () => updateNickname("New Name"),
+    "The account service could not complete this request. Please try again.",
+  ],
+  [
+    "an account deletion",
+    () => deleteAccount(),
+    "Accounts with quiz history cannot be deleted yet. Your session has been kept.",
+  ],
+])(
+  "keeps a valid session when Java masks %s as 401",
+  async (_, request, message) => {
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockResolvedValueOnce(
+          Response.json({ message: "Internal error" }, { status: 401 }),
+        )
+        .mockResolvedValueOnce(Response.json({ content: [] })),
+    );
+    await expect(request()).rejects.toMatchObject({ status: 409, message });
+  },
+);

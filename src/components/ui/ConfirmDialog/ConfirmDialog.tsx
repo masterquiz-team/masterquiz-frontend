@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useId, useRef, type ReactNode } from "react";
+import { useModalDialog } from "../useModalDialog";
 import styles from "./ConfirmDialog.module.scss";
 
 // Modal confirmation in the style of the game exit dialog. Cancel gets focus
@@ -27,30 +28,18 @@ export function ConfirmDialog({
   const ref = useRef<HTMLDialogElement>(null);
   const cancel = useRef<HTMLButtonElement>(null);
   const id = useId();
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!open || !dialog) return;
-    const previous =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    dialog.showModal();
-    cancel.current?.focus();
-    return () => {
-      dialog.close();
-      previous?.focus();
-    };
-  }, [open]);
+  useModalDialog(ref, {
+    open,
+    busy: pending,
+    onClose: onCancel,
+    initialFocus: () => cancel.current,
+  });
   return (
     <dialog
       ref={ref}
       className={styles.dialog}
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-body`}
-      onCancel={(event) => {
-        event.preventDefault();
-        if (!pending) onCancel();
-      }}
     >
       <h2 id={`${id}-title`} className={styles.title}>
         {title}
@@ -73,11 +62,15 @@ export function ConfirmDialog({
         >
           Cancel
         </button>
+        {/* Confirm keeps focus while pending, so it is not disabled. */}
         <button
           type="button"
           className={styles.confirm}
-          disabled={pending}
-          onClick={onConfirm}
+          aria-disabled={pending}
+          aria-busy={pending}
+          onClick={() => {
+            if (!pending) onConfirm();
+          }}
         >
           {pending ? "Please wait…" : confirmLabel}
         </button>
