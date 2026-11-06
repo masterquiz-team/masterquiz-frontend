@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { saveNickname, removeAccount } from "./profile";
+import { saveNickname, removeAccount, saveAvatar } from "./profile";
 import { ApiClientError, DEFAULT_API_TIMEOUT } from "@/lib/api/client";
 
 vi.mock("client-only", () => ({}));
@@ -65,5 +65,23 @@ it("deletes an account without requiring account fields in its response", async 
   expect(fetchMock).toHaveBeenCalledWith(
     "/api/profile",
     expect.objectContaining({ method: "DELETE", body: "{}" }),
+  );
+});
+
+it("saves an avatar through the profile PUT and parses the returned account", async () => {
+  const account = {
+    email: "ada@example.test",
+    nickname: "Ada",
+    score: 0,
+    totalGamesPlayed: 0,
+    level: 1,
+    avatar: 3,
+    streak: 0,
+  };
+  fetchMock.mockResolvedValue(Response.json(account));
+  await expect(saveAvatar(3)).resolves.toEqual(account);
+  expect(fetchMock).toHaveBeenCalledWith(
+    "/api/profile",
+    expect.objectContaining({ method: "PUT", body: '{"avatar":3}' }),
   );
 });
