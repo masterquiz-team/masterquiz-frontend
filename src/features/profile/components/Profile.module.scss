@@ -494,6 +494,9 @@
   &:disabled {
     @include patterns.disabled-control($opacity: 0.6);
   }
+  &[aria-disabled="true"] {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.6);
+  }
 }
 .primaryButton {
   @include patterns.primary-button;
@@ -668,10 +671,7 @@
   display: grid;
   cursor: pointer;
   input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
+    @include patterns.visually-hidden;
   }
   span {
     display: grid;
@@ -698,8 +698,7 @@
     @include patterns.focus-ring;
   }
   input:disabled + span {
-    cursor: wait;
-    opacity: 0.6;
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.6);
   }
 }
 @media (max-width: 450px) {

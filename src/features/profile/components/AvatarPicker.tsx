@@ -40,18 +40,17 @@ export function AvatarPicker({
   const close = useRef<HTMLButtonElement>(null);
   const alive = useRef(false);
   const submitting = useRef(false);
+  const attempted = useRef<number | null>(null);
+  const saveButton = useRef<HTMLButtonElement>(null);
   const id = useId();
   const [selected, setSelected] = useState(current);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Saving disables the controls, so give focus back once the error shows.
+  // The refresh after a failed save can show that it went through after all.
   useEffect(() => {
-    if (!error) return;
-    dialog.current
-      ?.querySelector<HTMLInputElement>("input:checked:not(:disabled)")
-      ?.focus();
-  }, [error]);
+    if (attempted.current !== null && current === attempted.current) onClose();
+  }, [current, onClose]);
 
   // A save in flight finishes before the dialog can close.
   const requestClose = () => {
@@ -78,6 +77,9 @@ export function AvatarPicker({
   async function save() {
     if (submitting.current || selected === null || selected === current) return;
     submitting.current = true;
+    attempted.current = selected;
+    // Saving disables the options; keep focus on Save, which stays focusable.
+    saveButton.current?.focus();
     setPending(true);
     setError(null);
     try {
@@ -114,9 +116,12 @@ export function AvatarPicker({
         requestClose();
       }}
       // Chrome can close a modal without a cancel event after repeated
-      // Escape presses; keep the parent in sync when that happens.
-      onClose={() => {
-        if (alive.current) onClose();
+      // Escape presses; keep the parent in sync when that happens. A close
+      // queued by an earlier unmount (Strict Mode) finds the dialog open again.
+      onClose={(event) => {
+        if (!alive.current || event.currentTarget.open) return;
+        if (submitting.current) event.currentTarget.showModal();
+        else onClose();
       }}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
@@ -192,9 +197,11 @@ export function AvatarPicker({
             Cancel
           </button>
           <button
+            ref={saveButton}
             type="submit"
             className={styles.primaryButton}
-            disabled={pending || selected === null || selected === current}
+            disabled={!pending && (selected === null || selected === current)}
+            aria-disabled={pending}
             aria-busy={pending}
           >
             {pending ? "Saving…" : "Save"}
