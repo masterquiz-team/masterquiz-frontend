@@ -11,7 +11,7 @@ import {
   getHistory,
   loadGameContext,
   withAttemptMutation,
-  withTotalScore,
+  withCorrectAnswers,
 } from "@/features/game/server/game";
 export function PUT(
   request: Request,
@@ -27,15 +27,16 @@ export function PUT(
         getHistory(id),
       ]);
       const game = buildGameView(context, history);
-      if (game.phase === "finished") return withTotalScore(game);
+      if (game.phase === "finished") return withCorrectAnswers(game, context);
       if (game.phase !== "ready-to-finish" && game.phase !== "timed-out")
         throw new ApiError(
           409,
           "Save all ten answers or wait until the time limit before finishing.",
         );
       const attempt = await finishAttempt(id);
-      return withTotalScore(
+      return withCorrectAnswers(
         buildGameView({ ...context, attempt }, await getHistory(id)),
+        { ...context, attempt },
       );
     });
   });

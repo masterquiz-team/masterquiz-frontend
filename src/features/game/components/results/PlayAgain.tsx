@@ -35,7 +35,6 @@ export function PlayAgain({
         {pending
           ? `Opening your ${getDifficulty(difficulty)?.label ?? ""} game…`
           : "Play again"}
-        {!pending && <span aria-hidden="true">→</span>}
       </button>
       {error && (
         <p role="alert" className={styles.startError}>

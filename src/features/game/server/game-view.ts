@@ -132,12 +132,12 @@ export function buildGameView(
     return {
       ...base,
       phase: "finished",
-      nickname: null,
-      // Only the player's own chosen text is revealed, after FINISHED. Never
-      // serialize the complete options, private feedback or correct-answer key.
+      // Correct texts are added separately by the finished-only server enrichment.
+      // Never serialize complete options or private feedback.
       results: quiz.listOfQuestions.map((question, index) => {
         const record = answered.get(index);
         return {
+          correctAnswers: [],
           questionId: question.id,
           questionText: question.text,
           answerText: record
@@ -166,7 +166,6 @@ export function buildGameView(
           Math.floor((finishedAt - startedAt) / 1000),
         ),
         durationSeconds,
-        totalScore: null,
       },
     };
   }
