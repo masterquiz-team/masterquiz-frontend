@@ -9,6 +9,8 @@ and pins pnpm 11.28.4. Tests use Vitest (`^5.0.5`).
 Run `pnpm install --frozen-lockfile`, copy [.env.example](.env.example) to
 `.env.local` if needed, then run `pnpm dev` and open <http://localhost:3000>.
 Run the Java backend separately; development defaults to <http://localhost:8080>.
+If you run the dev server on another port, update or remove `APP_ORIGIN` in
+`.env.local`, otherwise mutation requests fail the Origin check with 403.
 
 ## Commands
 
@@ -30,6 +32,8 @@ All commands below are scripts in [package.json](package.json).
 
 These are all environment variables read by application code; none uses a
 `NEXT_PUBLIC_` prefix. Keep local configuration in the project root.
+CI ([ci.yml](.github/workflows/ci.yml)) sets `BACKEND_API_URL` so the production
+build can run.
 
 | Variable          | Required?                                    | Purpose                                                                                                                                                                                                                                    |
 | ----------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -48,8 +52,9 @@ authorization, disables caching, and defaults to a 10-second timeout.
 
 [Authentication](src/features/auth/server/auth.ts) exchanges login/register
 payloads with Java without forwarding an existing bearer token.
-[Guest play](src/features/auth/server/guest.ts) creates a Java guest through
-`POST /api/auth/guest`; existing user/guest sessions are reused.
+[Guest play](src/features/auth/server/guest.ts) creates a Java guest: the browser
+calls the BFF `POST /api/auth/guest`, which calls Java `POST /guest`; existing
+user/guest sessions are reused.
 JWTs stay in the `masterquiz_session` cookie, with HttpOnly, SameSite=Lax,
 Path=/, expiry from JWT `exp`, and Secure in production. Guest sessions also
 use `masterquiz_guest` and `masterquiz_guest_id` cookies with the same flags;
