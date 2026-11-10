@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveAvatar } from "../services/profile";
 import { ApiClientError } from "@/lib/api/client";
-import { useModalDialog } from "@/components/ui/useModalDialog";
+import { Modal } from "@/components/ui/Modal";
 import { AVATARS, AVATAR_SAVE_FAILED } from "../avatars";
 import styles from "./Profile.module.scss";
 
@@ -37,7 +37,6 @@ export function AvatarPicker({
   onClose: () => void;
 }) {
   const router = useRouter();
-  const dialog = useRef<HTMLDialogElement>(null);
   const close = useRef<HTMLButtonElement>(null);
   const alive = useRef(false);
   const submitting = useRef(false);
@@ -64,13 +63,6 @@ export function AvatarPicker({
       alive.current = false;
     };
   }, []);
-
-  useModalDialog(dialog, {
-    busy: pending,
-    onClose: requestClose,
-    initialFocus: (element) =>
-      element.querySelector<HTMLInputElement>("input:checked") ?? close.current,
-  });
 
   async function save() {
     if (submitting.current || selected === null || selected === current) return;
@@ -105,8 +97,12 @@ export function AvatarPicker({
   }
 
   return (
-    <dialog
-      ref={dialog}
+    <Modal
+      busy={pending}
+      onClose={requestClose}
+      initialFocus={(dialog) =>
+        dialog.querySelector<HTMLInputElement>("input:checked") ?? close.current
+      }
       className={styles.editDialog}
       aria-labelledby={`${id}-title`}
     >
@@ -176,6 +172,6 @@ export function AvatarPicker({
           </button>
         </div>
       </form>
-    </dialog>
+    </Modal>
   );
 }

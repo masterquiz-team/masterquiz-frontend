@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, type ReactNode } from "react";
-import { useModalDialog } from "../useModalDialog";
+import { Modal } from "../Modal";
 import styles from "./ConfirmDialog.module.scss";
 
 // Modal confirmation in the style of the game exit dialog. Cancel gets focus
@@ -25,18 +25,14 @@ export function ConfirmDialog({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
-  const ref = useRef<HTMLDialogElement>(null);
   const cancel = useRef<HTMLButtonElement>(null);
   const id = useId();
-  useModalDialog(ref, {
-    open,
-    busy: pending,
-    onClose: onCancel,
-    initialFocus: () => cancel.current,
-  });
   return (
-    <dialog
-      ref={ref}
+    <Modal
+      open={open}
+      busy={pending}
+      onClose={onCancel}
+      initialFocus={() => cancel.current}
       className={styles.dialog}
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-body`}
@@ -75,6 +71,6 @@ export function ConfirmDialog({
           {pending ? "Please wait…" : confirmLabel}
         </button>
       </div>
-    </dialog>
+    </Modal>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import { CountUp } from "@/components/ui/CountUp";
-import { useModalDialog } from "@/components/ui/useModalDialog";
+import { Modal } from "@/components/ui/Modal";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import type { Account } from "../types";
 import { AvatarPicker } from "./AvatarPicker";
@@ -24,14 +24,8 @@ export function ProfileHero({ account }: { account: Account }) {
   const avatar =
     saved && saved.over === account.avatar ? saved.avatar : account.avatar;
   const [editing, setEditing] = useState(false);
-  const dialog = useRef<HTMLDialogElement>(null);
   const close = useRef<HTMLButtonElement>(null);
   const titleId = useId();
-  useModalDialog(dialog, {
-    open: editing,
-    onClose: () => setEditing(false),
-    initialFocus: () => close.current,
-  });
 
   const stats = [
     { label: "Total points", icon: "star", value: account.score },
@@ -112,8 +106,10 @@ export function ProfileHero({ account }: { account: Account }) {
           onClose={() => setPickingAvatar(false)}
         />
       )}
-      <dialog
-        ref={dialog}
+      <Modal
+        open={editing}
+        onClose={() => setEditing(false)}
+        initialFocus={() => close.current}
         className={styles.editDialog}
         aria-labelledby={titleId}
       >
@@ -139,7 +135,7 @@ export function ProfileHero({ account }: { account: Account }) {
         </label>
         <NicknameForm nickname={account.nickname} />
         <DeleteAccount />
-      </dialog>
+      </Modal>
     </section>
   );
 }

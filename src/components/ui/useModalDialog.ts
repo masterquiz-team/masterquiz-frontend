@@ -32,6 +32,16 @@ const radioOf = (element: HTMLElement): Radio | null =>
     ? element
     : null;
 
+export type ModalDialogOptions = {
+  open?: boolean;
+  // A busy dialog cannot be closed.
+  busy?: boolean;
+  onClose: () => void;
+  initialFocus?: (dialog: HTMLDialogElement) => HTMLElement | null;
+  // Gets focus on close when the element focused before opening is gone.
+  fallbackFocus?: () => HTMLElement | null;
+};
+
 // Opens a <dialog> as a modal while `open` is true. It focuses the initial
 // control, keeps Tab inside, and restores focus when it closes. Escape and a
 // native close call onClose unless the dialog is busy.
@@ -42,18 +52,15 @@ export function useModalDialog(
     busy = false,
     onClose,
     initialFocus,
-  }: {
-    open?: boolean;
-    busy?: boolean;
-    onClose: () => void;
-    initialFocus?: (dialog: HTMLDialogElement) => HTMLElement | null;
-  },
+    fallbackFocus,
+  }: ModalDialogOptions,
 ) {
   const isBusy = useEffectEvent(() => busy);
   const requestClose = useEffectEvent(() => onClose());
   const focusInitial = useEffectEvent((dialog: HTMLDialogElement) =>
     initialFocus?.(dialog)?.focus(),
   );
+  const focusFallback = useEffectEvent(() => fallbackFocus?.()?.focus());
 
   useEffect(() => {
     const dialog = ref.current;
@@ -112,6 +119,7 @@ export function useModalDialog(
       dialog.removeEventListener("keydown", handleKeyDown);
       dialog.close();
       if (previous?.isConnected) previous.focus();
+      else focusFallback();
     };
   }, [open, ref]);
 }
