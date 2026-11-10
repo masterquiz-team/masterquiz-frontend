@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useId, useRef } from "react";
+import { useId, useRef } from "react";
 import { DesignAsset } from "@/components/ui/DesignAsset";
+import { Modal } from "@/components/ui/Modal";
 import { assets } from "../../assets/play";
 import styles from "./Gameplay.module.scss";
 
@@ -13,40 +14,22 @@ export function ExitDialog({
   onCancel: () => void;
   onConfirm: () => void;
 }) {
-  const ref = useRef<HTMLDialogElement>(null);
   const cancel = useRef<HTMLButtonElement>(null);
   const id = useId();
-  useEffect(() => {
-    const dialog = ref.current;
-    if (!open || !dialog) return;
-    const previous =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    dialog.showModal();
-    cancel.current?.focus();
-    return () => {
-      dialog.close();
-      // The question can change while the modal is open (for example on timeout).
-      if (previous?.isConnected) previous.focus();
-      else
-        document
-          .querySelector<HTMLElement>(
-            'main h1[tabindex], main [role="alert"][tabindex]',
-          )
-          ?.focus();
-    };
-  }, [open]);
   return (
-    <dialog
-      ref={ref}
+    <Modal
+      open={open}
+      onClose={onCancel}
+      initialFocus={() => cancel.current}
+      // The question can change while the modal is open (for example on timeout).
+      fallbackFocus={() =>
+        document.querySelector<HTMLElement>(
+          'main h1[tabindex], main [role="alert"][tabindex]',
+        )
+      }
       className={styles.dialog}
       aria-labelledby={`${id}-title`}
       aria-describedby={`${id}-notice`}
-      onCancel={(event) => {
-        event.preventDefault();
-        onCancel();
-      }}
     >
       <button
         type="button"
@@ -86,6 +69,6 @@ export function ExitDialog({
           Yes, exit
         </button>
       </div>
-    </dialog>
+    </Modal>
   );
 }
