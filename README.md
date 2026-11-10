@@ -1,60 +1,59 @@
-# masterquiz-frontend
+# MasterQuiz frontend
 
-Frontend application for MasterQuiz — a team quiz platform
+Quiz frontend built with Next.js 16.3.8 App Router, React 19.2.8, TypeScript,
+and SCSS Modules. [package.json](package.json) requires Node.js `>=24 <25`
+and pins pnpm 11.28.4. Tests use Vitest (`^5.0.5`).
 
 ## Local development
 
-Use Node.js 24 and pnpm. Install dependencies with `pnpm install`, then start
-the frontend with `pnpm dev`. Open `http://localhost:3000`.
+Run `pnpm install --frozen-lockfile`, copy [.env.example](.env.example) to
+`.env.local` if needed, then run `pnpm dev` and open <http://localhost:3000>.
+Run the Java backend separately; development defaults to <http://localhost:8080>.
 
-## Scripts
+## Commands
 
-- `pnpm format:check` checks formatting; `pnpm format` rewrites it.
-- `pnpm lint` checks ESLint rules.
-- `pnpm typecheck` generates Next.js route types, then checks TypeScript.
-- `pnpm test` runs Vitest unit tests once with mocked backend requests.
-- `pnpm build` creates the production build; `pnpm start` serves it.
+All commands below are scripts in [package.json](package.json).
 
-Set `BACKEND_API_URL` explicitly for production. CI uses a placeholder URL and
-does not need a running Java backend. The tests cover request boundaries,
-session expiry, redirects, contract allowlists, and upstream error handling.
+| Command             | Purpose                                              |
+| ------------------- | ---------------------------------------------------- |
+| `pnpm dev`          | Start the Next.js development server.                |
+| `pnpm build`        | Create the production build.                         |
+| `pnpm start`        | Serve a production build.                            |
+| `pnpm lint`         | Run ESLint.                                          |
+| `pnpm typecheck`    | Generate Next.js route types and run `tsc --noEmit`. |
+| `pnpm test`         | Run Vitest once using `scripts/vitest.config.mts`.   |
+| `pnpm format`       | Rewrite formatting with Prettier.                    |
+| `pnpm format:check` | Check formatting with Prettier.                      |
+| `pnpm format:lint`  | Rewrite formatting, then run ESLint.                 |
 
-The home page targets the 1440 px desktop sketch and uses a static category preview.
-The `/categories` page reads protected backend categories after login and preserves
-selection in the URL. Quiz setup and the leaderboard await their backend contracts.
+## Environment
 
-## Styles
+These are all environment variables read by application code; none uses a
+`NEXT_PUBLIC_` prefix. Keep local configuration in the project root.
 
-Components use SCSS Modules compiled with Sass. Keep styles next to the component in a
-`ComponentName.module.scss` file, import them as `styles`, and use
-`className={styles.className}` in JSX. Shared colors and the browser reset live
-in `src/app/globals.scss`. Tailwind utilities and `@apply` are not used.
+| Variable          | Required?                                    | Purpose                                                                                                                                                                                                                                    |
+| ----------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `BACKEND_API_URL` | In production; optional otherwise            | Server-side Java API base URL. Defaults to `http://localhost:8080` outside production. See [transport.ts](src/lib/backend/transport.ts).                                                                                                   |
+| `APP_ORIGIN`      | Optional in code; set behind a reverse proxy | Public frontend origin for mutation Origin checks. Defaults to the request URL's origin; set to the public site URL when the proxy supplies an internal request URL. See [request.ts](src/lib/api/request.ts).                             |
+| `NODE_ENV`        | Managed by Next.js / the test runner         | Production requires the backend URL and sets Secure cookies. Development enables the leaderboard's `?demo=1` fixture. See [session.ts](src/features/auth/server/session.ts) and [leaderboard page](<src/app/(site)/leaderboard/page.tsx>). |
 
-## Checking the authentication API
+## Backend and sessions
 
-Start the backend separately using its Docker setup, then open `/register` or
-`/login` in the frontend. The forms send requests to `/api/auth/register` and
-`/api/auth/login`. These Next.js routes forward requests to the backend's
-`POST /register` and `POST /login`, so browser CORS configuration is not needed
-for these forms.
+Browser requests go to [Next.js BFF route handlers](src/app/api), then to
+feature-owned services in `src/features/*/server`, then through the server-only
+[Java transport](src/lib/backend/transport.ts). Server Components also call
+server services directly. [backendRequest](src/lib/api/server.ts) reads the
+session token and passes it explicitly to the transport, which adds Bearer
+authorization, disables caching, and defaults to a 10-second timeout.
 
-The backend URL defaults to `http://localhost:8080`. To change it, copy
-`.env.example` to `.env.local`, set `BACKEND_API_URL`, and restart the dev server.
-This URL is used on the Next.js server and is not a `NEXT_PUBLIC_` variable.
-
-Registration submits `email`, `nickname`, `password`, and `repeatPassword`.
-Login submits `email` and `password`. The forms validate fields and show pending,
-success, and error states. Registration redirects to login. Login stores the JWT
-in an HttpOnly cookie; browser JavaScript receives only the session email and
-expiry. The session is verified through the backend after navigation or reload,
-and logout clears the cookie. The categories page uses the same server-side auth support.
-
-Landing page artwork (category illustrations, benefit icons, ranking and
-decorations) is exported from Figma frame `11:2` into `public/images/home/`.
-
-## Categories workflow
-
-The categories implementation and its Next.js data flows, verified backend
-limitations, and missing SVG exports are documented in
-[docs/categories-flow.md](docs/categories-flow.md). Shared authentication is
-documented in [docs/auth-flow.md](docs/auth-flow.md).
+[Authentication](src/features/auth/server/auth.ts) exchanges login/register
+payloads with Java without forwarding an existing bearer token.
+[Guest play](src/features/auth/server/guest.ts) creates a Java guest through
+`POST /api/auth/guest`; existing user/guest sessions are reused.
+JWTs stay in the `masterquiz_session` cookie, with HttpOnly, SameSite=Lax,
+Path=/, expiry from JWT `exp`, and Secure in production. Guest sessions also
+use `masterquiz_guest` and `masterquiz_guest_id` cookies with the same flags;
+logout clears all three. See [cookie handling](src/features/auth/server/session.ts).
+The browser receives session metadata rather than the JWT.
+[Session verification](src/lib/backend/session.ts) asks Java to validate the
+token; decoding JWT claims alone does not verify its signature.
