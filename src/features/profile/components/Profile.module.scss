@@ -1,0 +1,708 @@
+@use "../../../styles/tokens";
+@use "../../../styles/patterns";
+
+.profile {
+  display: grid;
+  gap: 36px;
+  color: tokens.$text;
+}
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 40px;
+  padding-left: 16px;
+}
+.side {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+.hero {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  min-width: 0;
+}
+.avatarWrap {
+  position: relative;
+  flex: 0 0 200px;
+}
+.avatar {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border: 3px solid white;
+  border-radius: 50%;
+  padding: 17px;
+  display: block;
+}
+.pencil {
+  position: absolute;
+  right: 19px;
+  bottom: 0;
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: white;
+  border: 0;
+  padding: 0;
+  box-shadow: none;
+  cursor: pointer;
+  @include patterns.interactive-lift;
+  img {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+}
+.identity {
+  min-width: 0;
+  padding-top: 16px;
+  flex: 1;
+  h1 {
+    color: tokens.$text-heading;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+}
+.tagline {
+  margin-top: 24px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 19px;
+  color: tokens.$text-body;
+}
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+  margin-top: 21px;
+  > div {
+    display: grid;
+    grid-template-columns: 22px max-content;
+    column-gap: 10px;
+  }
+  dt {
+    display: contents;
+    img {
+      grid-column: 1;
+      grid-row: 1;
+      align-self: center;
+      max-height: 25px;
+      object-fit: contain;
+    }
+    span {
+      grid-column: 2;
+      grid-row: 2;
+      font-size: 13px;
+      color: tokens.$text-body;
+      white-space: nowrap;
+    }
+  }
+  dd {
+    grid-column: 2;
+    grid-row: 1;
+    font-weight: 600;
+    color: tokens.$text-heading;
+  }
+}
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 28px;
+}
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 16px;
+  border: 1px solid tokens.$primary;
+  border-radius: 23px;
+  color: tokens.$primary;
+  cursor: pointer;
+  @include patterns.interactive-lift;
+  &:disabled {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.6);
+  }
+}
+.logoutError {
+  margin-top: 12px;
+  color: tokens.$danger;
+  font-size: tokens.$font-size-sm;
+}
+.card {
+  min-width: 0;
+  padding: 22px 24px;
+  background: white;
+  border-radius: 23px;
+  box-shadow: tokens.$shadow-profile-card;
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: tokens.$text-heading;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+.cardHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+  > a {
+    font-size: 13px;
+    font-weight: 500;
+    color: tokens.$primary;
+    white-space: nowrap;
+  }
+}
+.level {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  margin-top: 12px;
+  h3 {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.2;
+  }
+}
+// Only the level hint is drawn in Figma; other hints keep the muted colour.
+.level .hint {
+  color: tokens.$text-subtle;
+}
+.points {
+  color: tokens.$text-body;
+  font-size: 13px;
+  text-align: right;
+  margin-bottom: 5px;
+}
+.progress {
+  height: 12px;
+  overflow: hidden;
+  background: tokens.$primary-tint;
+  border-radius: 6px;
+  span {
+    display: block;
+    width: 100%;
+    height: 100%;
+    transform-origin: left;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #5c4de4, #8f84ec 50%, #a59cf5);
+  }
+}
+.hint {
+  font-size: 13px;
+  color: tokens.$text-muted;
+  margin-top: 8px;
+}
+.badges {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  li {
+    // A fixed first row keeps the text in place when a narrow column
+    // shrinks the badge.
+    display: grid;
+    grid-template-rows: 74px;
+    align-content: start;
+    justify-items: center;
+    gap: 8px;
+    text-align: center;
+    color: tokens.$text-body;
+    font-size: 13px;
+    line-height: 1.2;
+    > img {
+      align-self: center;
+      height: auto;
+    }
+  }
+}
+.lockedBadge {
+  filter: grayscale(1);
+  opacity: 0.7;
+}
+.lockStatus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 12px;
+  color: tokens.$text-muted;
+}
+.comingSoon {
+  margin-right: auto;
+  color: tokens.$text-muted;
+  font-size: 12px;
+}
+.bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: stretch;
+}
+.activity {
+  display: flex;
+  flex-direction: column;
+  min-height: 160px;
+  h2 {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: 10px;
+  min-height: 88px;
+  padding-block: 16px;
+  color: tokens.$text-muted;
+  text-align: center;
+}
+.categories {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+  a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    height: 64px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: tokens.$primary-tint;
+    color: tokens.$text-heading;
+    font-size: 14px;
+    @include patterns.interactive-lift;
+    span {
+      overflow-wrap: anywhere;
+    }
+    img {
+      flex-shrink: 0;
+      width: 52px;
+      height: 48px;
+      object-fit: contain;
+    }
+  }
+  .allCategories {
+    background: tokens.$primary;
+    color: white;
+  }
+}
+.editDialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(520px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 28px;
+  border: 2px solid tokens.$primary;
+  border-radius: 23px;
+  background: white;
+  color: tokens.$text;
+  &::backdrop {
+    background: tokens.$dialog-backdrop;
+    backdrop-filter: blur(4px);
+  }
+  > section {
+    margin-top: 28px;
+    border-top: 1px solid tokens.$border-subtle;
+    padding-top: 20px;
+    h2 {
+      margin-bottom: 12px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    p {
+      color: tokens.$text-muted;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+  }
+}
+.dialogHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+  }
+}
+.email {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  input {
+    min-width: 0;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid tokens.$border;
+    border-radius: 10px;
+    color: tokens.$text-muted;
+  }
+}
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.pencil:focus-visible,
+.editButton:focus-visible,
+.profile a:focus-visible,
+.email input:focus-visible {
+  @include patterns.focus-ring;
+}
+@media (max-width: 1150px) {
+  .top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 24px;
+    padding-left: 0;
+  }
+  .hero {
+    flex-wrap: wrap;
+  }
+  .identity {
+    flex-basis: 100%;
+    padding-top: 0;
+  }
+  .stats {
+    margin-top: 24px;
+  }
+  .bottom {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  }
+  .categories {
+    gap: 12px;
+    a {
+      flex-direction: column;
+      height: auto;
+      min-height: 76px;
+      gap: 4px;
+      text-align: center;
+    }
+  }
+}
+@media (max-width: 760px) {
+  .top,
+  .bottom {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+  .hero {
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .avatarWrap {
+    flex-basis: 140px;
+  }
+  .avatar {
+    width: 140px;
+    height: 140px;
+    padding: 10px;
+  }
+  .pencil {
+    width: 40px;
+    height: 40px;
+    right: 5px;
+  }
+  .identity {
+    flex-basis: auto;
+    h1 {
+      font-size: 32px;
+    }
+  }
+  .stats {
+    gap: 14px;
+  }
+  .activity {
+    min-height: 160px;
+  }
+  .categories a {
+    flex-direction: row;
+    min-height: 64px;
+  }
+}
+@media (max-width: 450px) {
+  .hero {
+    flex-wrap: wrap;
+  }
+  .identity {
+    flex-basis: 100%;
+  }
+  .card {
+    padding: 20px 16px;
+  }
+  .level {
+    gap: 8px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    // Matches the 72px column inside the old 90px slot.
+    > img {
+      width: 72px;
+      height: 72px;
+      margin-block: 9px;
+    }
+  }
+  .level h3 {
+    font-size: 18px;
+  }
+  .badges {
+    gap: 8px;
+  }
+  .cardHeading {
+    gap: 8px;
+  }
+  .categories a {
+    flex-direction: column;
+  }
+}
+.form {
+  display: grid;
+  gap: 12px;
+}
+.formActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.primaryButton,
+.dangerButton {
+  padding: 10px 20px;
+  border-radius: tokens.$radius-control;
+  cursor: pointer;
+  @include patterns.interactive-lift;
+  &:disabled {
+    @include patterns.disabled-control($opacity: 0.6);
+  }
+  &[aria-disabled="true"] {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.6);
+  }
+}
+.primaryButton {
+  @include patterns.primary-button;
+}
+.dangerButton {
+  border: 1px solid tokens.$danger;
+  color: tokens.$danger;
+}
+.textButton {
+  @include patterns.primary-link;
+  cursor: pointer;
+  &:disabled {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.6);
+  }
+}
+.successText {
+  color: tokens.$success;
+}
+.errorText {
+  color: tokens.$danger;
+}
+.primaryButton:focus-visible,
+.dangerButton:focus-visible,
+.textButton:focus-visible {
+  @include patterns.focus-ring;
+}
+
+// The supplied desktop frame uses different insets for each panel.
+@media (min-width: 1200px) {
+  .top {
+    grid-template-columns: minmax(0, 697fr) minmax(0, 543fr);
+    padding-left: 33px;
+  }
+  .side {
+    padding-top: 3px;
+  }
+  .hero {
+    gap: 14px;
+  }
+  .identity {
+    padding-top: 21px;
+    h1 {
+      line-height: normal;
+    }
+  }
+  .tagline {
+    line-height: normal;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: minmax(0, 160fr) minmax(0, 165fr) minmax(0, 155fr);
+    gap: 18px 0;
+    padding-left: 3px;
+    font-size: 16px;
+    line-height: normal;
+    dt span {
+      margin-top: 2px;
+      white-space: normal;
+    }
+    dd {
+      overflow-wrap: anywhere;
+    }
+  }
+  .heroActions {
+    margin-left: 3px;
+    margin-top: 28px;
+  }
+  .editButton {
+    min-height: 45px;
+    line-height: normal;
+    &:first-child {
+      min-width: 157px;
+    }
+  }
+  .card {
+    line-height: normal;
+  }
+  .levelCard {
+    min-height: 176px;
+    padding: 24px 33px 24px 37px;
+  }
+  .level {
+    margin-left: -16px;
+    margin-top: 18px;
+    h3 {
+      margin-bottom: -5px;
+      line-height: normal;
+    }
+  }
+  .badgesCard {
+    min-height: 182px;
+    padding: 16px 22px 16px 37px;
+  }
+  .badges li {
+    gap: 4px;
+    line-height: normal;
+  }
+  .bottom {
+    grid-template-columns: minmax(0, 823fr) minmax(0, 458fr);
+    align-items: start;
+  }
+  .activity {
+    min-height: 389px;
+    padding: 21px 34px;
+    h2 {
+      gap: 15px;
+      align-items: flex-start;
+      > img {
+        margin-top: 1px;
+      }
+    }
+  }
+  .favouritesCard {
+    min-height: 284px;
+    padding: 17px 19px 16px 18px;
+    .cardHeading {
+      margin-bottom: 17px;
+      h2 {
+        gap: 9px;
+        align-items: flex-start;
+        > span {
+          padding-top: 2px;
+        }
+      }
+      h2 > img {
+        height: 20px;
+      }
+    }
+  }
+  .categories {
+    gap: 13px 20px;
+    margin-left: 5px;
+    a {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      justify-content: start;
+      gap: 19px;
+      height: 62px;
+      padding: 7px 12px;
+      border-radius: tokens.$radius-control;
+      img {
+        // Category SVGs include transparent space around their original artwork.
+        width: 78px;
+        height: 72px;
+        max-width: none;
+        margin: -12px -13px;
+      }
+      span {
+        // Keep long category names inside a fluid tile at 1200px.
+        grid-column: 2;
+        min-width: 0;
+      }
+    }
+    .allCategories {
+      display: flex;
+      justify-content: center;
+      font-weight: 500;
+    }
+  }
+}
+
+.avatarOptions {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.avatarOption {
+  position: relative;
+  display: grid;
+  cursor: pointer;
+  input {
+    @include patterns.visually-hidden;
+  }
+  span {
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 4px;
+    padding: 6px;
+    border: 2px solid tokens.$border-subtle;
+    border-radius: tokens.$radius-control;
+    font-size: 12px;
+    color: tokens.$text-muted;
+  }
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: contain;
+  }
+  input:checked + span {
+    border-color: tokens.$primary;
+  }
+  input:focus-visible + span {
+    @include patterns.focus-ring;
+  }
+  input:disabled + span {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.6);
+  }
+}
+@media (max-width: 450px) {
+  .avatarOptions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

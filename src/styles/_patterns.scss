@@ -1,0 +1,153 @@
+@use "tokens";
+
+// Mixins emit declarations locally: no global selectors or @extend ordering.
+@mixin back-link($shift: null, $line-height: null, $cursor: null) {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  @if $shift != null {
+    transform: translateY($shift);
+  }
+  font-size: tokens.$font-size-2xl;
+  @if $line-height != null {
+    line-height: $line-height;
+  }
+  @if $cursor != null {
+    cursor: $cursor;
+  }
+  span {
+    transform: rotate(180deg);
+  }
+}
+
+@mixin state-card($layout: flex) {
+  display: $layout;
+  @if $layout == flex {
+    flex-direction: column;
+    align-items: center;
+  } @else if $layout == grid {
+    justify-items: center;
+  } @else {
+    @error "Unsupported state layout: #{$layout}";
+  }
+  // Keep page-specific spacing in its original declaration order.
+  @content;
+  text-align: center;
+  h1 {
+    font-size: tokens.$font-size-4xl;
+    font-weight: 600;
+  }
+}
+
+@mixin primary-link {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+@mixin outline-button($radius: tokens.$radius-control) {
+  border: 2px solid var(--primary);
+  border-radius: $radius;
+  color: var(--primary);
+}
+
+@mixin primary-button {
+  color: tokens.$surface;
+  background: var(--primary);
+}
+
+@mixin focus-ring($width: 2px, $offset: 4px, $radius: null) {
+  outline: $width solid var(--primary);
+  outline-offset: $offset;
+  @if $radius != null {
+    border-radius: $radius;
+  }
+}
+
+@mixin disabled-control($cursor: default, $opacity: null) {
+  @if $opacity != null {
+    opacity: $opacity;
+  }
+  cursor: $cursor;
+}
+
+@mixin interactive-lift($transition: transform 180ms ease) {
+  transition: $transition;
+  @media (hover: hover) and (pointer: fine) {
+    &:not(:disabled, [aria-disabled="true"]):hover {
+      transform: translateY(-2px);
+    }
+  }
+  &:not(:disabled, [aria-disabled="true"]):active {
+    transform: translateY(0) scale(0.98);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+    &:not(:disabled, [aria-disabled="true"]):hover,
+    &:not(:disabled, [aria-disabled="true"]):active {
+      transform: none;
+    }
+  }
+}
+
+// Native showModal()/close() keep focus and interaction handling in the browser.
+@mixin dialog-motion {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity 0.24s ease-out,
+    transform 0.24s ease-out,
+    display 0.24s allow-discrete,
+    overlay 0.24s allow-discrete;
+  transition-behavior: allow-discrete;
+
+  &[open] {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  &::backdrop {
+    background: rgb(0 0 0 / 45%);
+    opacity: 0;
+    transition:
+      opacity 0.24s ease-out,
+      display 0.24s allow-discrete,
+      overlay 0.24s allow-discrete;
+    transition-behavior: allow-discrete;
+  }
+
+  &[open]::backdrop {
+    opacity: 1;
+  }
+
+  &:not([open]),
+  &:not([open])::backdrop {
+    pointer-events: none;
+  }
+
+  @starting-style {
+    &[open] {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    &[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &,
+    &::backdrop {
+      transition: none;
+      transform: none;
+    }
+  }
+}
+
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

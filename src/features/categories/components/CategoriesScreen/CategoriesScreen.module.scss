@@ -1,0 +1,122 @@
+@use "../../../../styles/tokens";
+@use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
+
+.heading {
+  max-width: 609px;
+  margin-inline: auto;
+  color: tokens.$text-heading;
+  font-size: tokens.$font-size-7xl;
+  font-weight: 700;
+  line-height: 58px;
+  text-align: center;
+  white-space: nowrap;
+
+  span {
+    color: var(--primary);
+  }
+}
+
+.screen {
+  // Gap between the heading and the grid, as in Figma.
+  margin-top: 62px;
+}
+
+.notice {
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: tokens.$font-size-sm;
+  line-height: 20px;
+  text-align: center;
+}
+
+.loadingStatus {
+  @include patterns.visually-hidden;
+}
+
+.screen a:not([class]) {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px;
+
+  &::before,
+  &::after {
+    position: absolute;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    content: "";
+  }
+
+  &::before {
+    top: -54px;
+    left: -65px;
+    width: 60px;
+    height: 78px;
+    background-image: url("/images/categories/accent-top.svg");
+  }
+
+  &::after {
+    right: -60px;
+    bottom: -56px;
+    width: 66px;
+    height: 75px;
+    background-image: url("/images/categories/accent-bottom.svg");
+  }
+}
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 24px;
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
+  text-align: center;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.loadingCard {
+  min-height: 270px;
+  border: 2px solid tokens.$surface;
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
+}
+
+@include breakpoints.down(1100px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+@include breakpoints.down(700px) {
+  .heading {
+    white-space: normal;
+  }
+}
+
+@include breakpoints.down(sm) {
+  .heading {
+    font-size: tokens.$font-size-4xl;
+    line-height: 40px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

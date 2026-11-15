@@ -1,0 +1,165 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
+
+.card {
+  position: relative;
+  width: 100%;
+  min-height: 601px;
+  margin-top: 8px;
+  padding: 48px 40px 56px;
+  border-radius: tokens.$radius-card;
+  background: tokens.$surface;
+  box-shadow: tokens.$shadow-design-card;
+}
+
+.registerCard {
+  min-height: 666px;
+  margin-top: -10px;
+  padding-block: 28px 27px;
+}
+
+.registerCard .form {
+  margin-top: 37px;
+}
+
+.registerCard .submitButton {
+  margin-top: 28px;
+}
+
+.registerCard .register {
+  margin-top: 23px;
+}
+
+.registerCard .accent {
+  top: -39px;
+}
+
+.accent {
+  position: absolute;
+  top: -57px;
+  left: -47px;
+  width: 64px;
+  height: 72px;
+  color: var(--primary);
+  pointer-events: none;
+}
+
+// Figma starts the login subtitle at the title's left edge, so the pair is
+// centred as one block.
+.heading {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+}
+
+.title {
+  text-align: center;
+  color: tokens.$text-heading;
+  font-size: tokens.$font-size-4xl;
+  font-weight: 600;
+  line-height: 39px;
+}
+
+.title span {
+  color: tokens.$primary;
+}
+
+.subtitle {
+  margin-top: 14px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-md;
+  line-height: 19px;
+}
+
+.form {
+  margin-top: 39px;
+}
+
+.forgotPassword {
+  display: block;
+  margin-top: 15px;
+  margin-left: auto;
+  color: var(--primary);
+  font-size: tokens.$font-size-sm;
+  line-height: 17px;
+  cursor: pointer;
+}
+
+.submitButton {
+  margin-top: 32px;
+}
+
+// The design puts form errors between the fields and the button.
+.feedback {
+  margin-top: 14px;
+}
+
+.feedback + .submitButton {
+  margin-top: 13px;
+}
+
+.notice {
+  margin-top: 16px;
+  font-size: tokens.$font-size-sm;
+  line-height: 20px;
+}
+
+.notice button {
+  color: var(--primary);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.notice button:focus-visible {
+  @include patterns.focus-ring;
+}
+
+.forgotPassword:focus-visible,
+.register a:focus-visible,
+.guest a:focus-visible {
+  @include patterns.focus-ring;
+}
+
+.register {
+  margin-top: 24px;
+  color: tokens.$text-body;
+  text-align: center;
+  font-size: tokens.$font-size-md;
+  line-height: 19px;
+}
+
+.guest {
+  margin-top: 16px;
+  text-align: center;
+  font-size: tokens.$font-size-sm;
+  line-height: 17px;
+}
+
+.guest a,
+.register a {
+  color: var(--primary);
+}
+
+@include breakpoints.down(1199px) {
+  .card {
+    padding-inline: 24px;
+  }
+
+  .title {
+    font-size: tokens.$font-size-3xl;
+  }
+}
+
+@include breakpoints.down(md) {
+  .accent {
+    left: 0;
+  }
+}
+
+@include breakpoints.down(sm) {
+  .title {
+    font-size: tokens.$font-size-2xl;
+    line-height: 30px;
+  }
+}

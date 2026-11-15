@@ -1,0 +1,93 @@
+import Image from "next/image";
+import Link from "next/link";
+import { Icon } from "@/components/ui/Icon";
+import styles from "./JoinCommunity.module.scss";
+
+// Static preview from the design; backend data will be connected later.
+const players = [
+  { name: "Alex", score: "1,240" },
+  { name: "Maria", score: "1,180" },
+  { name: "John", score: "1,050" },
+  { name: "You", score: "800" },
+];
+
+export const JoinCommunity = () => (
+  <section className={styles.section}>
+    <div className={styles.intro}>
+      <Image
+        src="/images/home/community.svg"
+        alt=""
+        width={168}
+        height={181}
+        className={styles.illustration}
+      />
+      <div>
+        <h2 className={styles.title}>Join a growing community</h2>
+        <p className={styles.description}>
+          Thousands of players are already testing their knowledge. Are you in?
+        </p>
+        <Link href="/register" className={styles.signUp}>
+          Sign up
+          <Icon name="arrow" className={styles.arrow} />
+        </Link>
+      </div>
+    </div>
+    <div className={styles.preview}>
+      <Image
+        src="/images/home/ranking-blob.svg"
+        alt=""
+        width={554}
+        height={452}
+        className={styles.blob}
+      />
+      <Image
+        src="/images/home/ranking-accent-left.svg"
+        alt=""
+        width={41}
+        height={73}
+        className={styles.leftAccent}
+      />
+      <div className={styles.card}>
+        <h3 className={styles.cardTitle}>
+          <Image
+            src="/images/home/ranking-crown.svg"
+            alt=""
+            width={26}
+            height={18}
+          />
+          Top players
+        </h3>
+        <ol>
+          {players.map((player, index) => (
+            <li
+              key={player.name}
+              className={index === 3 ? styles.currentPlayer : styles.player}
+            >
+              <span>{index + 1}</span>
+              <Image
+                src={
+                  index === 3
+                    ? "/images/home/ranking-avatar-current.svg"
+                    : "/images/home/ranking-avatar.svg"
+                }
+                alt=""
+                width={41}
+                height={41}
+                className={styles.avatar}
+              />
+              <span>{player.name}</span>
+              <span className={styles.score}>{player.score}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <Image
+        src="/images/home/ranking-accent-right.svg"
+        alt=""
+        width={41}
+        height={71}
+        className={styles.rightAccent}
+      />
+    </div>
+  </section>
+);

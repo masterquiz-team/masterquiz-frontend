@@ -1,0 +1,43 @@
+@use "../styles/tokens";
+@use "../styles/patterns";
+
+.body {
+  --primary: #{tokens.$primary};
+  box-sizing: border-box;
+  min-height: 100svh;
+  margin: 0;
+  padding: 24px;
+  display: grid;
+  align-items: center;
+  background: tokens.$background;
+  color: tokens.$text;
+  font-family: system-ui, sans-serif;
+}
+.state {
+  @include patterns.state-card {
+    gap: 16px;
+    padding: 64px 24px;
+    border-radius: tokens.$radius-card;
+    background: tokens.$surface;
+  }
+  h1,
+  p {
+    margin: 0;
+  }
+  h1 {
+    line-height: 1.25;
+  }
+  a,
+  button {
+    @include patterns.primary-link;
+    text-underline-offset: 3px;
+    border: 0;
+    padding: 4px;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    &:focus-visible {
+      @include patterns.focus-ring($radius: tokens.$radius-focus);
+    }
+  }
+}

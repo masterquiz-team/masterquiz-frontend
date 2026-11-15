@@ -1,0 +1,83 @@
+import type { CSSProperties } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { PlayLink } from "@/features/auth/components/PlayLink";
+import { Icon } from "@/components/ui/Icon";
+import { getCategoryArtwork } from "../../artwork";
+import styles from "./CategoryCard.module.scss";
+
+type Props = {
+  name: string;
+  href?: string;
+  selected?: boolean;
+  guestEntry?: boolean;
+  // Cards in the first row are on screen right away.
+  eager?: boolean;
+};
+
+export function CategoryCard({
+  name,
+  href,
+  selected = false,
+  guestEntry = false,
+  eager = false,
+}: Props) {
+  const artwork = getCategoryArtwork(name);
+  const CardLink = guestEntry ? PlayLink : Link;
+  const content = (
+    <>
+      <div className={styles.illustration} aria-hidden="true">
+        {artwork?.illustration && (
+          <Image
+            src={artwork.illustration}
+            alt=""
+            width={240}
+            height={210}
+            loading={eager ? "eager" : undefined}
+          />
+        )}
+      </div>
+      <h2 className={styles.title}>{name}</h2>
+      {artwork?.description && (
+        <p
+          className={styles.description}
+          style={
+            {
+              "--description-width": `${artwork.descriptionWidth}px`,
+            } as CSSProperties
+          }
+        >
+          {artwork.description}
+        </p>
+      )}
+      {href && (
+        <span className={styles.action} aria-hidden="true">
+          <span className={styles.actionCircle}>
+            <Icon name="arrow" className={styles.actionIcon} />
+          </span>
+        </span>
+      )}
+    </>
+  );
+  return (
+    <li>
+      {href ? (
+        <CardLink
+          href={href}
+          prefetch={false}
+          className={`${styles.card} ${selected ? styles.selected : ""}`}
+          aria-current={selected ? "true" : undefined}
+          aria-label={
+            guestEntry
+              ? `${name} — continue as guest to browse categories`
+              : undefined
+          }
+        >
+          {content}
+        </CardLink>
+      ) : (
+        <div className={styles.card}>{content}</div>
+      )}
+    </li>
+  );
+}

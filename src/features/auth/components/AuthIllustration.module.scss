@@ -1,0 +1,26 @@
+@use "../../../styles/breakpoints";
+
+// Figma group bounds: (66, 362), 685.5 x 631.5 in the 1440 frame.
+// Welcome starts at (80, 168), so the slot sits at (-14, 194) inside it.
+.slot {
+  position: absolute;
+  top: 194px;
+  left: -14px;
+  width: min(685.5px, calc(100% + 60.5px));
+  pointer-events: none;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@include breakpoints.down(1199px) {
+  .slot {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    margin-top: -18px;
+  }
+}

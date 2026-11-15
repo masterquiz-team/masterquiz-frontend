@@ -1,0 +1,46 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: max-content;
+  color: tokens.$text-heading;
+  font-size: tokens.$font-size-3xl;
+  font-weight: 600;
+  line-height: 34px;
+  white-space: nowrap;
+
+  &:focus-visible {
+    @include patterns.focus-ring($offset: 5px, $radius: tokens.$radius-focus);
+  }
+}
+
+.mark {
+  // Layout box from Figma. The SVG is 54×54 because its stroke spills 2px
+  // past that box, so it is drawn larger with a negative margin.
+  --mark-size: 50px;
+
+  flex: none;
+  width: calc(var(--mark-size) * 54 / 50);
+  height: calc(var(--mark-size) * 54 / 50);
+  margin: calc(var(--mark-size) * -2 / 50);
+}
+
+.quiz {
+  color: tokens.$primary;
+}
+
+@include breakpoints.down(sm) {
+  .brand {
+    gap: 12px;
+    font-size: tokens.$font-size-2xl;
+    line-height: 29px;
+  }
+
+  .mark {
+    --mark-size: 36px;
+  }
+}

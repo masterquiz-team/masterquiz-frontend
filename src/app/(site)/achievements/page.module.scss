@@ -1,0 +1,20 @@
+.main {
+  width: min(1312px, calc(100% - 64px));
+  margin-inline: auto;
+  padding-block: 36px 68px;
+}
+@media (max-width: 600px) {
+  .main {
+    width: calc(100% - 32px);
+    padding-block: 24px 48px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .main {
+    width: min(1320px, calc(100% - 64px));
+    // The design puts Back 3px into the 130px header area.
+    margin-top: -3px;
+    padding-top: 0;
+  }
+}

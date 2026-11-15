@@ -1,0 +1,89 @@
+@use "../styles/tokens";
+
+:root {
+  --background: #{tokens.$background};
+  --foreground: #{tokens.$foreground};
+  --primary: #{tokens.$primary};
+  --primary-hover: #{tokens.$primary-hover};
+  --muted: #{tokens.$text-muted};
+  --accent-purple: #{tokens.$accent-purple};
+  --accent-purple-soft: #{tokens.$accent-purple-soft};
+  --accent-cyan: #{tokens.$accent-cyan};
+  --accent-cyan-soft: #{tokens.$accent-cyan-soft};
+  --accent-pink: #{tokens.$accent-pink};
+
+  // Compatibility aliases for existing and parallel consumers.
+  --color1: var(--accent-purple);
+  --color2: var(--accent-purple-soft);
+  --color3: var(--accent-cyan);
+  --color4: var(--accent-cyan-soft);
+  --color5: var(--accent-pink);
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0 solid;
+}
+
+html {
+  height: 100%;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+  background: transparent;
+  border-radius: 0;
+}
+
+img,
+svg {
+  display: block;
+  vertical-align: middle;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}

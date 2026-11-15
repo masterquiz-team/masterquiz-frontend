@@ -1,0 +1,81 @@
+@use "../../../../styles/tokens";
+@use "../../../../styles/breakpoints";
+
+.section {
+  scroll-margin-top: 24px;
+  background: tokens.$surface-subtle;
+}
+.container {
+  max-width: 1440px;
+  min-height: 471px;
+  margin-inline: auto;
+  padding: 50px 80px 64px;
+}
+.label {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: tokens.$font-size-md;
+  line-height: 19px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.title {
+  margin-top: 8px;
+  font-size: tokens.$font-size-6xl;
+  font-weight: 700;
+  line-height: 60px;
+  color: tokens.$text-heading;
+}
+.list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 29px;
+}
+.icon {
+  width: 100px;
+  height: 100px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 36px;
+  border-radius: tokens.$radius-circle;
+  background: tokens.$primary-overlay;
+}
+.itemTitle {
+  font-size: tokens.$font-size-xl;
+  line-height: normal;
+  font-weight: 600;
+  color: tokens.$text-heading;
+}
+.description {
+  margin-top: 17px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-label;
+  line-height: 24px;
+}
+@include breakpoints.down(lg) {
+  .container {
+    padding-inline: 40px;
+  }
+  .list {
+    gap: 32px;
+  }
+}
+@include breakpoints.down(md) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px;
+  }
+}
+@include breakpoints.down(sm) {
+  .container {
+    padding: 48px 24px;
+  }
+  .title {
+    font-size: tokens.$font-size-3xl;
+    line-height: 36px;
+  }
+  .list {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,14 @@
+@use "../../../styles/breakpoints";
+
+.main {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding: 16px 35px 64px 48px;
+}
+
+@include breakpoints.down(md) {
+  .main {
+    padding-inline: 24px;
+  }
+}

@@ -1,0 +1,122 @@
+import "server-only";
+
+import type { AuthFormMode, AuthValues } from "../types";
+import { isRegisteredUser, parseAuthError } from "../validators/responses";
+import { backendFetch } from "@/lib/backend/transport";
+import { isRecord } from "@/lib/validation";
+import { GENERIC_AUTH_ERROR, INCORRECT_CREDENTIALS } from "../utils/messages";
+import { authJson } from "./request";
+import { getSessionState, readTokenSession } from "@/lib/backend/session";
+import { getGuestUserId, getSessionToken } from "@/lib/backend/token";
+import { clearSessionCookie, setSessionCookie } from "./session";
+
+// Route Handlers validate HTTP input; this function owns the Java auth exchange.
+export async function authenticate(mode: AuthFormMode, payload: AuthValues) {
+  let invalidSession = false;
+  const replyJson: typeof authJson = (body, status) => {
+    const reply = authJson(body, status);
+    if (invalidSession) clearSessionCookie(reply);
+    return reply;
+  };
+  try {
+    const state = await getSessionState();
+    invalidSession = state.status === "anonymous";
+    // Registration keeps a guest's progress through the backend's
+    // guestUserId field, not Authorization: a 401 could then mean bad
+    // credentials or an invalid guest token.
+    const guestToken =
+      state.status === "guest" ? await getSessionToken() : null;
+    const guestUserId =
+      mode === "register" && guestToken
+        ? await getGuestUserId(guestToken)
+        : null;
+    const response = await backendFetch(`/${mode}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(
+        guestUserId === null ? payload : { ...payload, guestUserId },
+      ),
+    });
+    const result: unknown = await response.json().catch(() => null);
+    if (!response.ok) {
+      // Credential rejection always uses product copy and never echoes
+      // Java's details, which could reveal whether an account exists.
+      if (mode === "login" && response.status === 401)
+        return replyJson({ message: INCORRECT_CREDENTIALS }, 401);
+      const fallback =
+        mode === "register" && response.status === 409
+          ? "An account with this email already exists."
+          : GENERIC_AUTH_ERROR;
+      return replyJson(parseAuthError(result, fallback), response.status);
+    }
+    if (!isRecord(result)) {
+      return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
+    }
+
+    if (mode === "register") {
+      if (!isRegisteredUser(result)) {
+        return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
+      }
+      const body = {
+        user: {
+          id: result.id,
+          email: result.email,
+          nickname: result.nickname,
+        },
+      };
+      const registrationToken: unknown =
+        "token" in result ? result.token : null;
+      if (state.status === "guest") {
+        // Registration currently returns a user DTO without a JWT. Sign in
+        // with the submitted credentials and no guest Authorization header.
+        // If sign-in fails, registration still succeeded: retain the guest
+        // session and let the existing registered -> login flow take over.
+        try {
+          let login: unknown = result;
+          if (typeof registrationToken !== "string") {
+            const loginResponse = await backendFetch("/login", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: payload.email,
+                password: payload.password,
+              }),
+            });
+            login = loginResponse.ok ? await loginResponse.json() : null;
+          }
+          const token =
+            isRecord(login) && typeof login.token === "string"
+              ? login.token
+              : null;
+          const session = token ? readTokenSession(token) : null;
+          if (token && session?.kind === "user") {
+            const reply = replyJson({ ...body, session }, response.status);
+            setSessionCookie(reply, token, session);
+            return reply;
+          }
+        } catch {
+          // Preserve successful registration and the existing guest cookie.
+        }
+      }
+      return replyJson(body, response.status);
+    }
+
+    const token = typeof result.token === "string" ? result.token : null;
+    const session = token ? readTokenSession(token) : null;
+    if (!token || !session) {
+      return replyJson({ message: GENERIC_AUTH_ERROR }, 502);
+    }
+    const reply = replyJson({ session });
+    setSessionCookie(reply, token, session);
+    return reply;
+  } catch (error) {
+    console.error("[authenticate] Backend authentication failed", error);
+    return replyJson(
+      {
+        message:
+          "The backend is unavailable or took too long to respond. Please try again later.",
+      },
+      502,
+    );
+  }
+}

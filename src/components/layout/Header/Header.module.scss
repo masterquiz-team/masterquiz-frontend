@@ -1,0 +1,54 @@
+@use "../../../styles/breakpoints";
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(max-content, 1fr) auto minmax(max-content, 1fr);
+  gap: 40px;
+  align-items: center;
+  width: 100%;
+  max-width: 1440px;
+  min-height: 130px;
+  margin-inline: auto;
+  padding-inline: 80px;
+}
+
+@include breakpoints.down(lg) {
+  .header {
+    grid-template-columns: auto 1fr auto;
+    gap: 40px;
+    padding-inline: 40px;
+  }
+}
+@include breakpoints.down(md) {
+  .header {
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    padding-block: 24px;
+  }
+  .header > nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
+@include breakpoints.down(sm) {
+  .header {
+    padding-inline: 24px;
+    gap: 20px 12px;
+  }
+}
+
+// The brand is too wide to share a row with the session controls here.
+@include breakpoints.down(380px) {
+  .header {
+    grid-template-columns: minmax(0, 1fr);
+
+    > :last-child {
+      grid-row: 2;
+      justify-self: start;
+    }
+
+    > nav {
+      grid-row: 3;
+    }
+  }
+}

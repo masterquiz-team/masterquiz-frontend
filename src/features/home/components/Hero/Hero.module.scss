@@ -1,0 +1,116 @@
+@use "../../../../styles/tokens";
+@use "../../../../styles/breakpoints";
+@use "../../../../styles/patterns";
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 659fr) minmax(0, 519fr);
+  align-items: start;
+  gap: 102px;
+  width: 100%;
+  max-width: 1440px;
+  min-height: 640px;
+  margin-inline: auto;
+  padding: 63px 80px 96px;
+}
+.modes {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: min(100%, 321px);
+  min-height: 34px;
+  padding-inline: 35px;
+  border-radius: tokens.$radius-card;
+  background: tokens.$primary-tint;
+  color: var(--primary);
+  font-size: tokens.$font-size-md;
+  line-height: 19px;
+  text-transform: uppercase;
+  li {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+}
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: tokens.$radius-circle;
+  background: currentColor;
+}
+.title {
+  margin-top: 31px;
+  color: tokens.$text-heading;
+  font-size: tokens.$font-size-7xl;
+  font-weight: 700;
+  line-height: 60px;
+  span {
+    color: tokens.$primary;
+  }
+}
+.description {
+  max-width: 589px;
+  margin-top: 28px;
+  color: tokens.$text-body;
+  font-size: tokens.$font-size-xl;
+  line-height: 35px;
+}
+.startButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 255px;
+  min-height: 69px;
+  margin-top: 37px;
+  padding: 20px 24px 20px 39px;
+  border-radius: 35px;
+  background: var(--primary);
+  color: tokens.$surface;
+  font-size: tokens.$font-size-xl;
+  font-weight: 600;
+  line-height: 24px;
+  @include patterns.interactive-lift(
+    (background-color 150ms, transform 180ms ease)
+  );
+}
+.startButton:hover {
+  background: var(--primary-hover);
+}
+.startButton:focus-visible {
+  @include patterns.focus-ring;
+}
+.arrowIcon {
+  width: 28px;
+  height: 28px;
+}
+@include breakpoints.down(lg) {
+  .hero {
+    padding-inline: 40px;
+    gap: 40px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .title {
+    font-size: tokens.$font-size-6xl;
+    line-height: 50px;
+  }
+}
+@include breakpoints.down(md) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-block: 40px 64px;
+    gap: 48px;
+  }
+}
+@include breakpoints.down(sm) {
+  .hero {
+    padding-inline: 24px;
+  }
+  .title {
+    font-size: tokens.$font-size-4xl;
+    line-height: 42px;
+  }
+  .description {
+    font-size: tokens.$font-size-lg;
+    line-height: 30px;
+  }
+}

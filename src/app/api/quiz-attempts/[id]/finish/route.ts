@@ -1,0 +1,43 @@
+import {
+  ApiError,
+  apiResponse,
+  parseId,
+  readMutation,
+  requireExactKeys,
+} from "@/lib/api/server";
+import {
+  buildGameView,
+  finishAttempt,
+  getHistory,
+  loadGameContext,
+  withAttemptMutation,
+  withCorrectAnswers,
+} from "@/features/game/server/game";
+export function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  return apiResponse(async () => {
+    const body = await readMutation(request);
+    requireExactKeys(body, [], "No finish parameters are accepted.");
+    const id = parseId((await params).id);
+    return withAttemptMutation(id, async () => {
+      const [context, history] = await Promise.all([
+        loadGameContext(id),
+        getHistory(id),
+      ]);
+      const game = buildGameView(context, history);
+      if (game.phase === "finished") return withCorrectAnswers(game, context);
+      if (game.phase !== "ready-to-finish" && game.phase !== "timed-out")
+        throw new ApiError(
+          409,
+          "Save all ten answers or wait until the time limit before finishing.",
+        );
+      const attempt = await finishAttempt(id);
+      return withCorrectAnswers(
+        buildGameView({ ...context, attempt }, await getHistory(id)),
+        { ...context, attempt },
+      );
+    });
+  });
+}

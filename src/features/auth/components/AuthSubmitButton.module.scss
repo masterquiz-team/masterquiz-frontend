@@ -1,0 +1,29 @@
+@use "../../../styles/tokens";
+@use "../../../styles/patterns";
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 21px;
+  width: 100%;
+  min-height: 56px;
+  @include patterns.outline-button($radius: 27px);
+  font-size: tokens.$font-size-md;
+  font-weight: 500;
+  line-height: 19px;
+  cursor: pointer;
+}
+
+.button:disabled {
+  @include patterns.disabled-control($cursor: wait, $opacity: 0.5);
+}
+
+.button:focus-visible {
+  @include patterns.focus-ring;
+}
+
+.arrow {
+  width: 28px;
+  height: 18px;
+}

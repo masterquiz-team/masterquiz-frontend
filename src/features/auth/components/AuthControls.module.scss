@@ -1,0 +1,87 @@
+@use "../../../styles/tokens";
+@use "../../../styles/breakpoints";
+@use "../../../styles/patterns";
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-self: end;
+  gap: 39px;
+  font-size: tokens.$font-size-md;
+  line-height: 19px;
+  white-space: nowrap;
+}
+
+.link {
+  color: tokens.$text-heading;
+}
+
+.link:hover {
+  color: var(--primary);
+}
+
+.link:focus-visible,
+.action:focus-visible {
+  @include patterns.focus-ring($radius: tokens.$radius-focus);
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 112px;
+  min-height: 48px;
+  border-radius: tokens.$radius-pill;
+  background: var(--primary);
+  color: tokens.$surface;
+  cursor: pointer;
+}
+
+.action:hover {
+  background: var(--primary-hover);
+}
+
+.user {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  @include patterns.interactive-lift;
+
+  &:hover {
+    background: tokens.$primary-overlay;
+  }
+
+  &:focus-visible {
+    @include patterns.focus-ring;
+  }
+}
+
+.skeleton {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: tokens.$primary-overlay;
+}
+
+.srOnly {
+  @include patterns.visually-hidden;
+}
+
+@include breakpoints.down(lg) {
+  .controls {
+    gap: 24px;
+  }
+}
+
+@include breakpoints.down(sm) {
+  .controls {
+    gap: 12px;
+    font-size: tokens.$font-size-sm;
+  }
+  .action {
+    width: 80px;
+    min-height: 40px;
+  }
+}

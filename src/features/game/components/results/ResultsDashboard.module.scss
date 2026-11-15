@@ -1,0 +1,313 @@
+@use "../../../../styles/tokens";
+@use "../../../../styles/patterns";
+
+.srOnly {
+  @include patterns.visually-hidden;
+}
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 608fr) minmax(0, 376fr);
+  align-items: stretch;
+  gap: 45px;
+  width: min(100%, 1029px);
+  margin-inline: auto;
+  color: tokens.$text-heading;
+}
+.overview,
+.answersPanel {
+  min-width: 0;
+  border-radius: tokens.$radius-control;
+  box-shadow: tokens.$shadow-question;
+}
+.overview {
+  padding: 2px 40px 71px;
+  background: tokens.$surface;
+}
+.intro {
+  text-align: center;
+  h1 {
+    margin: 28px 0 16px;
+    font-size: tokens.$font-size-6xl;
+    font-weight: 600;
+    line-height: 48px;
+    overflow-wrap: anywhere;
+  }
+  p {
+    max-inline-size: 341px;
+    margin-inline: auto;
+    color: tokens.$text-body;
+    font-size: tokens.$font-size-xl;
+    font-weight: 400;
+    line-height: 24px;
+  }
+}
+.trophy {
+  display: block;
+  width: 298px;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto -9px;
+}
+.completed {
+  display: flex;
+  margin-inline: auto;
+  align-items: center;
+  justify-content: center;
+  width: 152px;
+  min-height: 34px;
+  border-radius: tokens.$radius-badge;
+  background: tokens.$primary-overlay;
+  color: tokens.$primary;
+  font-size: tokens.$font-size-label;
+  font-weight: 400;
+}
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 25px;
+  margin-top: 40px;
+  > div {
+    min-width: 0;
+    min-height: 110px;
+    padding: 10px;
+    border-radius: tokens.$radius-control;
+  }
+  dt {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    color: tokens.$text-body;
+    font-size: tokens.$font-size-xs;
+    font-weight: 400;
+  }
+  dt img {
+    flex-shrink: 0;
+  }
+  dd {
+    display: grid;
+    gap: 10px;
+    margin: 7px 0 0 33px;
+  }
+  strong {
+    font-size: tokens.$font-size-2xl;
+    font-weight: 700;
+    line-height: 29px;
+    color: tokens.$text-heading;
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+  dd > span {
+    color: tokens.$text-body;
+    font-size: tokens.$font-size-xs;
+    font-weight: 400;
+    line-height: 15px;
+  }
+}
+.scoreTile {
+  background: tokens.$primary-tint;
+}
+.timeTile {
+  background: tokens.$results-time-surface;
+}
+.accuracyTile {
+  background: tokens.$success-surface;
+}
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 240px));
+  justify-content: center;
+  gap: 27px;
+  margin-top: 68px;
+}
+.goBack,
+.playAgain {
+  @include patterns.interactive-lift;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 50px;
+  padding: 10px 12px;
+  border-radius: tokens.$radius-control;
+  font-size: tokens.$font-size-md;
+  font-weight: 500;
+  line-height: 24px;
+  text-align: center;
+  cursor: pointer;
+}
+.goBack {
+  @include patterns.outline-button;
+}
+.playAgain {
+  @include patterns.primary-button;
+  &:hover {
+    background: tokens.$primary-hover;
+  }
+  &:disabled {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.7);
+  }
+}
+.replay {
+  min-width: 0;
+}
+.secondaryLink {
+  @include patterns.primary-link;
+  display: block;
+  max-width: 100%;
+  margin: 14px auto 0;
+  text-align: center;
+  font-size: tokens.$font-size-sm;
+  cursor: pointer;
+  &:disabled {
+    @include patterns.disabled-control($cursor: wait, $opacity: 0.7);
+  }
+}
+.startError {
+  margin-top: 12px;
+  font-size: tokens.$font-size-sm;
+  color: tokens.$danger;
+}
+.answersPanel {
+  padding: 17px 21px 30px;
+  background: tokens.$primary-tint;
+  > h2 {
+    margin-bottom: 18px;
+    font-size: tokens.$font-size-lg;
+    font-weight: 600;
+    line-height: 23px;
+  }
+}
+.answers {
+  display: grid;
+  gap: 10px;
+}
+.answerRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding: 9px 12px;
+  border-radius: tokens.$radius-control;
+  box-shadow: tokens.$shadow-result-answer;
+}
+.correct {
+  color: tokens.$success;
+  background: tokens.$surface;
+  .chosenAnswer {
+    font-weight: 600;
+  }
+}
+.wrong {
+  color: tokens.$danger-border;
+  background: tokens.$danger-surface;
+}
+.skipped {
+  color: tokens.$text-muted;
+  background: tokens.$surface-subtle;
+  .outcomeIcon {
+    border: 1px solid currentColor;
+  }
+}
+.outcomeIcon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border-radius: tokens.$radius-circle;
+  font-size: tokens.$font-size-sm;
+  line-height: 1;
+}
+.correctCheck {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+.answerContent {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  h3 {
+    display: flex;
+    gap: 4px;
+    // Figma wraps question text at 211px, even when the row is wider.
+    max-inline-size: 211px;
+    font-size: tokens.$font-size-xs;
+    font-weight: 500;
+    line-height: 15px;
+  }
+  .answerNumber {
+    flex: none;
+    white-space: nowrap;
+  }
+}
+.answerLines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 10px;
+  margin-top: 3px;
+  margin-left: 18px;
+  p {
+    font-size: tokens.$font-size-2xs;
+    font-weight: 300;
+    line-height: 14px;
+  }
+  strong {
+    font-weight: 600;
+  }
+  .correctAnswer {
+    color: tokens.$success;
+  }
+}
+.dashboard a:focus-visible,
+.dashboard button:focus-visible {
+  @include patterns.focus-ring($width: 3px);
+}
+@media (min-width: 1200px) {
+  .overview {
+    padding-right: 26px;
+  }
+  .intro {
+    margin-right: 14px;
+  }
+  .overview,
+  .answersPanel {
+    min-height: 751px;
+  }
+}
+@media (max-width: 800px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    max-width: 620px;
+    gap: 20px;
+  }
+}
+@media (max-width: 480px) {
+  .overview {
+    padding: 20px 16px;
+  }
+  .intro h1 {
+    font-size: tokens.$font-size-3xl;
+  }
+  .tiles {
+    gap: 8px;
+    > div {
+      padding: 12px 8px;
+    }
+    dt {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+    dd {
+      margin-left: 0;
+    }
+    strong {
+      font-size: tokens.$font-size-md;
+    }
+  }
+  .actions {
+    gap: 12px;
+    margin-top: 30px;
+  }
+}
