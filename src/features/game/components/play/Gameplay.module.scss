@@ -75,7 +75,10 @@
     width: 22px;
     height: 22px;
   }
-  &:has(input:focus-visible) {
+  // A checked option already shows the focus position through its selected
+  // styling (as in the design), so the outer ring is only for an unchecked
+  // option reached by Tab before anything is chosen.
+  &:has(input:focus-visible:not(:checked)) {
     @include patterns.focus-ring($width: 3px, $offset: 3px);
   }
 }
