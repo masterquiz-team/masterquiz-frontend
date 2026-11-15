@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { CountUp } from "@/components/ui/CountUp";
+import { Modal } from "@/components/ui/Modal";
 import { useLogout } from "@/features/auth/hooks/useLogout";
 import type { Account } from "../types";
 import { AvatarPicker } from "./AvatarPicker";
@@ -23,23 +24,8 @@ export function ProfileHero({ account }: { account: Account }) {
   const avatar =
     saved && saved.over === account.avatar ? saved.avatar : account.avatar;
   const [editing, setEditing] = useState(false);
-  const dialog = useRef<HTMLDialogElement>(null);
   const close = useRef<HTMLButtonElement>(null);
   const titleId = useId();
-  useEffect(() => {
-    const element = dialog.current;
-    if (!editing || !element) return;
-    const previous =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    element.showModal();
-    close.current?.focus();
-    return () => {
-      element.close();
-      previous?.focus();
-    };
-  }, [editing]);
 
   const stats = [
     { label: "Total points", icon: "star", value: account.score },
@@ -120,38 +106,12 @@ export function ProfileHero({ account }: { account: Account }) {
           onClose={() => setPickingAvatar(false)}
         />
       )}
-      <dialog
-        ref={dialog}
+      <Modal
+        open={editing}
+        onClose={() => setEditing(false)}
+        initialFocus={() => close.current}
         className={styles.editDialog}
         aria-labelledby={titleId}
-        onKeyDown={(event) => {
-          // Keep the wrap inside this dialog; a nested confirmation owns its keys.
-          if (
-            event.key !== "Tab" ||
-            !(event.target instanceof Element) ||
-            event.target.closest("dialog") !== event.currentTarget
-          )
-            return;
-          const controls = Array.from(
-            event.currentTarget.querySelectorAll<HTMLElement>(
-              'button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href], [tabindex="0"]',
-            ),
-          ).filter((element) => element.getClientRects().length > 0);
-          const first = controls[0];
-          const last = controls.at(-1);
-          if (event.shiftKey && document.activeElement === first) {
-            event.preventDefault();
-            last?.focus();
-          } else if (!event.shiftKey && document.activeElement === last) {
-            event.preventDefault();
-            first?.focus();
-          }
-        }}
-        onCancel={(event) => {
-          if (event.target !== event.currentTarget) return;
-          event.preventDefault();
-          setEditing(false);
-        }}
       >
         <div className={styles.dialogHeading}>
           <h2 id={titleId}>Edit profile</h2>
@@ -175,7 +135,7 @@ export function ProfileHero({ account }: { account: Account }) {
         </label>
         <NicknameForm nickname={account.nickname} />
         <DeleteAccount />
-      </dialog>
+      </Modal>
     </section>
   );
 }

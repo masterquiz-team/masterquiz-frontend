@@ -44,7 +44,8 @@
     font-size: tokens.$font-size-md;
     font-weight: 500;
     cursor: pointer;
-    &:disabled {
+    &:disabled,
+    &[aria-disabled="true"] {
       @include patterns.disabled-control($opacity: 0.7);
     }
     &:focus-visible {
