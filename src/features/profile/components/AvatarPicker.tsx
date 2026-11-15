@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveAvatar } from "../services/profile";
 import { ApiClientError } from "@/lib/api/client";
+import { Modal } from "@/components/ui/Modal";
 import { AVATARS, AVATAR_SAVE_FAILED } from "../avatars";
 import styles from "./Profile.module.scss";
 
@@ -36,7 +37,6 @@ export function AvatarPicker({
   onClose: () => void;
 }) {
   const router = useRouter();
-  const dialog = useRef<HTMLDialogElement>(null);
   const close = useRef<HTMLButtonElement>(null);
   const alive = useRef(false);
   const submitting = useRef(false);
@@ -59,18 +59,8 @@ export function AvatarPicker({
 
   useEffect(() => {
     alive.current = true;
-    const element = dialog.current;
-    const previous =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
-    element?.showModal();
-    const radio = element?.querySelector<HTMLInputElement>("input:checked");
-    (radio ?? close.current)?.focus();
     return () => {
       alive.current = false;
-      element?.close();
-      if (previous?.isConnected) previous.focus();
     };
   }, []);
 
@@ -107,40 +97,14 @@ export function AvatarPicker({
   }
 
   return (
-    <dialog
-      ref={dialog}
+    <Modal
+      busy={pending}
+      onClose={requestClose}
+      initialFocus={(dialog) =>
+        dialog.querySelector<HTMLInputElement>("input:checked") ?? close.current
+      }
       className={styles.editDialog}
       aria-labelledby={`${id}-title`}
-      onCancel={(event) => {
-        event.preventDefault();
-        requestClose();
-      }}
-      // Chrome can close a modal without a cancel event after repeated
-      // Escape presses; keep the parent in sync when that happens. A close
-      // queued by an earlier unmount (Strict Mode) finds the dialog open again.
-      onClose={(event) => {
-        if (!alive.current || event.currentTarget.open) return;
-        if (submitting.current) event.currentTarget.showModal();
-        else onClose();
-      }}
-      onKeyDown={(event) => {
-        if (event.key !== "Tab") return;
-        // A radio group contributes one Tab stop; arrows navigate its options.
-        const controls = Array.from(
-          event.currentTarget.querySelectorAll<HTMLElement>(
-            "button:not(:disabled), input:checked:not(:disabled)",
-          ),
-        );
-        const first = controls[0];
-        const last = controls.at(-1);
-        if (event.shiftKey && document.activeElement === first) {
-          event.preventDefault();
-          last?.focus();
-        } else if (!event.shiftKey && document.activeElement === last) {
-          event.preventDefault();
-          first?.focus();
-        }
-      }}
     >
       <div className={styles.dialogHeading}>
         <h2 id={`${id}-title`}>Choose your avatar</h2>
@@ -208,6 +172,6 @@ export function AvatarPicker({
           </button>
         </div>
       </form>
-    </dialog>
+    </Modal>
   );
 }
