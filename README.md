@@ -1,20 +1,65 @@
-# MasterQuiz frontend
+<div align="center">
 
-Quiz frontend built with Next.js 16.3.8 App Router, React 19.2.8, TypeScript,
-and SCSS Modules. [package.json](package.json) requires Node.js `>=24 <25`
-and pins pnpm 11.28.4. Tests use Vitest (`^5.0.5`).
+# MasterQuiz — frontend
 
-## Local development
+Web client for MasterQuiz: pick a category and difficulty, answer timed
+questions, earn achievements and climb the leaderboard.
 
-Run `pnpm install --frozen-lockfile`, copy [.env.example](.env.example) to
-`.env.local` if needed, then run `pnpm dev` and open <http://localhost:3000>.
-Run the Java backend separately; development defaults to <http://localhost:8080>.
-If you run the dev server on another port, update or remove `APP_ORIGIN` in
-`.env.local`, otherwise mutation requests fail the Origin check with 403.
+[![CI](https://github.com/masterquiz-team/masterquiz-frontend/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/masterquiz-team/masterquiz-frontend/actions/workflows/ci.yml)
+![Next.js](https://img.shields.io/badge/Next.js-16.3.8-000000?logo=nextdotjs)
+![React](https://img.shields.io/badge/React-19.2.8-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-24-5FA04E?logo=nodedotjs&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-11.28.4-F69220?logo=pnpm&logoColor=white)
 
-## Commands
+</div>
 
-All commands below are scripts in [package.json](package.json).
+## Contents
+
+- [Features](#features)
+- [Tech stack](#tech-stack)
+- [Getting started](#getting-started)
+- [Scripts](#scripts)
+- [Environment variables](#environment-variables)
+- [Project structure](#project-structure)
+- [Architecture](#architecture)
+- [Branches and deployment](#branches-and-deployment)
+
+## Features
+
+- Quiz game by category and difficulty, with a timer and answer feedback
+- Sign up / log in, or play as a guest — guest progress is kept on registration
+- Results page, profile with avatar and nickname, achievements, leaderboard
+
+## Tech stack
+
+| Area      | Tools                                                     |
+| --------- | --------------------------------------------------------- |
+| Framework | Next.js 16 App Router, React 19, TypeScript               |
+| Styling   | SCSS Modules, shared tokens in [`src/styles`](src/styles) |
+| Animation | [Motion](https://motion.dev)                              |
+| Quality   | ESLint, Prettier, Vitest, GitHub Actions                  |
+| Backend   | Separate Java (Spring Boot) API, reached through a BFF    |
+
+## Getting started
+
+Requirements: **Node.js 24** (`>=24 <25`) and **pnpm 11.28.4**
+(`corepack enable` picks the pinned version).
+
+```bash
+pnpm install --frozen-lockfile
+cp .env.example .env.local   # optional, defaults work locally
+pnpm dev
+```
+
+Open <http://localhost:3000>. Run the Java backend separately; development
+defaults to <http://localhost:8080>.
+
+> [!NOTE]
+> If you run the dev server on another port, update or remove `APP_ORIGIN` in
+> `.env.local`, otherwise mutation requests fail the Origin check with 403.
+
+## Scripts
 
 | Command             | Purpose                                              |
 | ------------------- | ---------------------------------------------------- |
@@ -28,37 +73,64 @@ All commands below are scripts in [package.json](package.json).
 | `pnpm format:check` | Check formatting with Prettier.                      |
 | `pnpm format:lint`  | Rewrite formatting, then run ESLint.                 |
 
-## Environment
+CI ([ci.yml](.github/workflows/ci.yml)) runs `format:check`, `lint`,
+`typecheck`, `test` and `build` on every push and pull request.
 
-These are all environment variables read by application code; none uses a
-`NEXT_PUBLIC_` prefix. Keep local configuration in the project root.
-CI ([ci.yml](.github/workflows/ci.yml)) sets `BACKEND_API_URL` so the production
-build can run.
+## Environment variables
 
-| Variable          | Required?                                    | Purpose                                                                                                                                                                                                                                    |
-| ----------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `BACKEND_API_URL` | In production; optional otherwise            | Server-side Java API base URL. Defaults to `http://localhost:8080` outside production. See [transport.ts](src/lib/backend/transport.ts).                                                                                                   |
-| `APP_ORIGIN`      | Optional in code; set behind a reverse proxy | Public frontend origin for mutation Origin checks. Defaults to the request URL's origin; set to the public site URL when the proxy supplies an internal request URL. See [request.ts](src/lib/api/request.ts).                             |
-| `NODE_ENV`        | Managed by Next.js / the test runner         | Production requires the backend URL and sets Secure cookies. Development enables the leaderboard's `?demo=1` fixture. See [session.ts](src/features/auth/server/session.ts) and [leaderboard page](<src/app/(site)/leaderboard/page.tsx>). |
+All variables are server-side; none uses the `NEXT_PUBLIC_` prefix.
 
-## Backend and sessions
+| Variable          | Required                         | Purpose                                                                                                                                                                                     |
+| ----------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BACKEND_API_URL` | In production                    | Java API base URL. Defaults to `http://localhost:8080` outside production. See [transport.ts](src/lib/backend/transport.ts).                                                                |
+| `APP_ORIGIN`      | Only behind a proxy              | Public frontend origin for the mutation Origin check. Defaults to the request URL's origin; set it when the proxy passes an internal request URL. See [request.ts](src/lib/api/request.ts). |
+| `NODE_ENV`        | Managed by Next.js / test runner | Production requires `BACKEND_API_URL` and sets Secure cookies. Development enables the leaderboard `?demo=1` fixture.                                                                       |
 
-Browser requests go to [Next.js BFF route handlers](src/app/api), then to
-feature-owned services in `src/features/*/server`, then through the server-only
-[Java transport](src/lib/backend/transport.ts). Server Components also call
-server services directly. [backendRequest](src/lib/api/server.ts) reads the
-session token and passes it explicitly to the transport, which adds Bearer
-authorization, disables caching, and defaults to a 10-second timeout.
+## Project structure
 
-[Authentication](src/features/auth/server/auth.ts) exchanges login/register
-payloads with Java without forwarding an existing bearer token.
-[Guest play](src/features/auth/server/guest.ts) creates a Java guest: the browser
-calls the BFF `POST /api/auth/guest`, which calls Java `POST /guest`; existing
-user/guest sessions are reused.
-JWTs stay in the `masterquiz_session` cookie, with HttpOnly, SameSite=Lax,
-Path=/, expiry from JWT `exp`, and Secure in production. Guest sessions also
-use `masterquiz_guest` and `masterquiz_guest_id` cookies with the same flags;
-logout clears all three. See [cookie handling](src/features/auth/server/session.ts).
-The browser receives session metadata rather than the JWT.
-[Session verification](src/lib/backend/session.ts) asks Java to validate the
-token; decoding JWT claims alone does not verify its signature.
+```text
+src/
+├── app/          # routes: (site), (auth), (game) groups and BFF handlers in api/
+├── features/     # achievements, auth, categories, game, home, leaderboard, profile
+│   └── */server  #   server-only services that talk to the Java API
+├── components/   # shared layout and UI components
+├── lib/          # API helpers, backend transport, formatting, validation
+└── styles/       # SCSS tokens, breakpoints and patterns
+```
+
+## Architecture
+
+```text
+Browser ──► Next.js BFF (src/app/api) ──► features/*/server ──► Java transport ──► Java API
+Server Components ───────────────────────────┘
+```
+
+- **BFF.** The browser only talks to Next.js route handlers. Server Components
+  call feature services directly. [`backendRequest`](src/lib/api/server.ts)
+  reads the session token and passes it to the server-only
+  [transport](src/lib/backend/transport.ts), which adds Bearer auth, disables
+  caching and applies a 10-second timeout.
+- **Auth.** [Login/register](src/features/auth/server/auth.ts) exchange payloads
+  with Java without forwarding an existing token. [Guest play](src/features/auth/server/guest.ts)
+  goes through `POST /api/auth/guest` → Java `POST /guest`; existing sessions
+  are reused.
+- **Sessions.** The JWT lives in the `masterquiz_session` cookie; guests also
+  get `masterquiz_guest` and `masterquiz_guest_id`
+  ([names](src/lib/backend/token.ts), [flags](src/features/auth/server/session.ts)).
+  All are HttpOnly, SameSite=Lax, Path=/, expire with the JWT `exp` and are
+  Secure in production; logout clears all three. The browser only receives
+  session metadata, never the JWT.
+  [Session verification](src/lib/backend/session.ts) asks Java to validate the
+  token instead of trusting decoded claims.
+
+## Branches and deployment
+
+| Branch      | Role                                              |
+| ----------- | ------------------------------------------------- |
+| `main`      | Production, deployed on Vercel                    |
+| `develop`   | Integration branch; feature branches merge here   |
+| `feature/*` | Work branches, merged into `develop` through a PR |
+
+On Vercel, set `BACKEND_API_URL` for Production. Leave `APP_ORIGIN` unset:
+Vercel passes the public host in the request URL, and a fixed value would
+reject requests from preview URLs.
