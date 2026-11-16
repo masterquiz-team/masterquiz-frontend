@@ -14,7 +14,7 @@ import incorrectRadio from "./answer-incorrect-radio.svg";
 import incorrectCross from "./answer-incorrect-cross.svg";
 import incorrectDot from "./answer-incorrect-dot.svg";
 import optionCheck from "./answer-correct-check.svg";
-import exitIllustration from "./exit-illustration.svg";
+import exitIllustration from "./exit-illustration.png";
 import close from "./dialog-close.svg";
 
 export const assets = {
