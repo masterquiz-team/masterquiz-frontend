@@ -246,7 +246,7 @@
   margin: auto;
   width: min(498px, calc(100% - 32px));
   max-height: calc(100dvh - 32px);
-  padding: 40px 33px 42px;
+  padding: 0 33px 41px;
   overflow: auto;
   border: 2px solid var(--primary);
   border-radius: tokens.$radius-card;
@@ -256,8 +256,11 @@
     background: tokens.$dialog-backdrop;
   }
   h2 {
+    position: relative;
     text-align: center;
-    margin-top: 33px;
+    // The artwork's bounding box ends below the visible blob, so the title
+    // tucks into its transparent bottom edge, as in the Figma frame.
+    margin-top: -27px;
     font-size: tokens.$font-size-4xl;
     font-weight: 700;
     line-height: normal;
@@ -266,19 +269,28 @@
 .dialogClose {
   position: absolute;
   top: 10px;
-  right: 10px;
+  right: 14px;
+  z-index: 1;
   cursor: pointer;
 }
 .dialogArtwork {
   display: block;
-  width: 100px;
-  margin: auto;
+  width: 236px;
+  max-width: 100%;
+  margin: 0 auto;
+  // The tilted blob widens the group to the left; this keeps the door centred.
+  translate: -21px 0;
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
 }
 .dialogBars {
   display: grid;
   justify-items: center;
   gap: 8px;
-  margin: 20px auto 0;
+  margin: 15px auto 0;
   span {
     width: min(282px, 100%);
     height: 17px;
@@ -286,16 +298,13 @@
   }
 }
 .dialogNotice {
-  font-size: tokens.$font-size-xs;
-  line-height: 1.4;
-  color: tokens.$text-muted;
-  margin: 12px 0;
-  text-align: center;
+  @include patterns.visually-hidden;
 }
 .dialogActions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  gap: 11px;
+  margin-top: 31px;
   button {
     min-height: 45px;
     font-weight: 500;
