@@ -83,8 +83,24 @@ createServer(async (req, res) => {
           return;
         }
         scenarios[key] = value;
+        if (key === "attemptClock" && value === "expired") {
+          for (const attempt of attempts.values()) {
+            attempt.startedAt = new Date(Date.now() - 601_000)
+              .toISOString()
+              .replace(/Z$/, "");
+          }
+        }
       }
       return reply({ ok: true });
+    }
+    if (path === "/__state" && method === "GET") {
+      return reply({
+        users: users.map(({ password, ...user }) => {
+          void password;
+          return user;
+        }),
+        attempts: [...attempts.values()].map(attemptDto),
+      });
     }
     if (path === "/login" && method === "POST") {
       const user = users.find(
@@ -162,6 +178,8 @@ createServer(async (req, res) => {
         return reply(null);
       }
       if (method === "PUT") {
+        if (scenarios.profileUpdate === "error500")
+          return reply({ message: "Forced update failure" }, 500);
         if (typeof body.nickname === "string") user.nickname = body.nickname;
         if (typeof body.avatarId === "string") user.avatarId = body.avatarId;
       }
@@ -189,22 +207,26 @@ createServer(async (req, res) => {
         scoreByCategoryId: { "1": 100 },
         flag: true,
       });
-    if (/^\/leaderboard(?:\/\d+)?$/.test(path))
+    if (/^\/leaderboard(?:\/\d+)?$/.test(path)) {
+      const history = path === "/leaderboard/2";
       return reply(
         page([
           {
             userId: identity.id,
             rank: 1,
-            nickname: user?.nickname ?? identity.subject,
-            flag: true,
+            nickname: history
+              ? "HistoryChampion"
+              : (user?.nickname ?? identity.subject),
+            flag: !history,
             score: 100,
             totalGamesPlayed: 2,
-            categoryName: "Geography",
-            categoryScore: 100,
+            categoryName: history ? "History" : "Geography",
+            categoryScore: history ? 240 : 100,
             gamesPlayed: 2,
           },
         ]),
       );
+    }
     if (/^\/quiz\/category\/\d+$/.test(path))
       return reply(page([quiz("EASY", Number(path.split("/")[3]))]));
     if (/^\/quiz\/\d+$/.test(path))
