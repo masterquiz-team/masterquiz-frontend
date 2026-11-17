@@ -20,6 +20,7 @@ questions, earn achievements and climb the leaderboard.
 - [Tech stack](#tech-stack)
 - [Getting started](#getting-started)
 - [Scripts](#scripts)
+- [End-to-end tests](#end-to-end-tests)
 - [Environment variables](#environment-variables)
 - [Project structure](#project-structure)
 - [Architecture](#architecture)
@@ -69,12 +70,52 @@ defaults to <http://localhost:8080>.
 | `pnpm lint`         | Run ESLint.                                          |
 | `pnpm typecheck`    | Generate Next.js route types and run `tsc --noEmit`. |
 | `pnpm test`         | Run Vitest once using `scripts/vitest.config.mts`.   |
+| `pnpm e2e`          | Run the Playwright e2e suite (see below).            |
+| `pnpm e2e:ui`       | Open the Playwright UI mode.                         |
 | `pnpm format`       | Rewrite formatting with Prettier.                    |
 | `pnpm format:check` | Check formatting with Prettier.                      |
 | `pnpm format:lint`  | Rewrite formatting, then run ESLint.                 |
 
 CI ([ci.yml](.github/workflows/ci.yml)) runs `format:check`, `lint`,
-`typecheck`, `test` and `build` on every push and pull request.
+`typecheck`, `test` and `build` on every push and pull request, and a
+separate job runs the e2e suite.
+
+## End-to-end tests
+
+The Playwright tests live in [`e2e/tests`](e2e/tests). Before the run,
+[playwright.config.ts](playwright.config.ts) starts a mock backend
+([`e2e/mock-backend`](e2e/mock-backend)) and a production build of the app
+(`pnpm build && pnpm start`), so no real backend or `pnpm dev` is needed. The
+first run takes a few minutes because of the build.
+
+```bash
+pnpm exec playwright install chromium   # once, downloads the browser
+pnpm e2e                                # the whole suite
+pnpm e2e e2e/tests/game-exit-guard.spec.ts   # one file
+pnpm e2e -g "Back"                      # tests whose title matches
+```
+
+| Flag                | What it does                                                |
+| ------------------- | ----------------------------------------------------------- |
+| `-g "<text>"`       | Runs only tests whose title matches the text.               |
+| `--headed`          | Shows the browser window while the tests run.               |
+| `--ui`              | Interactive mode with a step timeline (same as `e2e:ui`).   |
+| `--debug`           | Opens the Playwright Inspector to step through a test.      |
+| `--repeat-each=3`   | Runs every test three times to catch flaky ones.            |
+| `--max-failures=1`  | Stops after the first failure.                              |
+| `--project=desktop` | Runs one project: `desktop`, or `mobile` (`@mobile` tests). |
+
+The default ports are 18080 (mock backend) and 13100 (app). If they are busy,
+for example while another run is going on, pick others:
+
+```bash
+E2E_BACKEND_PORT=18326 E2E_APP_PORT=13326 pnpm e2e
+```
+
+After a run, `pnpm exec playwright show-report` opens the HTML report from
+`playwright-report/`. Failed tests keep a screenshot and a trace there; the
+trace replays every step with the DOM, network and console. In CI the same
+report is uploaded as the `playwright-results` artifact.
 
 ## Environment variables
 
