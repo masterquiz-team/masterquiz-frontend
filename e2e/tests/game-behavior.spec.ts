@@ -1,20 +1,6 @@
-import type { Page } from "@playwright/test";
-import { test, expect, startAsGuest, mockURL } from "../support/fixtures";
+import { test, expect, mockURL } from "../support/fixtures";
 
-async function startGame(page: Page) {
-  await startAsGuest(page);
-  await page.getByRole("link", { name: /^Geography/ }).click();
-  await page
-    .getByRole("link", { name: "Easy: 10 questions, about 5 minutes" })
-    .click();
-  await page.getByRole("button", { name: /Random Quiz/ }).click();
-  await expect(
-    page.getByRole("heading", { name: "Geography question 1?", exact: true }),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("button", { name: "Next", exact: true }),
-  ).toBeDisabled();
-}
+import { startGame } from "../support/game";
 
 test("неправильна відповідь показує помилку та правильний варіант", async ({
   page,
