@@ -28,6 +28,7 @@ import { ReadyToFinishPhase } from "./ReadyToFinishPhase";
 import type { GameFailure } from "../../types";
 import { useGame } from "../../hooks/useGame";
 import { useGameShortcuts } from "../../hooks/useGameShortcuts";
+import { useLeaveGuard, type LeaveRequest } from "../../hooks/useLeaveGuard";
 import styles from "./Gameplay.module.scss";
 
 function GameStep({
@@ -97,7 +98,11 @@ export function GamePlayer({
     advance,
     reload,
   } = useGame(attemptId, initialGame, initialError);
-  const [exit, setExit] = useState(false);
+  // Why the exit dialog is open: the Back button, a link or browser Back.
+  const [leave, setLeave] = useState<
+    LeaveRequest | { kind: "back-button" } | null
+  >(null);
+  const exit = leave !== null;
   const main = useRef<HTMLDivElement>(null);
   const focusedTransition = useRef(0);
   const router = useRouter();
@@ -143,7 +148,14 @@ export function GamePlayer({
         : phase === "feedback" || phase === "ready-to-finish"
           ? advance
           : undefined,
-    onExit: () => setExit(true),
+    onExit: () => setLeave({ kind: "back-button" }),
+  });
+  // Results and error screens have nothing unsaved, and a timed-out attempt is
+  // finished automatically, so only a quiz in play holds the player.
+  const leaveGuard = useLeaveGuard({
+    active: !!shortcutGame,
+    attemptId,
+    onLeaveRequest: setLeave,
   });
   useEffect(() => {
     if (stepReady && !pending && transition !== focusedTransition.current) {
@@ -165,7 +177,7 @@ export function GamePlayer({
             className={styles.back}
             onClick={() =>
               game && game.phase !== "finished"
-                ? setExit(true)
+                ? setLeave({ kind: "back-button" })
                 : router.push(backHref)
             }
             disabled={pending}
@@ -262,11 +274,15 @@ export function GamePlayer({
         )}
       </div>
       <ExitDialog
-        open={exit}
-        onCancel={() => setExit(false)}
+        open={exit && !showingResults}
+        onCancel={() => setLeave(null)}
         onConfirm={() => {
-          setExit(false);
-          router.push(backHref);
+          setLeave(null);
+          // Go where the player was heading: the clicked link, back through
+          // history, or the quiz list (also when there is no page to go back to).
+          if (leave?.kind === "history" && leaveGuard.leaveByHistory()) return;
+          leaveGuard.release();
+          router.push(leave?.kind === "link" ? leave.href : backHref);
         }}
       />
     </main>
