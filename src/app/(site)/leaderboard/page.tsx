@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getUnlockedBadges } from "@/features/achievements/server/achievements";
 import { loadProtectedPage } from "@/features/auth/server/protected-page";
 import { getUserProfile } from "@/features/auth/server/profile";
 import { getAllCategories } from "@/features/categories/server/api";
@@ -29,14 +30,16 @@ export default async function LeaderboardPage({
         : "/leaderboard";
     },
     async () => {
-      const [categories, board, profile] = await Promise.all([
+      const [categories, board, profile, badges] = await Promise.all([
         getAllCategories(),
         demo
           ? getDemoLeaderboard(request.category)
           : getLeaderboard(request.category),
         getUserProfile(),
+        // Badges are optional; a failed lookup must not break the page.
+        getUnlockedBadges().catch(() => null),
       ]);
-      return { categories, board, profile };
+      return { categories, board, profile, badges };
     },
   );
   if (result.status === "anonymous") redirect(result.loginHref);
@@ -60,7 +63,7 @@ export default async function LeaderboardPage({
         <a href="/leaderboard">Try again</a>
       </PageState>
     );
-  const { categories, board, profile } = result.data;
+  const { categories, board, profile, badges } = result.data;
   return (
     <Reveal as="main" className={styles.main}>
       <LeaderboardScreen
@@ -71,6 +74,7 @@ export default async function LeaderboardPage({
           nickname: profile?.nickname ?? null,
           score: profile?.score ?? null,
         }}
+        badges={badges}
         demo={demo}
       />
     </Reveal>

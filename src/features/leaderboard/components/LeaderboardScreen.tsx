@@ -1,7 +1,10 @@
 import { getImageProps } from "next/image";
 import { formatNumber } from "@/lib/format";
 import type { Category } from "@/features/categories/types";
+import Link from "next/link";
 import { Stagger } from "@/components/ui/Entrance";
+import type { BadgeId } from "@/features/achievements/badges";
+import { BadgePreview } from "@/features/achievements/components/BadgePreview";
 import type { Leaderboard } from "../types";
 import { CategorySelect, CategoryTiles } from "./CategoryFilter";
 import { CrownIcon, MedalIcon, UserIcon } from "./LeaderboardIcons";
@@ -86,12 +89,15 @@ export function LeaderboardScreen({
   categories,
   selected,
   player,
+  badges,
   demo,
 }: {
   board: Leaderboard;
   categories: Category[];
   selected: number | null;
   player: { nickname: string | null; score: number | null };
+  // null when the badge lookup failed.
+  badges: BadgeId[] | null;
   demo: boolean;
 }) {
   const me = board.status === "ok" ? board.me : null;
@@ -193,11 +199,16 @@ export function LeaderboardScreen({
           className={`${styles.card} ${styles.badges}`}
           aria-labelledby="your-badges"
         >
-          <h2 id="your-badges">
-            <MedalIcon />
-            Your badges
-          </h2>
-          <p>Badges are coming soon.</p>
+          <div className={styles.cardHeading}>
+            <h2 id="your-badges">
+              <MedalIcon />
+              Your badges
+            </h2>
+            <Link href="/achievements" className={styles.viewAll}>
+              View all<span className={styles.visuallyHidden}> badges</span>
+            </Link>
+          </div>
+          <BadgePreview unlocked={badges} className={styles.badgeList} />
         </section>
       </div>
 

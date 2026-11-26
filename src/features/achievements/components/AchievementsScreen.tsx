@@ -4,18 +4,42 @@ import Link from "next/link";
 import { useState } from "react";
 import { Stagger } from "@/components/ui/Entrance";
 import { PublicAsset } from "@/components/ui/PublicAsset";
-import { badges } from "../badges";
+import { badgeArtwork, badgeProgress, badges, type BadgeId } from "../badges";
 import styles from "./Achievements.module.scss";
 
-const filters = [
-  { id: "all", label: "All", count: badges.length },
-  { id: "unlocked", label: "Unlocked", count: 0 },
-  { id: "locked", label: "Locked", count: badges.length },
-] as const;
+type Filter = "all" | "unlocked" | "locked";
 
-export function AchievementsScreen() {
-  const [filter, setFilter] = useState<(typeof filters)[number]["id"]>("all");
-  const visible = filter === "unlocked" ? [] : badges;
+// The design writes the share with a decimal comma: 62,5%.
+const percentFormat = new Intl.NumberFormat("de-DE", {
+  maximumFractionDigits: 1,
+});
+
+export function AchievementsScreen({
+  unlocked,
+  progress,
+}: {
+  unlocked: BadgeId[];
+  progress: { totalGamesPlayed: number; streak: number };
+}) {
+  const [filter, setFilter] = useState<Filter>("all");
+  const earned = new Set(unlocked);
+  const unlockedCount = badges.filter((badge) => earned.has(badge.id)).length;
+  const lockedCount = badges.length - unlockedCount;
+  const ratio = unlockedCount / badges.length;
+  const filters = [
+    { id: "all", label: "All", count: badges.length },
+    { id: "unlocked", label: "Unlocked", count: unlockedCount },
+    { id: "locked", label: "Locked", count: lockedCount },
+  ] as const;
+  const visible = badges.filter((badge) =>
+    filter === "all" ? true : earned.has(badge.id) === (filter === "unlocked"),
+  );
+  const hint =
+    lockedCount === 0
+      ? "You have unlocked every badge!"
+      : unlockedCount === 0
+        ? "Finish a quiz to unlock your first badge!"
+        : "Keep playing to unlock more!";
   return (
     <div className={styles.achievements}>
       <Link href="/profile" className={styles.back}>
@@ -48,7 +72,7 @@ export function AchievementsScreen() {
           />
           <div>
             <h2 id="achievement-summary">
-              0 of {badges.length} badges unlocked
+              {unlockedCount} of {badges.length} badges unlocked
             </h2>
             <div className={styles.summaryProgress}>
               <div
@@ -57,11 +81,13 @@ export function AchievementsScreen() {
                 aria-label="Badges unlocked"
                 aria-valuemin={0}
                 aria-valuemax={badges.length}
-                aria-valuenow={0}
-              />
-              <span>0%</span>
+                aria-valuenow={unlockedCount}
+              >
+                <span style={{ width: `${ratio * 100}%` }} />
+              </div>
+              <span>{percentFormat.format(ratio * 100)}%</span>
             </div>
-            <p>Achievements are coming soon. Keep playing!</p>
+            <p>{hint}</p>
           </div>
         </section>
       </div>
@@ -82,42 +108,81 @@ export function AchievementsScreen() {
         ))}
       </div>
       <p className={styles.srOnly} role="status">
-        {visible.length} {filter === "unlocked" ? "unlocked" : "locked"} badges
-        shown
+        {visible.length} {filter === "all" ? "" : `${filter} `}badges shown
       </p>
       {visible.length === 0 ? (
         <p className={styles.empty}>
-          Achievements are coming soon. Keep playing!
+          {filter === "unlocked"
+            ? "No badges yet. Finish a quiz to unlock your first one!"
+            : "You have unlocked every badge!"}
         </p>
       ) : (
         <Stagger as="ul" key={filter} className={styles.grid}>
-          {visible.map((badge) => (
-            <li key={badge.id} className={styles.card}>
-              <PublicAsset
-                src={
-                  "lockedIcon" in badge
-                    ? badge.lockedIcon
-                    : `/images/achievements/badge-${badge.id}.svg`
-                }
-                size={85}
-                className={styles.lockedArtwork}
-              />
-              <span
-                className={`${styles.rarity} ${styles[badge.rarity.toLowerCase()]}`}
-              >
-                {badge.rarity}
-              </span>
-              <h2>{badge.title}</h2>
-              <p>{badge.description}</p>
-              <div className={styles.locked}>
+          {visible.map((badge) => {
+            const isUnlocked = earned.has(badge.id);
+            const counter = isUnlocked
+              ? null
+              : badgeProgress(badge.id, progress);
+            return (
+              <li key={badge.id} className={styles.card}>
                 <PublicAsset
-                  src="/images/achievements/status-locked.svg"
-                  size={18}
+                  src={badgeArtwork(badge, isUnlocked)}
+                  size={85}
+                  className={
+                    isUnlocked || "lockedIcon" in badge
+                      ? undefined
+                      : styles.lockedArtwork
+                  }
                 />
-                Locked
-              </div>
-            </li>
-          ))}
+                <span
+                  className={`${styles.rarity} ${styles[badge.rarity.toLowerCase()]}`}
+                >
+                  {badge.rarity}
+                </span>
+                <h2>{badge.title}</h2>
+                <p>{badge.description}</p>
+                {counter && (
+                  <div className={styles.counter}>
+                    <div
+                      className={styles.counterTrack}
+                      role="progressbar"
+                      aria-label={`${badge.title} progress`}
+                      aria-valuemin={0}
+                      aria-valuemax={counter.max}
+                      aria-valuenow={counter.value}
+                    >
+                      <span
+                        style={{
+                          width: `${(counter.value / counter.max) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <span>
+                      {counter.value} / {counter.max}
+                      {counter.unit}
+                    </span>
+                  </div>
+                )}
+                {isUnlocked ? (
+                  <div className={styles.unlocked}>
+                    <PublicAsset
+                      src="/images/achievements/status-unlocked.svg"
+                      size={27}
+                    />
+                    Unlocked
+                  </div>
+                ) : (
+                  <div className={styles.locked}>
+                    <PublicAsset
+                      src="/images/achievements/status-locked.svg"
+                      size={18}
+                    />
+                    Locked
+                  </div>
+                )}
+              </li>
+            );
+          })}
         </Stagger>
       )}
     </div>

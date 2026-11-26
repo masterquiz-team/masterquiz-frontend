@@ -5,7 +5,8 @@ import type { Category } from "@/features/categories/types";
 import { difficultyHref } from "@/features/game/routes";
 import type { Account } from "../types";
 import { getLevelProgress } from "../levels";
-import { profileBadges } from "@/features/achievements/badges";
+import type { BadgeId } from "@/features/achievements/badges";
+import { BadgePreview } from "@/features/achievements/components/BadgePreview";
 import { ProfileHero } from "./ProfileHero";
 import { PublicAsset } from "@/components/ui/PublicAsset";
 import { LevelProgress } from "./LevelProgress";
@@ -15,9 +16,12 @@ import styles from "./Profile.module.scss";
 export function ProfileScreen({
   account,
   favourites,
+  unlockedBadges,
 }: {
   account: Account;
   favourites: Category[];
+  // null when the badge lookup failed.
+  unlockedBadges: BadgeId[] | null;
 }) {
   const progress = getLevelProgress(account.score, account.level);
   return (
@@ -57,32 +61,11 @@ export function ProfileScreen({
           >
             <div className={styles.cardHeading}>
               <h2 id="your-badges">Your badges</h2>
-              <span className={styles.comingSoon}>Coming soon</span>
               <Link href="/achievements">
                 View all<span className={styles.srOnly}> badges</span>
               </Link>
             </div>
-            <Stagger as="ul" className={styles.badges}>
-              {profileBadges.map((badge) => (
-                <li key={badge.id}>
-                  <PublicAsset
-                    src={`/images/achievements/profile-badge-${badge.id}.svg`}
-                    size={74}
-                    className={styles.lockedBadge}
-                  />
-                  <span>
-                    {"profileTitle" in badge ? badge.profileTitle : badge.title}
-                  </span>
-                  <span className={styles.lockStatus}>
-                    <PublicAsset
-                      src="/images/achievements/status-locked.svg"
-                      size={14}
-                    />
-                    Locked
-                  </span>
-                </li>
-              ))}
-            </Stagger>
+            <BadgePreview unlocked={unlockedBadges} className={styles.badges} />
           </section>
         </div>
       </div>

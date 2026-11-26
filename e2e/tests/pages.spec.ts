@@ -33,18 +33,52 @@ test("leaderboard показує рейтинг гравця та категор
   ).toBeVisible();
 });
 
-test("achievements чесно показує ще недоступні нагороди", async ({ page }) => {
+test("achievements показує відкриті бейджі з бекенду", async ({ page }) => {
   await page.goto("/achievements");
   await expect(
     page.getByRole("heading", { name: "Achievements", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("progressbar", { name: "Badges unlocked" }),
-  ).toHaveAttribute("aria-valuenow", "0");
-  await page.getByRole("button", { name: /^Unlocked/ }).click();
+  ).toHaveAttribute("aria-valuenow", "1");
+  await expect(
+    page.getByRole("heading", { name: "1 of 8 badges unlocked" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("progressbar", { name: "Quiz Veteran progress" }),
+  ).toHaveAttribute("aria-valuenow", "2");
+  await page.getByRole("button", { name: "Unlocked (1)" }).click();
   await expect(page.getByRole("status")).toContainText(
-    "0 unlocked badges shown",
+    "1 unlocked badges shown",
   );
+  const card = page.getByRole("listitem").filter({ hasText: "First Steps" });
+  await expect(card).toContainText("Unlocked");
+});
+
+test("профіль показує відкритий бейдж без замка", async ({ page }) => {
+  await page.goto("/profile");
+  const badges = page.getByRole("region", { name: "Your badges" });
+  await expect(
+    badges.getByRole("listitem").filter({ hasText: "First steps" }),
+  ).not.toContainText("Locked");
+  await expect(
+    badges.getByRole("listitem").filter({ hasText: "Perfect Score" }),
+  ).toContainText("Locked");
+});
+
+test("збій бейджів не ламає профіль", async ({ page, request }) => {
+  expect(
+    (
+      await request.post(`${mockURL}/__scenario`, {
+        data: { "user-achievements": "error500" },
+      })
+    ).ok(),
+  ).toBeTruthy();
+  await page.goto("/profile");
+  await expect(
+    page.getByRole("heading", { name: "Your level", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Badges could not be loaded.")).toBeVisible();
 });
 
 test("backend 500 показує PageState замість падіння", async ({

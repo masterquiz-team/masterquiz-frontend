@@ -66,11 +66,34 @@
     font-size: 15px;
   }
 }
-.track {
+.track,
+.counterTrack {
+  overflow: hidden;
   height: 15px;
   flex: 1;
   border-radius: 7.5px;
   background: tokens.$primary-tint;
+  > span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: tokens.$primary;
+  }
+}
+.counter {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: auto 0 10px;
+  color: tokens.$text-body;
+  font-size: 13px;
+  > span {
+    white-space: nowrap;
+  }
+}
+.counterTrack {
+  height: 10px;
+  border-radius: 5px;
 }
 .filters {
   display: flex;
@@ -144,6 +167,14 @@
   color: #cb61cb;
   background: rgb(203 97 203 / 20%);
 }
+.unlocked {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: auto;
+  color: tokens.$success;
+  font-size: 13px;
+}
 .locked {
   display: flex;
   align-items: center;
@@ -152,6 +183,9 @@
   padding-top: 4px;
   color: tokens.$text-subtle;
   font-size: 12px;
+}
+.counter + .locked {
+  margin-top: 0;
 }
 .empty {
   padding: 48px 20px;
