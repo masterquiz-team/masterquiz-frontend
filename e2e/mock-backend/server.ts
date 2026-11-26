@@ -198,6 +198,23 @@ createServer(async (req, res) => {
       );
       return reply(category ?? {}, category ? 200 : 404);
     }
+    if (path === "/user-achievements") {
+      if (!user || identity.guest)
+        return reply({ message: "Members only" }, 403);
+      // Same shape as Java: earned badges only, no achievement type.
+      return reply([
+        {
+          id: 1,
+          userId: user.id,
+          achievementId: 1,
+          title: "First Steps",
+          description: "Complete first quiz",
+          rarity: "COMMON",
+          achievementImage: "/achievementimage/first_steps.png",
+          unlockedAt: dateTime(),
+        },
+      ]);
+    }
     if (path === "/leaderboard/me")
       return reply({
         nickname: user?.nickname ?? identity.subject,
