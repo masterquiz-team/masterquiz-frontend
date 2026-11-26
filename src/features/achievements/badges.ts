@@ -53,6 +53,27 @@ export const badges = [
   },
 ] as const;
 
+export type Badge = (typeof badges)[number];
+export type BadgeId = Badge["id"];
+
+export const badgeArtwork = (badge: Badge, unlocked: boolean) =>
+  !unlocked && "lockedIcon" in badge
+    ? badge.lockedIcon
+    : `/images/achievements/badge-${badge.id}.svg`;
+
+// Progress the account already exposes. Other badges have no counter in the
+// API, so they show only their locked state.
+export function badgeProgress(
+  id: BadgeId,
+  account: { totalGamesPlayed: number; streak: number },
+) {
+  if (id === "quiz-veteran")
+    return { value: Math.min(account.totalGamesPlayed, 50), max: 50, unit: "" };
+  if (id === "on-fire")
+    return { value: Math.min(account.streak, 3), max: 3, unit: " days" };
+  return null;
+}
+
 export const profileBadges = [
   "first-steps",
   "perfect-score",
