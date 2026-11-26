@@ -206,45 +206,6 @@
   color: tokens.$text-muted;
   margin-top: 8px;
 }
-.badges {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
-  li {
-    // A fixed first row keeps the text in place when a narrow column
-    // shrinks the badge.
-    display: grid;
-    grid-template-rows: 74px;
-    align-content: start;
-    justify-items: center;
-    gap: 8px;
-    text-align: center;
-    color: tokens.$text-body;
-    font-size: 13px;
-    line-height: 1.2;
-    > img {
-      align-self: center;
-      height: auto;
-    }
-  }
-}
-.lockedBadge {
-  filter: grayscale(1);
-  opacity: 0.7;
-}
-.lockStatus {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 12px;
-  color: tokens.$text-muted;
-}
-.comingSoon {
-  margin-right: auto;
-  color: tokens.$text-muted;
-  font-size: 12px;
-}
 .bottom {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);

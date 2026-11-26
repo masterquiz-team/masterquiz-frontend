@@ -313,11 +313,9 @@
 }
 .badges {
   min-height: 216px;
-  p {
-    margin-top: 24px;
-    color: tokens.$text-muted;
-    font-size: tokens.$font-size-sm;
-  }
+}
+.badgeList {
+  margin-top: 20px;
 }
 .demoNote {
   grid-area: note;

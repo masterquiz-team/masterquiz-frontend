@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getUnlockedBadges } from "@/features/achievements/server/achievements";
 import { loadProtectedPage } from "@/features/auth/server/protected-page";
 import { getFavouriteCategories } from "@/features/profile/server/favourites";
 import { getAccount } from "@/features/profile/server/account";
@@ -15,11 +16,13 @@ export default async function ProfilePage() {
   const result = await loadProtectedPage(
     () => "/profile",
     async () => {
-      const [account, favourites] = await Promise.all([
+      const [account, favourites, badges] = await Promise.all([
         getAccount(),
         getFavouriteCategories(),
+        // Badges are optional; a failed lookup must not break the profile.
+        getUnlockedBadges().catch(() => null),
       ]);
-      return { account, favourites };
+      return { account, favourites, badges };
     },
   );
   if (result.status === "anonymous") redirect(result.loginHref);
@@ -30,6 +33,7 @@ export default async function ProfilePage() {
         <ProfileScreen
           account={result.data.account}
           favourites={result.data.favourites}
+          unlockedBadges={result.data.badges}
         />
       </Reveal>
     );
